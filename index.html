@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Neon Tic Tac Toe Multiplayer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* ================= CSS: MODERN GLASSMORPHISM / NEON UI ================= */
+        :root {
+            --bg: #0f0c29; --bg2: #302b63; --bg3: #24243e;
+            --neon-blue: #00f2fe; --neon-pink: #fe0979;
+            --glass: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            font-family: 'Poppins', sans-serif;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background: linear-gradient(to right, var(--bg), var(--bg2), var(--bg3));
+            color: white; height: 100vh; overflow: hidden; display: flex; align-items: center; justify-content: center;
+        }
+        .screen { display: none; width: 100%; height: 100%; padding: 20px; flex-direction: column; align-items: center; justify-content: center; }
+        .active { display: flex; }
+        
+        .glass-panel {
+            background: var(--glass); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border); border-radius: 20px; padding: 30px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); width: 100%; max-width: 400px; text-align: center;
+        }
+        
+        h1, h2 { margin-bottom: 20px; text-shadow: 0 0 10px var(--neon-blue); }
+        input, button { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: none; outline: none; font-family: inherit; }
+        input { background: rgba(0,0,0,0.3); color: white; border: 1px solid var(--glass-border); }
+        
+        button {
+            background: linear-gradient(45deg, var(--neon-blue), #4facfe); color: white; font-weight: bold;
+            cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
+        }
+        button:hover { transform: scale(1.05); box-shadow: 0 0 15px var(--neon-blue); }
+        .btn-secondary { background: linear-gradient(45deg, var(--neon-pink), #f77062); }
+        .btn-secondary:hover { box-shadow: 0 0 15px var(--neon-pink); }
+
+        /* Game Board */
+        .board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 20px 0; width: 300px; height: 300px; }
+        .cell {
+            background: var(--glass); border: 1px solid var(--glass-border); border-radius: 10px;
+            display: flex; align-items: center; justify-content: center; font-size: 3rem; font-weight: bold;
+            cursor: pointer; transition: 0.3s;
+        }
+        .cell:hover { background: rgba(255, 255, 255, 0.2); }
+        .cell.x { color: var(--neon-blue); text-shadow: 0 0 15px var(--neon-blue); }
+        .cell.o { color: var(--neon-pink); text-shadow: 0 0 15px var(--neon-pink); }
+
+        /* Chat System */
+        .chat-container { width: 100%; max-width: 400px; height: 200px; background: rgba(0,0,0,0.5); border-radius: 10px; display: flex; flex-direction: column; margin-top: 20px; border: 1px solid var(--glass-border); }
+        .chat-messages { flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 8px; text-align: left; font-size: 0.85rem;}
+        .chat-msg { background: var(--glass); padding: 8px; border-radius: 8px; }
+        .chat-msg span { font-weight: bold; color: var(--neon-blue); }
+        .chat-input-area { display: flex; }
+        .chat-input-area input { margin: 0; border-radius: 0 0 0 10px; flex: 1; }
+        .chat-input-area button { margin: 0; border-radius: 0 0 10px 0; width: 60px; }
+
+        /* Popups */
+        .popup { position: fixed; top: 20px; background: var(--glass); padding: 20px; border-radius: 10px; border: 1px solid var(--neon-pink); backdrop-filter: blur(10px); z-index: 100; display: none; }
+        .win-glow { animation: winPulse 1s infinite alternate; }
+        @keyframes winPulse { from { box-shadow: 0 0 10px var(--neon-blue); } to { box-shadow: 0 0 30px var(--neon-blue); } }
+    </style>
+</head>
+<body>
+
+    <div id="auth-screen" class="screen active">
+        <div class="glass-panel">
+            <h1>Neon TTT</h1>
+            <input type="email" id="email" placeholder="Email">
+            <input type="password" id="password" placeholder="Password">
+            <button id="login-btn">Login / Register</button>
+        </div>
+    </div>
+
+    <div id="lobby-screen" class="screen">
+        <div class="glass-panel">
+            <h2>Lobby</h2>
+            <p>Welcome, <span id="user-name">Player</span>!</p>
+            <div style="margin: 20px 0; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 8px;">
+                Your Invite Code: <br><strong id="my-invite-code" style="color: var(--neon-blue); font-size: 1.2rem;">---</strong>
+            </div>
+            
+            <input type="text" id="friend-code" placeholder="Enter Friend's Invite Code">
+            <button id="invite-btn">Invite Player</button>
+            <hr style="border-color: var(--glass-border); margin: 20px 0;">
+            <button id="local-btn" class="btn-secondary">Local Player vs Player</button>
+            <button id="ai-btn" class="btn-secondary">Player vs AI</button>
+        </div>
+    </div>
+
+    <div id="game-screen" class="screen">
+        <div class="glass-panel">
+            <h2 id="game-status">Turn: X</h2>
+            <div class="board" id="board">
+                <div class="cell" data-index="0"></div><div class="cell" data-index="1"></div><div class="cell" data-index="2"></div>
+                <div class="cell" data-index="3"></div><div class="cell" data-index="4"></div><div class="cell" data-index="5"></div>
+                <div class="cell" data-index="6"></div><div class="cell" data-index="7"></div><div class="cell" data-index="8"></div>
+            </div>
+            <button id="rematch-btn" style="display: none;">Play Again</button>
+            <button id="leave-btn" class="btn-secondary">Leave Game</button>
+        </div>
+
+        <div class="chat-container" id="chat-container" style="display: none;">
+            <div class="chat-messages" id="chat-messages"></div>
+            <div class="chat-input-area">
+                <input type="text" id="chat-input" placeholder="Type a message...">
+                <button id="send-chat">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="invite-popup" class="popup">
+        <p><span id="inviter-name">Someone</span> invited you!</p>
+        <button id="accept-invite">Accept</button>
+        <button id="reject-invite" class="btn-secondary">Reject</button>
+    </div>
+
+    <script type="module">
+        // Import Firebase v9 Modular SDK
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, query, where, onSnapshot, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // 🔥 REPLACE THIS WITH YOUR FIREBASE CONFIG 🔥
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // --- GLOBAL STATE ---
+        let currentUser = null;
+        let myProfile = null;
+        let currentGameMode = null; // 'local', 'ai', 'online'
+        let currentGameId = null;
+        let boardState = ['', '', '', '', '', '', '', '', ''];
+        let currentPlayer = 'X';
+        let isGameActive = true;
+        let mySymbol = 'X'; // For online
+        let unsubscribeGame = null;
+        let unsubscribeChat = null;
+
+        // --- DOM Elements ---
+        const screens = { auth: document.getElementById('auth-screen'), lobby: document.getElementById('lobby-screen'), game: document.getElementById('game-screen') };
+        const cells = document.querySelectorAll('.cell');
+        const statusText = document.getElementById('game-status');
+        const chatContainer = document.getElementById('chat-container');
+
+        // --- UTILS ---
+        const switchScreen = (screenName) => {
+            Object.values(screens).forEach(s => s.classList.remove('active'));
+            screens[screenName].classList.add('active');
+        };
+        const generateInviteCode = () => Math.random().toString(36).substring(2, 8).toUpperCase();
+
+        // --- AUTHENTICATION ---
+        document.getElementById('login-btn').addEventListener('click', async () => {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+            } catch (error) {
+                if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
+                    await createUserWithEmailAndPassword(auth, email, password);
+                } else { alert("Error: " + error.message); }
+            }
+        });
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = user;
+                const userRef = doc(db, 'users', user.uid);
+                const docSnap = await getDoc(userRef);
+                
+                if (docSnap.exists()) {
+                    myProfile = docSnap.data();
+                } else {
+                    myProfile = { uid: user.uid, name: user.email.split('@')[0], inviteCode: generateInviteCode(), online: true };
+                    await setDoc(userRef, myProfile);
+                }
+                
+                document.getElementById('user-name').innerText = myProfile.name;
+                document.getElementById('my-invite-code').innerText = myProfile.inviteCode;
+                switchScreen('lobby');
+                listenForInvites();
+            } else { switchScreen('auth'); }
+        });
+
+        // --- LOBBY & MULTIPLAYER SETUP ---
+        document.getElementById('invite-btn').addEventListener('click', async () => {
+            const friendCode = document.getElementById('friend-code').value.toUpperCase();
+            if(!friendCode) return;
+            // Find friend
+            const q = query(collection(db, "users"), where("inviteCode", "==", friendCode));
+            onSnapshot(q, async (snapshot) => {
+                if(!snapshot.empty) {
+                    const friend = snapshot.docs[0].data();
+                    const inviteRef = await addDoc(collection(db, 'invites'), {
+                        senderUid: currentUser.uid, senderName: myProfile.name,
+                        receiverUid: friend.uid, status: 'pending'
+                    });
+                    
+                    // Listen for acceptance
+                    onSnapshot(doc(db, 'invites', inviteRef.id), (docSnap) => {
+                        const data = docSnap.data();
+                        if(data?.status === 'accepted') {
+                            startOnlineGame(data.gameId, 'X');
+                        }
+                    });
+                } else { alert("Player not found!"); }
+            });
+        });
+
+        function listenForInvites() {
+            const q = query(collection(db, 'invites'), where('receiverUid', '==', currentUser.uid), where('status', '==', 'pending'));
+            onSnapshot(q, (snapshot) => {
+                snapshot.docChanges().forEach((change) => {
+                    if (change.type === "added") {
+                        const invite = change.doc.data();
+                        document.getElementById('inviter-name').innerText = invite.senderName;
+                        document.getElementById('invite-popup').style.display = 'block';
+                        
+                        document.getElementById('accept-invite').onclick = async () => {
+                            const gameRef = await addDoc(collection(db, 'games'), {
+                                players: [invite.senderUid, currentUser.uid],
+                                board: ['', '', '', '', '', '', '', '', ''],
+                                turn: 'X', status: 'playing', p1: invite.senderUid
+                            });
+                            await updateDoc(doc(db, 'invites', change.doc.id), { status: 'accepted', gameId: gameRef.id });
+                            document.getElementById('invite-popup').style.display = 'none';
+                            startOnlineGame(gameRef.id, 'O');
+                        };
+                        
+                        document.getElementById('reject-invite').onclick = async () => {
+                            await updateDoc(doc(db, 'invites', change.doc.id), { status: 'rejected' });
+                            document.getElementById('invite-popup').style.display = 'none';
+                        };
+                    }
+                });
+            });
+        }
+
+        function startOnlineGame(gameId, symbol) {
+            currentGameMode = 'online';
+            currentGameId = gameId;
+            mySymbol = symbol;
+            chatContainer.style.display = 'flex';
+            switchScreen('game');
+            resetBoardUI();
+            
+            // Sync Game State
+            unsubscribeGame = onSnapshot(doc(db, 'games', gameId), (docSnap) => {
+                const game = docSnap.data();
+                boardState = game.board;
+                currentPlayer = game.turn;
+                isGameActive = game.status === 'playing';
+                updateBoardUI();
+                
+                if(game.status === 'win') handleWinUI(game.turn);
+                else if(game.status === 'draw') handleDrawUI();
+                else statusText.innerText = `Turn: ${currentPlayer} ${currentPlayer === mySymbol ? '(You)' : ''}`;
+            });
+
+            // Sync Chat
+            unsubscribeChat = onSnapshot(query(collection(db, `games/${gameId}/chat`)), (snapshot) => {
+                const chatBox = document.getElementById('chat-messages');
+                chatBox.innerHTML = '';
+                let messages = [];
+                snapshot.forEach(doc => messages.push(doc.data()));
+                messages.sort((a,b) => a.timestamp - b.timestamp).forEach(msg => {
+                    chatBox.innerHTML += `<div class="chat-msg"><span>${msg.sender}:</span> ${msg.text}</div>`;
+                });
+                chatBox.scrollTop = chatBox.scrollHeight;
+            });
+        }
+
+        // --- GAME MODES (Local & AI) ---
+        document.getElementById('local-btn').addEventListener('click', () => { currentGameMode = 'local'; chatContainer.style.display = 'none'; switchScreen('game'); resetGame(); });
+        document.getElementById('ai-btn').addEventListener('click', () => { currentGameMode = 'ai'; chatContainer.style.display = 'none'; switchScreen('game'); resetGame(); });
+
+        // --- GAME LOGIC ---
+        const winningConditions = [ [0,1,2], [3,4,5], [6,7,8], [0,3,6], [1,4,7], [2,5,8], [0,4,8], [2,4,6] ];
+
+        cells.forEach(cell => {
+            cell.addEventListener('click', () => {
+                const index = cell.getAttribute('data-index');
+                if (boardState[index] !== '' || !isGameActive) return;
+
+                if (currentGameMode === 'online') {
+                    if(currentPlayer !== mySymbol) return; // Not your turn
+                    boardState[index] = mySymbol;
+                    checkWinOrDraw(mySymbol, true);
+                } else {
+                    boardState[index] = currentPlayer;
+                    checkWinOrDraw(currentPlayer, false);
+                    if (currentGameMode === 'ai' && isGameActive) { setTimeout(aiMove, 500); }
+                }
+            });
+        });
+
+        function aiMove() {
+            let emptyCells = boardState.map((val, idx) => val === '' ? idx : null).filter(val => val !== null);
+            if(emptyCells.length > 0) {
+                let randomCell = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+                boardState[randomCell] = 'O';
+                checkWinOrDraw('O', false);
+            }
+        }
+
+        async function checkWinOrDraw(player, isOnline) {
+            let roundWon = false;
+            for (let i = 0; i < winningConditions.length; i++) {
+                const [a, b, c] = winningConditions[i];
+                if (boardState[a] && boardState[a] === boardState[b] && boardState[a] === boardState[c]) {
+                    roundWon = true; break;
+                }
+            }
+
+            if (roundWon) {
+                isGameActive = false;
+                if(isOnline) await updateDoc(doc(db, 'games', currentGameId), { board: boardState, status: 'win', turn: player });
+                else handleWinUI(player);
+                return;
+            }
+
+            if (!boardState.includes('')) {
+                isGameActive = false;
+                if(isOnline) await updateDoc(doc(db, 'games', currentGameId), { board: boardState, status: 'draw' });
+                else handleDrawUI();
+                return;
+            }
+
+            currentPlayer = player === 'X' ? 'O' : 'X';
+            if(isOnline) await updateDoc(doc(db, 'games', currentGameId), { board: boardState, turn: currentPlayer });
+            else { statusText.innerText = `Turn: ${currentPlayer}`; updateBoardUI(); }
+        }
+
+        function updateBoardUI() {
+            cells.forEach((cell, i) => {
+                cell.innerText = boardState[i];
+                cell.className = `cell ${boardState[i].toLowerCase()}`;
+            });
+        }
+        function resetBoardUI() {
+            boardState = ['', '', '', '', '', '', '', '', ''];
+            cells.forEach(c => { c.innerText = ''; c.className = 'cell'; c.classList.remove('win-glow'); });
+            document.getElementById('rematch-btn').style.display = 'none';
+        }
+
+        function handleWinUI(winner) {
+            statusText.innerText = `${winner} Wins!`;
+            document.querySelector('.glass-panel').classList.add('win-glow');
+            document.getElementById('rematch-btn').style.display = 'block';
+            updateBoardUI();
+        }
+        function handleDrawUI() {
+            statusText.innerText = `Match Draw!`;
+            document.getElementById('rematch-btn').style.display = 'block';
+            updateBoardUI();
+        }
+
+        function resetGame() {
+            isGameActive = true; currentPlayer = 'X'; resetBoardUI();
+            statusText.innerText = `Turn: X`;
+            document.querySelector('.glass-panel').classList.remove('win-glow');
+            if(currentGameMode === 'online') updateDoc(doc(db, 'games', currentGameId), { board: boardState, status: 'playing', turn: 'X' });
+        }
+
+        document.getElementById('rematch-btn').addEventListener('click', resetGame);
+        document.getElementById('leave-btn').addEventListener('click', () => {
+            if(unsubscribeGame) unsubscribeGame();
+            if(unsubscribeChat) unsubscribeChat();
+            switchScreen('lobby');
+        });
+
+        // --- CHAT SYSTEM ---
+        document.getElementById('send-chat').addEventListener('click', async () => {
+            const input = document.getElementById('chat-input');
+            if(input.value.trim() !== '' && currentGameMode === 'online') {
+                await addDoc(collection(db, `games/${currentGameId}/chat`), {
+                    sender: myProfile.name, text: input.value, timestamp: serverTimestamp()
+                });
+                input.value = '';
+            }
+        });
+    </script>
+</body>
+</html>
