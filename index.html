@@ -3,70 +3,119 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Neon Tic Tac Toe Multiplayer</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+    <title>Time Attack Tic Tac Toe Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-        /* ================= CSS: MODERN GLASSMORPHISM / NEON UI ================= */
         :root {
-            --bg: #0f0c29; --bg2: #302b63; --bg3: #24243e;
-            --neon-blue: #00f2fe; --neon-pink: #fe0979;
-            --glass: rgba(255, 255, 255, 0.1);
-            --glass-border: rgba(255, 255, 255, 0.2);
-            font-family: 'Poppins', sans-serif;
+            --bg-color: #050a1a;
+            --container-bg: #0c152e;
+            --text-color: #e2e8f0;
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --x-color: #ff3333;
+            --o-color: #33ff33;
+            --cell-bg: rgba(255, 255, 255, 0.05);
+            --cell-hover: rgba(255, 255, 255, 0.1);
+            --border-color: rgba(255, 255, 255, 0.15);
+            --winning-bg: rgba(5, 10, 26, 0.95);
+            --shadow-primary: 0 0 15px rgba(37, 99, 235, 0.5);
+            --timer-safe: #10b981;
+            --timer-warn: #ef4444;
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            background: linear-gradient(to right, var(--bg), var(--bg2), var(--bg3));
-            color: white; height: 100vh; overflow: hidden; display: flex; align-items: center; justify-content: center;
-        }
-        .screen { display: none; width: 100%; height: 100%; padding: 20px; flex-direction: column; align-items: center; justify-content: center; }
-        .active { display: flex; }
-        
-        .glass-panel {
-            background: var(--glass); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-            border: 1px solid var(--glass-border); border-radius: 20px; padding: 30px;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); width: 100%; max-width: 400px; text-align: center;
-        }
-        
-        h1, h2 { margin-bottom: 20px; text-shadow: 0 0 10px var(--neon-blue); }
-        input, button { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: none; outline: none; font-family: inherit; }
-        input { background: rgba(0,0,0,0.3); color: white; border: 1px solid var(--glass-border); text-align: center; }
-        input::placeholder { color: #ccc; }
-        
-        button {
-            background: linear-gradient(45deg, var(--neon-blue), #4facfe); color: white; font-weight: bold;
-            cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
-        }
-        button:hover { transform: scale(1.05); box-shadow: 0 0 15px var(--neon-blue); }
-        .btn-secondary { background: linear-gradient(45deg, var(--neon-pink), #f77062); }
-        .btn-secondary:hover { box-shadow: 0 0 15px var(--neon-pink); }
 
-        /* Game Board */
-        .board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 20px 0; width: 300px; height: 300px; margin-left: auto; margin-right: auto; }
-        .cell {
-            background: var(--glass); border: 1px solid var(--glass-border); border-radius: 10px;
-            display: flex; align-items: center; justify-content: center; font-size: 3rem; font-weight: bold;
-            cursor: pointer; transition: 0.3s;
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
+
+        body {
+            background-color: var(--bg-color); color: var(--text-color);
+            display: flex; justify-content: center; align-items: center;
+            min-height: 100vh; overflow: hidden;
         }
-        .cell:hover { background: rgba(255, 255, 255, 0.2); }
-        .cell.x { color: var(--neon-blue); text-shadow: 0 0 15px var(--neon-blue); }
-        .cell.o { color: var(--neon-pink); text-shadow: 0 0 15px var(--neon-pink); }
+
+        .screen { display: none; width: 100%; height: 100%; justify-content: center; align-items: center; padding: 20px; }
+        .active { display: flex; }
+
+        .container {
+            background-color: var(--container-bg); padding: 2rem; border-radius: 1.5rem;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), var(--shadow-primary);
+            text-align: center; width: 100%; max-width: 500px;
+            max-height: 95vh; overflow-y: auto; position: relative;
+        }
+        .container::-webkit-scrollbar { width: 5px; }
+        .container::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
+
+        h1 {
+            margin-bottom: 1rem; font-size: 2rem; font-weight: 800; text-transform: uppercase;
+            background: linear-gradient(135deg, #2563eb, #ff3333, #33ff33);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+
+        input[type="email"], input[type="password"], input[type="text"] {
+            width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 8px; border: 1px solid var(--border-color);
+            background: rgba(0,0,0,0.3); color: white; outline: none; font-family: inherit; text-align: center;
+        }
+
+        .control-group { margin-bottom: 1.2rem; text-align: left; }
+        .control-label { font-size: 0.95rem; color: #cbd5e1; margin-bottom: 8px; display: block; font-weight: 600; }
+        
+        .btn-group { display: flex; gap: 10px; }
+        .btn {
+            flex: 1; background-color: transparent; color: white; border: 2px solid var(--primary);
+            padding: 8px; border-radius: 8px; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: 0.2s;
+        }
+        .btn:hover { background-color: rgba(37, 99, 235, 0.2); }
+        .btn.active { background-color: var(--primary); box-shadow: var(--shadow-primary); border-color: var(--primary); }
+
+        .start-btn {
+            background-color: #10b981; border: none; width: 100%; padding: 15px; font-size: 1.2rem;
+            border-radius: 10px; margin-top: 10px; font-weight: bold; cursor: pointer; transition: 0.2s;
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.4); color: white;
+        }
+        .start-btn:hover { background-color: #059669; transform: scale(1.02); }
+        .btn-danger { background-color: #ef4444; box-shadow: 0 0 15px rgba(239, 68, 68, 0.4); }
+
+        .slider-container { display: flex; align-items: center; gap: 15px; }
+        input[type=range] { flex: 1; -webkit-appearance: none; background: rgba(255,255,255,0.1); height: 8px; border-radius: 5px; outline: none; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 22px; height: 22px; border-radius: 50%; background: var(--primary); cursor: pointer; box-shadow: 0 0 10px var(--primary); }
+        .val-badge { font-size: 1.2rem; font-weight: 800; color: #3b82f6; min-width: 50px; text-align: center; background: rgba(59, 130, 246, 0.1); padding: 5px 10px; border-radius: 8px; }
+
+        /* Timer Styles */
+        #timer-container { display: none; width: 100%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 5px; margin-bottom: 10px; overflow: hidden; }
+        #timer-bar { height: 100%; width: 100%; background-color: var(--timer-safe); transition: width 1s linear, background-color 0.3s; box-shadow: 0 0 10px var(--timer-safe); }
+        #time-text { font-size: 1rem; font-weight: bold; color: #cbd5e1; margin-bottom: 5px; display: none; }
+
+        .status { font-size: 1.2rem; margin-bottom: 0.2rem; font-weight: 700; color: #f8fafc; }
+        .rule-text { font-size: 0.8rem; color: #94a3b8; margin-bottom: 10px; font-weight: 600; letter-spacing: 1px;}
+
+        .board { display: grid; gap: 6px; margin: 0 auto 10px auto; width: 100%; max-width: 350px; }
+        .cell {
+            background-color: var(--cell-bg); border-radius: 8px; border: 2px solid var(--border-color);
+            display: flex; justify-content: center; align-items: center; font-weight: 900;
+            cursor: pointer; aspect-ratio: 1 / 1; transition: all 0.2s ease; user-select: none;
+        }
+        .cell:hover { background-color: var(--cell-hover); transform: scale(0.95); }
+        .cell.x { color: var(--x-color); text-shadow: 0 0 10px var(--x-color); }
+        .cell.o { color: var(--o-color); text-shadow: 0 0 10px var(--o-color); }
+        .cell.pop { animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .cell.win-highlight { background-color: rgba(255, 255, 255, 0.2); border-color: white; transform: scale(1.05); z-index: 5; }
 
         /* Chat System */
-        .chat-container { width: 100%; max-width: 400px; height: 200px; background: rgba(0,0,0,0.5); border-radius: 10px; display: flex; flex-direction: column; margin-top: 20px; border: 1px solid var(--glass-border); }
-        .chat-messages { flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 8px; text-align: left; font-size: 0.85rem;}
-        .chat-msg { background: var(--glass); padding: 8px; border-radius: 8px; word-wrap: break-word; }
-        .chat-msg span { font-weight: bold; color: var(--neon-blue); }
-        .chat-input-area { display: flex; border-top: 1px solid var(--glass-border); }
-        .chat-input-area input { margin: 0; border-radius: 0 0 0 10px; flex: 1; border: none; }
-        .chat-input-area button { margin: 0; border-radius: 0 0 10px 0; width: 80px; }
+        .chat-container { width: 100%; height: 150px; background: rgba(0,0,0,0.4); border-radius: 8px; display: none; flex-direction: column; margin-top: 15px; border: 1px solid var(--border-color); }
+        .chat-messages { flex: 1; overflow-y: auto; padding: 8px; display: flex; flex-direction: column; gap: 5px; text-align: left; font-size: 0.8rem;}
+        .chat-msg { background: rgba(255,255,255,0.05); padding: 5px 8px; border-radius: 5px; word-wrap: break-word; }
+        .chat-msg span { font-weight: bold; color: var(--primary); }
+        .chat-input-area { display: flex; border-top: 1px solid var(--border-color); }
+        .chat-input-area input { margin: 0; border: none; border-radius: 0 0 0 8px; background: transparent; padding: 8px; flex: 1;}
+        .chat-input-area button { margin: 0; border: none; border-radius: 0 0 8px 0; background: var(--primary); color: white; font-weight: bold; padding: 0 15px; cursor: pointer;}
 
-        /* Popups */
-        .popup { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: var(--glass); padding: 20px; border-radius: 10px; border: 1px solid var(--neon-pink); backdrop-filter: blur(10px); z-index: 100; display: none; box-shadow: 0 0 20px var(--neon-pink); text-align: center; min-width: 300px; }
-        .win-glow { animation: winPulse 1s infinite alternate; }
-        @keyframes winPulse { from { box-shadow: 0 0 10px var(--neon-blue); } to { box-shadow: 0 0 30px var(--neon-blue); } }
+        /* Popups & Notifications */
+        #celebration-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--winning-bg); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 100; backdrop-filter: blur(8px); }
+        .winner-msg { font-size: 3.5rem; font-weight: 900; text-align: center; background: linear-gradient(135deg, #ff3333, #33ff33); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0 0 20px rgba(255,255,255,0.2); animation: popIn 0.5s; }
+        .sub-msg { font-size: 1.2rem; color: #cbd5e1; margin-top: 10px; font-weight: 600; }
         
-        #toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); padding: 10px 20px; border-radius: 5px; display: none; z-index: 1000; border: 1px solid var(--neon-blue); }
+        .popup { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: var(--container-bg); padding: 20px; border-radius: 10px; border: 2px solid var(--primary); z-index: 200; display: none; box-shadow: var(--shadow-primary); text-align: center; min-width: 300px; }
+        #toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #1e293b; padding: 10px 20px; border-radius: 5px; display: none; z-index: 1000; border: 1px solid var(--primary); font-weight: bold; }
+
+        @keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
     </style>
 </head>
 <body>
@@ -74,64 +123,119 @@
     <div id="toast">Message</div>
 
     <div id="auth-screen" class="screen active">
-        <div class="glass-panel">
-            <h1>Neon TTT</h1>
-            <p style="margin-bottom: 15px; font-size: 0.9rem;">Sign in to play online</p>
-            <input type="email" id="email" placeholder="Email (e.g., player@game.com)">
-            <input type="password" id="password" placeholder="Password (min 6 chars)">
-            <button id="login-btn">Login / Register</button>
+        <div class="container">
+            <h1>PRO TTT</h1>
+            <p style="margin-bottom: 20px; color: #94a3b8;">Login to play multiplayer</p>
+            <input type="email" id="email" placeholder="Email Address">
+            <input type="password" id="password" placeholder="Password (Min 6 chars)">
+            <button class="start-btn" id="login-btn">LOGIN / REGISTER</button>
         </div>
     </div>
 
-    <div id="lobby-screen" class="screen">
-        <div class="glass-panel">
-            <h2>Lobby</h2>
-            <p>Welcome, <span id="user-name" style="color: var(--neon-pink); font-weight: bold;">Player</span>!</p>
-            <div style="margin: 20px 0; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 8px;">
-                Your Invite Code: <br><strong id="my-invite-code" style="color: var(--neon-blue); font-size: 1.5rem; letter-spacing: 2px;">---</strong>
-            </div>
+    <div id="home-screen" class="screen">
+        <div class="container">
+            <h1>Game Setup</h1>
+            <p style="color: #94a3b8; margin-bottom: 10px;">Player: <span id="user-name" style="color: #33ff33; font-weight: bold;">---</span></p>
             
-            <input type="text" id="friend-code" placeholder="Enter Friend's Invite Code">
-            <button id="invite-btn">Invite Friend</button>
-            <hr style="border-color: var(--glass-border); margin: 20px 0;">
-            <button id="local-btn" class="btn-secondary">Local (Pass & Play)</button>
-            <button id="ai-btn" class="btn-secondary">Play vs AI</button>
+            <div class="control-group">
+                <label class="control-label">Select Mode:</label>
+                <div class="btn-group">
+                    <button class="btn" id="btn-1p" onclick="setMode('1p')">1P CPU</button>
+                    <button class="btn" id="btn-2p" onclick="setMode('2p')">2P Local</button>
+                    <button class="btn active" id="btn-online" onclick="setMode('online')">Online</button>
+                </div>
+            </div>
+
+            <div id="online-group" style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 10px; margin-bottom: 15px; border: 1px dashed var(--primary);">
+                <p style="margin-bottom: 10px; font-size: 0.9rem;">Your Invite Code: <strong id="my-invite-code" style="color: #00f2fe; font-size: 1.2rem; letter-spacing: 2px;">---</strong></p>
+                <input type="text" id="friend-code" placeholder="Enter Friend's Code Here">
+            </div>
+
+            <div class="control-group" id="diff-group" style="display: none;">
+                <label class="control-label">CPU Difficulty:</label>
+                <div class="btn-group">
+                    <button class="btn" id="btn-easy" onclick="setDiff('easy')">Easy</button>
+                    <button class="btn active" id="btn-medium" onclick="setDiff('medium')">Medium</button>
+                    <button class="btn" id="btn-hard" onclick="setDiff('hard')">Hard</button>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label">Turn Timer:</label>
+                <div class="btn-group">
+                    <button class="btn active" id="btn-timer-off" onclick="setTimer('off')">Off</button>
+                    <button class="btn" id="btn-timer-10" onclick="setTimer(10)">10 Sec</button>
+                    <button class="btn" id="btn-timer-15" onclick="setTimer(15)">15 Sec</button>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label">Grid Size (Boxes):</label>
+                <div class="slider-container">
+                    <input type="range" id="grid-slider" min="3" max="6" value="3" oninput="updateGridDisplay(this.value)">
+                    <div class="val-badge"><span id="g-val">3</span>x<span id="g-val2">3</span></div>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label">Boxes to Match to Win:</label>
+                <div class="slider-container">
+                    <input type="range" id="win-slider" min="3" max="3" value="3" oninput="updateWinDisplay(this.value)">
+                    <div class="val-badge" id="w-val">3</div>
+                </div>
+            </div>
+
+            <button class="start-btn" id="start-game-btn" onclick="handleStartBtn()">INVITE FRIEND</button>
         </div>
     </div>
 
     <div id="game-screen" class="screen">
-        <div class="glass-panel">
-            <h2 id="game-status">Turn: X</h2>
-            <div class="board" id="board">
-                <div class="cell" data-index="0"></div><div class="cell" data-index="1"></div><div class="cell" data-index="2"></div>
-                <div class="cell" data-index="3"></div><div class="cell" data-index="4"></div><div class="cell" data-index="5"></div>
-                <div class="cell" data-index="6"></div><div class="cell" data-index="7"></div><div class="cell" data-index="8"></div>
+        <div class="container">
+            <div class="status" id="status-text">Player X's Turn</div>
+            <div class="rule-text" id="rule-display">Match 3 in a row to win!</div>
+            
+            <div id="time-text">00:10</div>
+            <div id="timer-container"><div id="timer-bar"></div></div>
+            
+            <div class="board" id="board"></div> 
+            
+            <div class="btn-group">
+                <button class="btn" id="restart-btn" onclick="requestRestart()" style="display: none;">Play Again</button>
+                <button class="btn btn-danger" onclick="leaveGame()">Leave Game</button>
             </div>
-            <button id="rematch-btn" style="display: none;">Play Again</button>
-            <button id="leave-btn" class="btn-secondary">Leave Game</button>
-        </div>
 
-        <div class="chat-container" id="chat-container" style="display: none;">
-            <div class="chat-messages" id="chat-messages"></div>
-            <div class="chat-input-area">
-                <input type="text" id="chat-input" placeholder="Type a message...">
-                <button id="send-chat">Send</button>
+            <div class="chat-container" id="chat-container">
+                <div class="chat-messages" id="chat-messages"></div>
+                <div class="chat-input-area">
+                    <input type="text" id="chat-input" placeholder="Message...">
+                    <button id="send-chat">Send</button>
+                </div>
             </div>
         </div>
     </div>
 
     <div id="invite-popup" class="popup">
-        <p><strong id="inviter-name" style="color: var(--neon-blue);">Someone</strong> has challenged you!</p>
-        <button id="accept-invite">Accept</button>
-        <button id="reject-invite" class="btn-secondary">Decline</button>
+        <p><strong id="inviter-name" style="color: var(--primary); font-size: 1.2rem;">Someone</strong> challenged you!</p>
+        <p style="font-size: 0.8rem; margin-bottom: 15px; color: #94a3b8;">Settings will sync automatically.</p>
+        <div class="btn-group">
+            <button class="start-btn" id="accept-invite" style="margin-top:0;">Accept</button>
+            <button class="btn btn-danger" id="reject-invite">Decline</button>
+        </div>
     </div>
+
+    <div id="celebration-screen">
+        <div class="winner-msg" id="winner-msg-text">Player X Wins!</div>
+        <div class="sub-msg" id="sub-msg-text"></div>
+        <button class="start-btn" style="width: auto; padding: 15px 40px; margin-top: 30px;" onclick="closeCelebration()">Continue</button>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, query, where, onSnapshot, getDocs, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, query, where, onSnapshot, getDocs, addDoc, serverTimestamp, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // Aapka Firebase Config 
         const firebaseConfig = {
             apiKey: "AIzaSyBldLyB9d18ZGStroUC0-yjuUrp31DFQ28",
             authDomain: "online-tic-tac-toe-d919f.firebaseapp.com",
@@ -145,53 +249,65 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // --- GLOBAL STATE ---
+        // --- GLOBAL VARIABLES ---
+        window.mode = 'online';
+        window.diff = 'medium';
+        window.size = 3;
+        window.winLength = 3;
+        window.timerSetting = 'off';
+        
+        let boardState = [];
+        let currentPlayer = 'X';
+        let gameActive = false;
+        let timerInterval;
+        let timeLeft;
+        
+        // Multiplayer Globals
         let currentUser = null;
         let myProfile = null;
-        let currentGameMode = null; // 'local', 'ai', 'online'
         let currentGameId = null;
-        let boardState = ['', '', '', '', '', '', '', '', ''];
-        let currentPlayer = 'X';
-        let isGameActive = false;
         let mySymbol = 'X'; 
         let unsubscribeGame = null;
         let unsubscribeChat = null;
 
-        // --- DOM Elements ---
-        const screens = { auth: document.getElementById('auth-screen'), lobby: document.getElementById('lobby-screen'), game: document.getElementById('game-screen') };
-        const cells = document.querySelectorAll('.cell');
-        const statusText = document.getElementById('game-status');
-        const chatContainer = document.getElementById('chat-container');
-
         // --- UTILS ---
-        const switchScreen = (screenName) => {
-            Object.values(screens).forEach(s => s.classList.remove('active'));
-            screens[screenName].classList.add('active');
-        };
+        const switchScreen = (id) => { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); };
+        const showToast = (msg) => { const t = document.getElementById('toast'); t.innerText = msg; t.style.display = 'block'; setTimeout(() => t.style.display = 'none', 3000); };
         const generateInviteCode = () => Math.random().toString(36).substring(2, 8).toUpperCase();
-        const showToast = (msg) => {
-            const toast = document.getElementById('toast');
-            toast.innerText = msg;
-            toast.style.display = 'block';
-            setTimeout(() => toast.style.display = 'none', 3000);
+
+        // --- UI SETTINGS FUNCTIONS ---
+        window.setMode = (m) => {
+            window.mode = m;
+            ['1p', '2p', 'online'].forEach(x => document.getElementById(`btn-${x}`).classList.toggle('active', x === m));
+            document.getElementById('diff-group').style.display = m === '1p' ? 'block' : 'none';
+            document.getElementById('online-group').style.display = m === 'online' ? 'block' : 'none';
+            document.getElementById('start-game-btn').innerText = m === 'online' ? 'INVITE FRIEND' : 'START BATTLE';
         };
+
+        window.setDiff = (d) => { window.diff = d; ['easy', 'medium', 'hard'].forEach(x => document.getElementById(`btn-${x}`).classList.toggle('active', x === d)); };
+        window.setTimer = (t) => { window.timerSetting = t; ['off', '10', '15'].forEach(x => document.getElementById(`btn-timer-${x}`).classList.toggle('active', x == t)); };
+        
+        window.updateGridDisplay = (val) => {
+            window.size = parseInt(val);
+            document.getElementById('g-val').innerText = window.size; document.getElementById('g-val2').innerText = window.size;
+            const winSlider = document.getElementById('win-slider');
+            winSlider.max = window.size;
+            if (parseInt(winSlider.value) > window.size) winSlider.value = window.size;
+            window.updateWinDisplay(winSlider.value);
+        };
+        
+        window.updateWinDisplay = (val) => { window.winLength = parseInt(val); document.getElementById('w-val').innerText = window.winLength; };
 
         // --- AUTHENTICATION ---
         document.getElementById('login-btn').addEventListener('click', async () => {
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            if(!email || !password) return showToast("Enter email and password!");
-            
-            try {
-                await signInWithEmailAndPassword(auth, email, password);
-                showToast("Logged in successfully!");
-            } catch (error) {
-                if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
-                    try {
-                        await createUserWithEmailAndPassword(auth, email, password);
-                        showToast("Account created!");
-                    } catch(e) { showToast(e.message); }
-                } else { showToast(error.message); }
+            const e = document.getElementById('email').value, p = document.getElementById('password').value;
+            if(!e || !p) return showToast("Enter email and password!");
+            try { await signInWithEmailAndPassword(auth, e, p); showToast("Logged in!"); } 
+            catch (err) {
+                if (err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential') {
+                    try { await createUserWithEmailAndPassword(auth, e, p); showToast("Account created!"); } 
+                    catch(e2) { showToast(e2.message); }
+                } else { showToast(err.message); }
             }
         });
 
@@ -200,54 +316,52 @@
                 currentUser = user;
                 const userRef = doc(db, 'users', user.uid);
                 const docSnap = await getDoc(userRef);
-                
-                if (docSnap.exists()) {
-                    myProfile = docSnap.data();
-                } else {
-                    myProfile = { uid: user.uid, name: user.email.split('@')[0], inviteCode: generateInviteCode(), online: true };
-                    await setDoc(userRef, myProfile);
-                }
+                if (docSnap.exists()) { myProfile = docSnap.data(); } 
+                else { myProfile = { uid: user.uid, name: user.email.split('@')[0], inviteCode: generateInviteCode() }; await setDoc(userRef, myProfile); }
                 
                 document.getElementById('user-name').innerText = myProfile.name;
                 document.getElementById('my-invite-code').innerText = myProfile.inviteCode;
-                switchScreen('lobby');
+                switchScreen('home-screen');
                 listenForInvites();
-            } else { switchScreen('auth'); }
+            } else { switchScreen('auth-screen'); }
         });
 
-        // --- LOBBY & MULTIPLAYER SETUP ---
-        document.getElementById('invite-btn').addEventListener('click', async () => {
-            const friendCode = document.getElementById('friend-code').value.toUpperCase();
-            if(!friendCode) return showToast("Enter friend's code!");
-            if(friendCode === myProfile.inviteCode) return showToast("You can't invite yourself!");
+        // --- MULTIPLAYER LOBBY ---
+        window.handleStartBtn = async () => {
+            if (window.mode === 'online') {
+                const friendCode = document.getElementById('friend-code').value.toUpperCase();
+                if(!friendCode) return showToast("Enter friend's code!");
+                if(friendCode === myProfile.inviteCode) return showToast("Can't invite yourself!");
 
-            const q = query(collection(db, "users"), where("inviteCode", "==", friendCode));
-            const snapshot = await getDocs(q); // Changed to getDocs
-            
-            if(!snapshot.empty) {
-                const friend = snapshot.docs[0].data();
-                showToast("Invite sent! Waiting...");
-                const inviteRef = await addDoc(collection(db, 'invites'), {
-                    senderUid: currentUser.uid, senderName: myProfile.name,
-                    receiverUid: friend.uid, status: 'pending'
-                });
-                
-                // Sender listens to their own invite doc
-                onSnapshot(doc(db, 'invites', inviteRef.id), (docSnap) => {
-                    const data = docSnap.data();
-                    if(data?.status === 'accepted' && data.gameId) {
-                        startOnlineGame(data.gameId, 'X');
-                        showToast("Invite accepted!");
-                    } else if (data?.status === 'rejected') {
-                        showToast("Invite declined!");
-                    }
-                });
-            } else { showToast("Player not found!"); }
-        });
+                const snapshot = await getDocs(query(collection(db, "users"), where("inviteCode", "==", friendCode)));
+                if(!snapshot.empty) {
+                    const friend = snapshot.docs[0].data();
+                    showToast("Invite sent! Waiting...");
+                    
+                    // Add settings to invite so receiver knows game rules
+                    const inviteRef = await addDoc(collection(db, 'invites'), {
+                        senderUid: currentUser.uid, senderName: myProfile.name, receiverUid: friend.uid, status: 'pending',
+                        settings: { size: window.size, winLength: window.winLength, timerSetting: window.timerSetting }
+                    });
+                    
+                    onSnapshot(doc(db, 'invites', inviteRef.id), (docSnap) => {
+                        const data = docSnap.data();
+                        if(data?.status === 'accepted' && data.gameId) {
+                            startOnlineGame(data.gameId, 'X');
+                            deleteDoc(doc(db, 'invites', inviteRef.id)); // cleanup
+                        } else if (data?.status === 'rejected') showToast("Invite declined!");
+                    });
+                } else showToast("Player not found!");
+            } else {
+                // Offline Local/CPU Mode
+                document.getElementById('chat-container').style.display = 'none';
+                switchScreen('game-screen');
+                initBoard();
+            }
+        };
 
         function listenForInvites() {
-            const q = query(collection(db, 'invites'), where('receiverUid', '==', currentUser.uid), where('status', '==', 'pending'));
-            onSnapshot(q, (snapshot) => {
+            onSnapshot(query(collection(db, 'invites'), where('receiverUid', '==', currentUser.uid), where('status', '==', 'pending')), (snapshot) => {
                 snapshot.docChanges().forEach((change) => {
                     if (change.type === "added") {
                         const invite = change.doc.data();
@@ -255,16 +369,22 @@
                         document.getElementById('invite-popup').style.display = 'block';
                         
                         document.getElementById('accept-invite').onclick = async () => {
+                            // Apply host's settings
+                            window.size = invite.settings.size;
+                            window.winLength = invite.settings.winLength;
+                            window.timerSetting = invite.settings.timerSetting;
+
                             const gameRef = await addDoc(collection(db, 'games'), {
                                 players: [invite.senderUid, currentUser.uid],
-                                board: ['', '', '', '', '', '', '', '', ''],
-                                turn: 'X', status: 'playing', p1: invite.senderUid
+                                board: Array(window.size * window.size).fill(""),
+                                turn: 'X', status: 'playing', 
+                                size: window.size, winLength: window.winLength, timerSetting: window.timerSetting,
+                                lastMoveTime: serverTimestamp()
                             });
                             await updateDoc(doc(db, 'invites', change.doc.id), { status: 'accepted', gameId: gameRef.id });
                             document.getElementById('invite-popup').style.display = 'none';
                             startOnlineGame(gameRef.id, 'O');
                         };
-                        
                         document.getElementById('reject-invite').onclick = async () => {
                             await updateDoc(doc(db, 'invites', change.doc.id), { status: 'rejected' });
                             document.getElementById('invite-popup').style.display = 'none';
@@ -274,175 +394,226 @@
             });
         }
 
+        // --- ONLINE GAME SYNC ---
         function startOnlineGame(gameId, symbol) {
-            currentGameMode = 'online';
             currentGameId = gameId;
             mySymbol = symbol;
-            chatContainer.style.display = 'flex';
-            switchScreen('game');
-            resetBoardUI();
+            document.getElementById('chat-container').style.display = 'flex';
+            switchScreen('game-screen');
             
-            // Sync Game State
             unsubscribeGame = onSnapshot(doc(db, 'games', gameId), (docSnap) => {
                 const game = docSnap.data();
                 if(!game) return;
                 
-                boardState = game.board;
-                currentPlayer = game.turn;
-                isGameActive = game.status === 'playing';
-                updateBoardUI();
+                // Sync Settings from DB
+                window.size = game.size; window.winLength = game.winLength; window.timerSetting = game.timerSetting;
+                boardState = game.board; currentPlayer = game.turn; gameActive = game.status === 'playing';
                 
-                if(game.status === 'win') handleWinUI(game.turn);
+                renderBoardUI();
+                
+                if(game.status === 'win') handleWinUI(game.winner);
                 else if(game.status === 'draw') handleDrawUI();
-                else statusText.innerText = `Turn: ${currentPlayer} ${currentPlayer === mySymbol ? '(You)' : ''}`;
+                else if(game.status === 'timeout') handleWinUI(game.winner, `Opponent ran out of time!`);
+                else {
+                    document.getElementById('status-text').innerText = `Turn: ${currentPlayer} ${currentPlayer === mySymbol ? '(You)' : ''}`;
+                    startTurnTimer(); // Reset timer locally on every move
+                }
             });
 
-            // Sync Chat
             unsubscribeChat = onSnapshot(query(collection(db, `games/${gameId}/chat`)), (snapshot) => {
                 const chatBox = document.getElementById('chat-messages');
-                chatBox.innerHTML = '';
-                let messages = [];
-                snapshot.forEach(doc => messages.push(doc.data()));
-                messages.sort((a,b) => (a.timestamp?.toMillis() || 0) - (b.timestamp?.toMillis() || 0)).forEach(msg => {
-                    chatBox.innerHTML += `<div class="chat-msg"><span>${msg.sender}:</span> ${msg.text}</div>`;
+                chatBox.innerHTML = ''; let msgs = [];
+                snapshot.forEach(d => msgs.push(d.data()));
+                msgs.sort((a,b) => (a.timestamp?.toMillis() || 0) - (b.timestamp?.toMillis() || 0)).forEach(m => {
+                    chatBox.innerHTML += `<div class="chat-msg"><span>${m.sender}:</span> ${m.text}</div>`;
                 });
                 chatBox.scrollTop = chatBox.scrollHeight;
             });
         }
 
-        // --- GAME MODES (Local & AI) ---
-        document.getElementById('local-btn').addEventListener('click', () => { 
-            currentGameMode = 'local'; chatContainer.style.display = 'none'; switchScreen('game'); startNewOfflineGame(); 
-        });
-        document.getElementById('ai-btn').addEventListener('click', () => { 
-            currentGameMode = 'ai'; chatContainer.style.display = 'none'; switchScreen('game'); startNewOfflineGame(); 
-        });
+        // --- CORE GAME ENGINE ---
+        window.initBoard = () => {
+            clearInterval(timerInterval);
+            boardState = Array(window.size * window.size).fill("");
+            currentPlayer = 'X'; gameActive = true;
+            document.getElementById('restart-btn').style.display = 'none';
+            renderBoardUI();
+            document.getElementById('status-text').innerText = "Player X's Turn";
+            startTurnTimer();
+        };
 
-        // --- GAME LOGIC ---
-        const winningConditions = [ [0,1,2], [3,4,5], [6,7,8], [0,3,6], [1,4,7], [2,5,8], [0,4,8], [2,4,6] ];
+        function renderBoardUI() {
+            document.getElementById('rule-display').innerText = `MATCH ${window.winLength} IN A ROW TO WIN!`;
+            if(window.timerSetting !== 'off') { document.getElementById('timer-container').style.display = 'block'; document.getElementById('time-text').style.display = 'block'; }
+            else { document.getElementById('timer-container').style.display = 'none'; document.getElementById('time-text').style.display = 'none'; }
 
-        cells.forEach(cell => {
-            cell.addEventListener('click', async () => {
-                const index = cell.getAttribute('data-index');
-                if (boardState[index] !== '' || !isGameActive) return;
+            const boardEl = document.getElementById('board');
+            boardEl.style.gridTemplateColumns = `repeat(${window.size}, 1fr)`;
+            boardEl.innerHTML = '';
+            let fontSize = window.size <= 4 ? 2.5 : (window.size <= 6 ? 1.8 : 1.2);
 
-                if (currentGameMode === 'online') {
-                    if(currentPlayer !== mySymbol) return showToast("Not your turn!");
-                    
-                    let newBoard = [...boardState];
-                    newBoard[index] = mySymbol;
-                    let result = checkGameState(newBoard);
-                    
-                    if (result === 'win') {
-                        await updateDoc(doc(db, 'games', currentGameId), { board: newBoard, status: 'win', turn: mySymbol });
-                    } else if (result === 'draw') {
-                        await updateDoc(doc(db, 'games', currentGameId), { board: newBoard, status: 'draw' });
-                    } else {
-                        let nextTurn = mySymbol === 'X' ? 'O' : 'X';
-                        await updateDoc(doc(db, 'games', currentGameId), { board: newBoard, turn: nextTurn });
-                    }
-
-                } else {
-                    boardState[index] = currentPlayer;
-                    processOfflineMove();
-                }
-            });
-        });
-
-        function processOfflineMove() {
-            updateBoardUI();
-            let result = checkGameState(boardState);
-            
-            if (result === 'win') {
-                isGameActive = false; handleWinUI(currentPlayer);
-            } else if (result === 'draw') {
-                isGameActive = false; handleDrawUI();
-            } else {
-                currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
-                statusText.innerText = `Turn: ${currentPlayer}`;
-                
-                if (currentGameMode === 'ai' && currentPlayer === 'O' && isGameActive) {
-                    isGameActive = false; // block user clicks during AI thinking
-                    setTimeout(() => {
-                        let emptyCells = boardState.map((val, idx) => val === '' ? idx : null).filter(val => val !== null);
-                        if(emptyCells.length > 0) {
-                            let randomCell = emptyCells[Math.floor(Math.random() * emptyCells.length)];
-                            boardState[randomCell] = 'O';
-                            isGameActive = true;
-                            processOfflineMove();
-                        }
-                    }, 600);
-                }
+            for(let i = 0; i < window.size * window.size; i++) {
+                const cell = document.createElement('div');
+                cell.className = `cell ${boardState[i] !== '' ? boardState[i].toLowerCase() : ''}`;
+                cell.dataset.idx = i; cell.style.fontSize = `${fontSize}rem`;
+                cell.innerText = boardState[i];
+                cell.addEventListener('click', () => handleMove(i));
+                boardEl.appendChild(cell);
             }
         }
 
-        function checkGameState(board) {
-            for (let i = 0; i < winningConditions.length; i++) {
-                const [a, b, c] = winningConditions[i];
-                if (board[a] && board[a] === board[b] && board[a] === board[c]) return 'win';
+        // FIXED TURN BUG LOGIC
+        window.handleMove = async (idx) => {
+            if(!gameActive || boardState[idx] !== "") return;
+            
+            if (window.mode === 'online') {
+                if(currentPlayer !== mySymbol) return showToast("Not your turn!");
+                
+                boardState[idx] = mySymbol;
+                const result = checkWinOrDraw(boardState);
+                
+                if (result === 'win') {
+                    await updateDoc(doc(db, 'games', currentGameId), { board: boardState, status: 'win', winner: mySymbol });
+                } else if (result === 'draw') {
+                    await updateDoc(doc(db, 'games', currentGameId), { board: boardState, status: 'draw' });
+                } else {
+                    let nextTurn = mySymbol === 'X' ? 'O' : 'X';
+                    await updateDoc(doc(db, 'games', currentGameId), { board: boardState, turn: nextTurn, lastMoveTime: serverTimestamp() });
+                }
+            } else {
+                // Local & CPU Mode
+                boardState[idx] = currentPlayer;
+                const result = checkWinOrDraw(boardState);
+                if (result === 'win') { handleWinUI(currentPlayer); } 
+                else if (result === 'draw') { handleDrawUI(); } 
+                else {
+                    currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+                    document.getElementById('status-text').innerText = `Player ${currentPlayer}'s Turn`;
+                    renderBoardUI(); startTurnTimer();
+                    
+                    if (window.mode === '1p' && currentPlayer === 'O') {
+                        gameActive = false; document.getElementById('status-text').innerText = "CPU is thinking...";
+                        setTimeout(cpuMove, 600);
+                    }
+                }
             }
-            if (!board.includes('')) return 'draw';
+        };
+
+        // --- TIMER SYNC ---
+        function startTurnTimer() {
+            if(window.timerSetting === 'off' || !gameActive) return;
+            if(window.mode === '1p' && currentPlayer === 'O') { document.getElementById('timer-bar').style.width = '100%'; return; }
+
+            clearInterval(timerInterval);
+            timeLeft = parseInt(window.timerSetting);
+            updateTimerUI();
+
+            timerInterval = setInterval(async () => {
+                timeLeft--; updateTimerUI();
+                if(timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    if(window.mode === 'online' && currentPlayer === mySymbol && gameActive) {
+                        // If my time is up, I lose automatically
+                        gameActive = false;
+                        let opponent = mySymbol === 'X' ? 'O' : 'X';
+                        await updateDoc(doc(db, 'games', currentGameId), { status: 'timeout', winner: opponent });
+                    } else if (window.mode !== 'online') {
+                        let winner = currentPlayer === 'X' ? 'O' : 'X';
+                        handleWinUI(winner, "Time Out!");
+                    }
+                }
+            }, 1000);
+        }
+
+        function updateTimerUI() {
+            const bar = document.getElementById('timer-bar'), txt = document.getElementById('time-text');
+            bar.style.width = `${(timeLeft / parseInt(window.timerSetting)) * 100}%`;
+            txt.innerText = `00:${timeLeft < 10 ? '0'+timeLeft : timeLeft}`;
+            if(timeLeft <= 3) { bar.style.backgroundColor = 'var(--timer-warn)'; bar.style.boxShadow = '0 0 15px var(--timer-warn)'; txt.style.color = '#ef4444'; } 
+            else { bar.style.backgroundColor = 'var(--timer-safe)'; bar.style.boxShadow = '0 0 10px var(--timer-safe)'; txt.style.color = '#cbd5e1'; }
+        }
+
+        // --- WIN LOGIC ---
+        function checkWinOrDraw(board) {
+            let winCells = getWinningCells(currentPlayer, board);
+            if(winCells) return 'win';
+            if(!board.includes("")) return 'draw';
             return 'continue';
         }
 
-        function updateBoardUI() {
-            cells.forEach((cell, i) => {
-                cell.innerText = boardState[i];
-                cell.className = `cell ${boardState[i].toLowerCase()}`;
-            });
-        }
-        function resetBoardUI() {
-            boardState = ['', '', '', '', '', '', '', '', ''];
-            cells.forEach(c => { c.innerText = ''; c.className = 'cell'; c.classList.remove('win-glow'); });
-            document.getElementById('rematch-btn').style.display = 'none';
+        function getWinningCells(player, board) {
+            let s = window.size, wl = window.winLength;
+            for(let r=0; r<s; r++) for(let c=0; c<=s-wl; c++) { let a=[]; for(let i=0; i<wl; i++) if(board[r*s+(c+i)]===player) a.push(r*s+(c+i)); if(a.length===wl) return a; }
+            for(let c=0; c<s; c++) for(let r=0; r<=s-wl; r++) { let a=[]; for(let i=0; i<wl; i++) if(board[(r+i)*s+c]===player) a.push((r+i)*s+c); if(a.length===wl) return a; }
+            for(let r=0; r<=s-wl; r++) for(let c=0; c<=s-wl; c++) { let a=[]; for(let i=0; i<wl; i++) if(board[(r+i)*s+(c+i)]===player) a.push((r+i)*s+(c+i)); if(a.length===wl) return a; }
+            for(let r=0; r<=s-wl; r++) for(let c=wl-1; c<s; c++) { let a=[]; for(let i=0; i<wl; i++) if(board[(r+i)*s+(c-i)]===player) a.push((r+i)*s+(c-i)); if(a.length===wl) return a; }
+            return null;
         }
 
-        function handleWinUI(winner) {
-            statusText.innerText = `${winner} Wins! 🎉`;
-            document.querySelector('.glass-panel').classList.add('win-glow');
-            document.getElementById('rematch-btn').style.display = 'block';
+        function handleWinUI(winner, msg = "") {
+            gameActive = false; clearInterval(timerInterval); renderBoardUI();
+            let winCells = getWinningCells(winner, boardState);
+            if(winCells) winCells.forEach(i => document.querySelector(`.cell[data-idx='${i}']`)?.classList.add('win-highlight'));
+            
+            setTimeout(() => {
+                let msgText = winner === 'O' && window.mode === '1p' ? "CPU Wins!" : `Player ${winner} Wins!`;
+                if (window.mode === 'online') msgText = winner === mySymbol ? "You Win! 🎉" : "You Lost! 💔";
+                
+                document.getElementById('status-text').innerText = msgText;
+                document.getElementById('winner-msg-text').innerText = msgText;
+                document.getElementById('sub-msg-text').innerText = msg;
+                document.getElementById('celebration-screen').style.display = 'flex';
+                document.getElementById('restart-btn').style.display = 'block';
+                if(winner === mySymbol || window.mode !== 'online') fireConfetti();
+            }, 500);
         }
+
         function handleDrawUI() {
-            statusText.innerText = `Match Draw! 🤝`;
-            document.getElementById('rematch-btn').style.display = 'block';
+            gameActive = false; clearInterval(timerInterval); renderBoardUI();
+            document.getElementById('status-text').innerText = "It's a Draw!";
+            document.getElementById('restart-btn').style.display = 'block';
         }
 
-        function startNewOfflineGame() {
-            isGameActive = true; currentPlayer = 'X'; resetBoardUI();
-            statusText.innerText = `Turn: X`;
-            document.querySelector('.glass-panel').classList.remove('win-glow');
-        }
-
-        document.getElementById('rematch-btn').addEventListener('click', () => {
-            if(currentGameMode === 'online') {
-                updateDoc(doc(db, 'games', currentGameId), { board: ['', '', '', '', '', '', '', '', ''], status: 'playing', turn: 'X' });
-                document.querySelector('.glass-panel').classList.remove('win-glow');
-            } else {
-                startNewOfflineGame();
+        // --- CPU LOGIC ---
+        function cpuMove() {
+            if(!gameActive) return; gameActive = true;
+            let move = -1, empty = boardState.map((v, i) => v === "" ? i : null).filter(v => v !== null);
+            if(window.diff === 'hard' || (window.diff === 'medium' && Math.random() > 0.4)) {
+                for(let i of empty) { boardState[i] = 'O'; if(getWinningCells('O', boardState)) { move = i; break; } boardState[i] = ""; }
+                if(move === -1) for(let i of empty) { boardState[i] = 'X'; if(getWinningCells('X', boardState)) { move = i; break; } boardState[i] = ""; }
             }
-        });
+            if(move === -1) move = empty[Math.floor(Math.random() * empty.length)];
+            window.handleMove(move);
+        }
 
-        document.getElementById('leave-btn').addEventListener('click', () => {
-            if(unsubscribeGame) unsubscribeGame();
-            if(unsubscribeChat) unsubscribeChat();
-            switchScreen('lobby');
-        });
+        // --- EXTRAS ---
+        window.requestRestart = async () => {
+            if(window.mode === 'online') {
+                await updateDoc(doc(db, 'games', currentGameId), { board: Array(window.size * window.size).fill(""), status: 'playing', turn: 'X' });
+            } else { window.initBoard(); }
+        };
+
+        window.leaveGame = () => { if(unsubscribeGame) unsubscribeGame(); if(unsubscribeChat) unsubscribeChat(); switchScreen('home-screen'); };
+        window.closeCelebration = () => { document.getElementById('celebration-screen').style.display = 'none'; };
+
+        function fireConfetti() {
+            var duration = 3000, end = Date.now() + duration;
+            (function frame() {
+                confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0 }, colors: ['#ff3333', '#33ff33'], zIndex: 110 });
+                confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1 }, colors: ['#ff3333', '#33ff33'], zIndex: 110 });
+                if (Date.now() < end) requestAnimationFrame(frame);
+            }());
+        }
 
         // --- CHAT SYSTEM ---
         document.getElementById('send-chat').addEventListener('click', async () => {
             const input = document.getElementById('chat-input');
-            if(input.value.trim() !== '' && currentGameMode === 'online') {
-                await addDoc(collection(db, `games/${currentGameId}/chat`), {
-                    sender: myProfile.name, text: input.value, timestamp: serverTimestamp()
-                });
+            if(input.value.trim() !== '' && window.mode === 'online') {
+                await addDoc(collection(db, `games/${currentGameId}/chat`), { sender: myProfile.name, text: input.value, timestamp: serverTimestamp() });
                 input.value = '';
             }
         });
-        
-        // Enter key to send message
-        document.getElementById('chat-input').addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') document.getElementById('send-chat').click();
-        });
+        document.getElementById('chat-input').addEventListener('keypress', (e) => { if (e.key === 'Enter') document.getElementById('send-chat').click(); });
     </script>
 </body>
 </html>
