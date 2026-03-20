@@ -3,523 +3,712 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tic Tac Toe Pro - Clean Edition</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <title>Tic Tac Toe – AlignIt Style</title>
+    <!-- Chalk font + clean body font -->
+    <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        /* ================= CLEAN & SOLID UI ================= */
-        :root {
-            --bg-main: #0f172a;        /* Solid Dark Blue/Gray */
-            --bg-card: #1e293b;        /* Lighter Solid Box */
-            --bg-input: #0f172a;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --primary: #3b82f6;        /* Bright Blue */
-            --primary-hover: #2563eb;
-            --danger: #ef4444;         /* Red for Leave/X */
-            --success: #10b981;        /* Green for O/Start */
-            --border: #334155;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none; /* prevents accidental text selection on taps */
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
+        :root {
+            --chalkboard-dark: #1a2a2f;
+            --chalk-line: rgba(255, 255, 255, 0.4);
+            --x-color: #ff4757;
+            --o-color: #2ed573;
+            --glow-white: rgba(255, 255, 255, 0.3);
+        }
 
         body {
-            background-color: var(--bg-main); color: var(--text-main);
-            display: flex; justify-content: center; align-items: center;
-            min-height: 100vh; overflow: hidden;
+            background-color: var(--chalkboard-dark);
+            /* authentic chalkboard texture (subtle grain) */
+            background-image: radial-gradient(circle, rgba(255,255,240,0.07) 1px, transparent 1px);
+            background-size: 22px 22px;
+            background-position: 0 0;
+            font-family: 'Poppins', sans-serif;
+            color: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
         }
 
-        .screen { display: none; width: 100%; height: 100%; justify-content: center; align-items: center; padding: 20px; }
+        /* screens */
+        .screen {
+            display: none;
+            width: 100%;
+            max-width: 500px;
+            height: 100vh;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            backdrop-filter: blur(2px);
+        }
         .active { display: flex; }
 
-        /* Clean Card Design - No Glassmorphism */
-        .container {
-            background-color: var(--bg-card); padding: 30px 25px; border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); border: 1px solid var(--border);
-            text-align: center; width: 100%; max-width: 450px;
-            max-height: 95vh; overflow-y: auto; position: relative;
+        h1, h2, .chalk-text {
+            font-family: 'Permanent Marker', cursive;
+            letter-spacing: 2px;
+            text-shadow: 3px 3px 0 rgba(0,0,0,0.5);
         }
-        
-        .container::-webkit-scrollbar { width: 6px; }
-        .container::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+        h1 { font-size: 3rem; margin-bottom: 0.5rem; }
+        h2 { font-size: 2rem; margin-bottom: 1.5rem; }
 
-        /* Typography Hierarchy */
-        h1 { font-size: 2.5rem; font-weight: 900; margin-bottom: 5px; color: #ffffff; letter-spacing: -1px; }
-        h2 { font-size: 1.8rem; font-weight: 700; margin-bottom: 20px; color: #ffffff; }
-        .subtitle { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 25px; font-weight: 400; }
-        .label { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 6px; display: block; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; text-align: left; }
-
-        /* Inputs & Invite Code */
         input {
-            width: 100%; padding: 14px; margin-bottom: 15px; border-radius: 8px; 
-            border: 1px solid var(--border); background: var(--bg-input); 
-            color: white; outline: none; font-size: 1rem; text-align: center;
+            width: 100%;
+            max-width: 280px;
+            padding: 12px 18px;
+            margin-bottom: 15px;
+            background: rgba(0,0,0,0.4);
+            border: 2px solid var(--chalk-line);
+            border-radius: 50px;
+            color: white;
+            font-size: 1rem;
+            text-align: center;
+            outline: none;
+            transition: 0.2s;
         }
-        input:focus { border-color: var(--primary); }
-        
-        .invite-box {
-            background: var(--bg-input); border: 2px dashed var(--border);
-            padding: 15px; border-radius: 12px; margin-bottom: 20px;
+        input:focus {
+            border-color: #fff;
+            box-shadow: 0 0 12px var(--glow-white);
         }
-        .invite-code-text { font-size: 1.8rem; font-weight: 900; color: var(--success); letter-spacing: 3px; }
 
-        /* Buttons */
-        .btn-group { display: flex; gap: 10px; margin-bottom: 20px; }
         .btn {
-            flex: 1; background-color: var(--bg-input); color: var(--text-muted); 
-            border: 1px solid var(--border); padding: 10px; border-radius: 8px; 
-            font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: 0.2s;
+            background: transparent;
+            border: 2px solid white;
+            color: white;
+            padding: 10px 22px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.2s;
+            width: 100%;
+            max-width: 280px;
+            margin: 6px auto;
+            font-family: 'Poppins', sans-serif;
         }
-        .btn:hover { background-color: #1e293b; color: white; }
-        .btn.active { background-color: var(--primary); color: white; border-color: var(--primary); }
-
-        .btn-main {
-            background-color: var(--success); border: none; width: 100%; padding: 16px; font-size: 1.1rem;
-            border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.2s; color: white; margin-top: 10px;
+        .btn:hover, .btn:active {
+            background: rgba(255,255,255,0.15);
+            box-shadow: 0 0 12px rgba(255,255,255,0.3);
         }
-        .btn-main:hover { background-color: #059669; }
-        .btn-danger { background-color: var(--bg-input); color: var(--danger); border: 1px solid var(--danger); }
-        .btn-danger:hover { background-color: var(--danger); color: white; }
+        .btn-action {
+            background: var(--o-color);
+            border: none;
+            color: #111;
+            font-weight: bold;
+            box-shadow: 0 4px 12px rgba(46,213,115,0.4);
+        }
+        .btn-danger {
+            border-color: var(--x-color);
+            color: var(--x-color);
+        }
 
-        /* Grid Setup */
-        .slider-container { display: flex; align-items: center; gap: 15px; margin-bottom: 20px;}
-        input[type=range] { flex: 1; -webkit-appearance: none; background: var(--border); height: 6px; border-radius: 3px; }
-        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%; background: var(--primary); cursor: pointer; }
-        .val-badge { font-size: 1.1rem; font-weight: 700; color: white; min-width: 45px; background: var(--primary); padding: 4px 8px; border-radius: 6px; }
+        .invite-box {
+            background: rgba(0,0,0,0.5);
+            border-radius: 24px;
+            padding: 14px 20px;
+            margin: 20px 0;
+            text-align: center;
+            border: 1px dashed var(--chalk-line);
+            width: 100%;
+            max-width: 280px;
+        }
+        .invite-code {
+            font-family: 'Permanent Marker', cursive;
+            font-size: 2rem;
+            color: #ffdd88;
+            letter-spacing: 4px;
+        }
 
-        /* Board */
-        .status-text { font-size: 1.4rem; font-weight: 700; color: white; margin-bottom: 5px; }
-        .board { display: grid; gap: 8px; margin: 20px auto; width: 100%; max-width: 320px; }
+        /* GAME BOARD – CHALK GRID */
+        .board-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+        .status-area {
+            font-family: 'Permanent Marker', cursive;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            text-align: center;
+            text-transform: uppercase;
+            background: rgba(0,0,0,0.4);
+            padding: 6px 20px;
+            border-radius: 60px;
+            letter-spacing: 1px;
+        }
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0;
+            width: 80vw;
+            max-width: 340px;
+            aspect-ratio: 1 / 1;
+            background: transparent;
+        }
         .cell {
-            background-color: var(--bg-input); border-radius: 8px; border: 2px solid var(--border);
-            display: flex; justify-content: center; align-items: center; font-weight: 900;
-            cursor: pointer; aspect-ratio: 1 / 1; transition: 0.1s ease; user-select: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: 4px solid var(--chalk-line);
+            transition: 0.1s linear;
         }
-        .cell:active { transform: scale(0.95); }
-        .cell.x { color: var(--danger); }
-        .cell.o { color: var(--success); }
-        .win-highlight { background-color: var(--primary); border-color: white; color: white !important; }
+        /* clean chalkboard grid – outer borders removed */
+        .cell[data-index="0"], .cell[data-index="1"], .cell[data-index="2"] { border-top: none; }
+        .cell[data-index="6"], .cell[data-index="7"], .cell[data-index="8"] { border-bottom: none; }
+        .cell[data-index="0"], .cell[data-index="3"], .cell[data-index="6"] { border-left: none; }
+        .cell[data-index="2"], .cell[data-index="5"], .cell[data-index="8"] { border-right: none; }
+        .cell:hover { background: rgba(255,255,255,0.05); }
 
-        /* Timer */
-        #timer-container { display: none; width: 100%; height: 6px; background: var(--bg-input); border-radius: 3px; margin: 10px 0; overflow: hidden; }
-        #timer-bar { height: 100%; width: 100%; background-color: var(--success); transition: width 1s linear; }
+        /* SVG ICONS – DRAWING ANIMATIONS */
+        .svg-icon {
+            width: 70%;
+            height: 70%;
+        }
 
-        /* Chat System */
-        .chat-container { width: 100%; height: 160px; background: var(--bg-input); border-radius: 8px; display: none; flex-direction: column; margin-top: 20px; border: 1px solid var(--border); overflow: hidden; }
-        .chat-messages { flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 8px; text-align: left; font-size: 0.85rem;}
-        .chat-msg { background: var(--bg-card); padding: 8px 12px; border-radius: 6px; word-wrap: break-word; color: #cbd5e1; }
-        .chat-msg span { font-weight: 700; color: var(--primary); margin-right: 5px; }
-        .chat-input-area { display: flex; border-top: 1px solid var(--border); background: var(--bg-card); }
-        .chat-input-area input { margin: 0; border: none; border-radius: 0; background: transparent; padding: 12px; flex: 1; font-size: 0.9rem;}
-        .chat-input-area button { background: var(--primary); color: white; border: none; padding: 0 15px; font-weight: 700; cursor: pointer; }
+        /* X – two strokes, second stroke delayed */
+        .path-x {
+            stroke-dasharray: 140;
+            stroke-dashoffset: 140;
+            animation: drawChalk 0.4s ease-out forwards;
+        }
+        .path-x-delay {
+            stroke-dasharray: 140;
+            stroke-dashoffset: 140;
+            animation: drawChalk 0.4s ease-out 0.18s forwards;
+        }
 
-        /* Modals & Toasts */
-        .popup { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: var(--bg-card); padding: 25px; border-radius: 12px; border: 1px solid var(--border); z-index: 200; display: none; box-shadow: 0 10px 40px rgba(0,0,0,0.8); text-align: center; min-width: 320px; }
-        #toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: var(--primary); color: white; padding: 12px 24px; border-radius: 8px; display: none; z-index: 1000; font-weight: 700; font-size: 0.9rem; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
-        
-        #celebration-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(15, 23, 42, 0.95); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 100; }
-        .winner-msg { font-size: 3rem; font-weight: 900; color: white; text-align: center; margin-bottom: 10px; }
-        
+        /* O – perfect circle draw */
+        .path-o {
+            stroke-dasharray: 220;   /* circumference of circle r=35 => 2*π*35 ≈ 220 */
+            stroke-dashoffset: 220;
+            animation: drawChalk 0.55s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards;
+        }
+
+        @keyframes drawChalk {
+            to { stroke-dashoffset: 0; }
+        }
+
+        /* Chat section */
+        .chat-wrapper {
+            width: 100%;
+            max-width: 340px;
+            background: rgba(0,0,0,0.45);
+            border-radius: 24px;
+            margin-top: 20px;
+            backdrop-filter: blur(2px);
+            border: 1px solid var(--chalk-line);
+            overflow: hidden;
+        }
+        .chat-messages {
+            height: 110px;
+            overflow-y: auto;
+            padding: 8px 12px;
+            font-size: 0.8rem;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .chat-msg {
+            background: rgba(255,255,200,0.08);
+            padding: 5px 10px;
+            border-radius: 20px;
+            width: fit-content;
+            max-width: 90%;
+        }
+        .chat-msg span { color: #ffdd88; font-weight: bold; margin-right: 6px; }
+        .chat-input-area {
+            display: flex;
+            border-top: 1px solid var(--chalk-line);
+        }
+        .chat-input-area input {
+            margin: 0;
+            border: none;
+            border-radius: 0;
+            background: transparent;
+            padding: 10px;
+            text-align: left;
+        }
+        .chat-input-area button {
+            background: var(--chalk-line);
+            border: none;
+            padding: 0 18px;
+            font-weight: bold;
+            cursor: pointer;
+            color: black;
+        }
+
+        /* Modals */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+            backdrop-filter: blur(6px);
+        }
+        .modal {
+            background: #1e2a2f;
+            padding: 28px 20px;
+            border-radius: 32px;
+            border: 2px solid white;
+            text-align: center;
+            width: 85%;
+            max-width: 320px;
+            box-shadow: 0 0 30px rgba(255,255,200,0.2);
+        }
+        .winner-text {
+            font-family: 'Permanent Marker', cursive;
+            font-size: 3rem;
+            margin-bottom: 20px;
+            text-shadow: 0 0 15px currentColor;
+        }
+        #toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #111;
+            color: #ffdd88;
+            padding: 10px 22px;
+            border-radius: 40px;
+            font-weight: bold;
+            z-index: 300;
+            display: none;
+            font-family: monospace;
+            white-space: nowrap;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.4);
+        }
     </style>
 </head>
 <body>
 
-    <div id="toast">Message</div>
+<div id="toast">✨ Message</div>
 
-    <div id="auth-screen" class="screen active">
-        <div class="container">
-            <h1>TIC TAC TOE</h1>
-            <p class="subtitle">Log in to play multiplayer</p>
-            <span class="label">Email Address</span>
-            <input type="email" id="email" placeholder="player@game.com">
-            <span class="label">Password</span>
-            <input type="password" id="password" placeholder="Min 6 characters">
-            <button class="btn-main" id="login-btn">Secure Login</button>
-        </div>
+<!-- AUTH SCREEN -->
+<div id="auth-screen" class="screen active">
+    <h1 class="chalk-text">TIC TAC TOE</h1>
+    <p style="margin-bottom: 24px;">⚡ Multiplayer Edition</p>
+    <input type="email" id="email" placeholder="Email address">
+    <input type="password" id="password" placeholder="Password (min 6)">
+    <button class="btn btn-action" id="login-btn">PLAY NOW</button>
+</div>
+
+<!-- HOME / LOBBY -->
+<div id="home-screen" class="screen">
+    <h2 class="chalk-text">LOBBY</h2>
+    <p>👤 <strong id="user-name" style="color: #ffdd88;">---</strong></p>
+    <div class="invite-box">
+        <div style="font-size: 0.8rem;">YOUR INVITE CODE</div>
+        <div class="invite-code" id="my-invite-code">------</div>
     </div>
+    <input type="text" id="friend-code" placeholder="Enter friend's code">
+    <button class="btn btn-action" onclick="window.handleInvite()">SEND CHALLENGE</button>
+    <button class="btn" style="margin-top: 18px;" onclick="window.playOffline()">✏️ PRACTICE (OFFLINE)</button>
+</div>
 
-    <div id="home-screen" class="screen">
-        <div class="container">
-            <h2>Game Setup</h2>
-            <p class="subtitle" style="margin-top:-15px;">Playing as: <strong id="user-name" style="color:var(--primary);">---</strong></p>
-            
-            <span class="label">Game Mode</span>
-            <div class="btn-group">
-                <button class="btn" id="btn-1p" onclick="setMode('1p')">CPU</button>
-                <button class="btn" id="btn-2p" onclick="setMode('2p')">Local</button>
-                <button class="btn active" id="btn-online" onclick="setMode('online')">Online</button>
-            </div>
-
-            <div id="online-group" class="invite-box">
-                <span class="label" style="text-align: center;">Share this code with friend</span>
-                <div class="invite-code-text" id="my-invite-code">------</div>
-                <input type="text" id="friend-code" placeholder="Or enter friend's code here" style="margin-top: 15px; margin-bottom: 0;">
-            </div>
-
-            <span class="label">Turn Timer</span>
-            <div class="btn-group">
-                <button class="btn active" id="btn-timer-off" onclick="setTimer('off')">Off</button>
-                <button class="btn" id="btn-timer-10" onclick="setTimer(10)">10s</button>
-                <button class="btn" id="btn-timer-15" onclick="setTimer(15)">15s</button>
-            </div>
-
-            <span class="label">Grid Size</span>
-            <div class="slider-container">
-                <input type="range" id="grid-slider" min="3" max="6" value="3" oninput="updateGridDisplay(this.value)">
-                <div class="val-badge"><span id="g-val">3</span>x<span id="g-val2">3</span></div>
-            </div>
-
-            <span class="label">Matches to Win</span>
-            <div class="slider-container">
-                <input type="range" id="win-slider" min="3" max="3" value="3" oninput="updateWinDisplay(this.value)">
-                <div class="val-badge" id="w-val">3</div>
-            </div>
-
-            <button class="btn-main" id="start-game-btn" onclick="handleStartBtn()">Invite & Start</button>
+<!-- GAME SCREEN -->
+<div id="game-screen" class="screen">
+    <div class="board-container">
+        <div class="status-area" id="status-text">YOUR TURN</div>
+        <div class="board" id="board">
+            <!-- 9 cells dynamically -->
         </div>
-    </div>
-
-    <div id="game-screen" class="screen">
-        <div class="container">
-            <div class="status-text" id="status-text">Player X Turn</div>
-            <p class="label" id="rule-display" style="text-align: center;">Match 3 to win</p>
-            
-            <div id="timer-container"><div id="timer-bar"></div></div>
-            
-            <div class="board" id="board"></div> 
-            
-            <div class="btn-group" style="margin-bottom: 0;">
-                <button class="btn" id="restart-btn" onclick="requestRestart()" style="display: none; background: var(--primary); color: white; border: none;">Play Again</button>
-                <button class="btn btn-danger" onclick="leaveGame()">Leave Game</button>
-            </div>
-
-            <div class="chat-container" id="chat-container">
-                <div class="chat-messages" id="chat-messages"></div>
-                <div class="chat-input-area">
-                    <input type="text" id="chat-input" placeholder="Type a message...">
-                    <button id="send-chat">Send</button>
-                </div>
+        <div class="chat-wrapper" id="chat-container" style="display: none;">
+            <div class="chat-messages" id="chat-messages"></div>
+            <div class="chat-input-area">
+                <input type="text" id="chat-input" placeholder="Chalk a message...">
+                <button id="send-chat">SEND</button>
             </div>
         </div>
+        <button class="btn btn-danger" style="margin-top: 18px;" onclick="window.leaveGame()">LEAVE MATCH</button>
     </div>
+</div>
 
-    <div id="invite-popup" class="popup">
-        <h2 style="margin-bottom: 10px;">Game Invite!</h2>
-        <p class="subtitle"><strong id="inviter-name" style="color: var(--primary);">Someone</strong> wants to play.</p>
-        <div class="btn-group" style="margin-bottom: 0;">
-            <button class="btn" style="background: var(--success); color: white; border:none;" id="accept-invite">Accept</button>
-            <button class="btn btn-danger" id="reject-invite">Decline</button>
-        </div>
+<!-- INVITE POPUP -->
+<div id="invite-popup" class="overlay">
+    <div class="modal">
+        <h2 class="chalk-text">⚡ CHALLENGE!</h2>
+        <p><strong id="inviter-name" style="color: #ffdd88;">Someone</strong> invited you to play.</p>
+        <button class="btn btn-action" id="accept-invite">ACCEPT</button>
+        <button class="btn btn-danger" id="reject-invite">DECLINE</button>
     </div>
+</div>
 
-    <div id="celebration-screen">
-        <div class="winner-msg" id="winner-msg-text">Player X Wins!</div>
-        <p class="subtitle" id="sub-msg-text" style="color: white; font-size: 1.2rem;"></p>
-        <button class="btn-main" style="width: auto; padding: 12px 40px; margin-top: 20px;" onclick="closeCelebration()">Continue</button>
+<!-- WIN / DRAW CELEBRATION -->
+<div id="celebration-screen" class="overlay">
+    <div class="modal">
+        <div class="winner-text" id="winner-msg-text">WINNER!</div>
+        <button class="btn btn-action" id="rematch-btn" onclick="window.requestRestart()">PLAY AGAIN</button>
+        <button class="btn" onclick="window.leaveGame()">BACK TO LOBBY</button>
     </div>
+</div>
 
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<script type="module">
+    // ----------------------------- FIREBASE INIT -----------------------------
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, query, where, onSnapshot, getDocs, addDoc, serverTimestamp, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, query, where, onSnapshot, getDocs, addDoc, serverTimestamp, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    const firebaseConfig = {
+        apiKey: "AIzaSyBldLyB9d18ZGStroUC0-yjuUrp31DFQ28",
+        authDomain: "online-tic-tac-toe-d919f.firebaseapp.com",
+        projectId: "online-tic-tac-toe-d919f",
+        storageBucket: "online-tic-tac-toe-d919f.firebasestorage.app",
+        messagingSenderId: "644365665798",
+        appId: "1:644365665798:web:f90b64bdc3aa6912032587"
+    };
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyBldLyB9d18ZGStroUC0-yjuUrp31DFQ28",
-            authDomain: "online-tic-tac-toe-d919f.firebaseapp.com",
-            projectId: "online-tic-tac-toe-d919f",
-            storageBucket: "online-tic-tac-toe-d919f.firebasestorage.app",
-            messagingSenderId: "644365665798",
-            appId: "1:644365665798:web:f90b64bdc3aa6912032587"
-        };
+    // ----------------------------- SVG DRAWING ICONS -----------------------------
+    const svgX = `<svg class="svg-icon" viewBox="0 0 100 100"><path class="path-x" d="M 20 20 L 80 80" stroke="#ff4757" stroke-width="12" stroke-linecap="round" fill="none"/><path class="path-x-delay" d="M 80 20 L 20 80" stroke="#ff4757" stroke-width="12" stroke-linecap="round" fill="none"/></svg>`;
+    const svgO = `<svg class="svg-icon" viewBox="0 0 100 100"><circle class="path-o" cx="50" cy="50" r="35" stroke="#2ed573" stroke-width="12" fill="none" stroke-linecap="round"/></svg>`;
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
+    // ----------------------------- GLOBAL STATE -----------------------------
+    let currentUser = null;
+    let myProfile = null;
+    let mode = 'online';          // 'online' or 'offline'
+    let boardState = ['', '', '', '', '', '', '', '', ''];
+    let currentPlayer = 'X';     // 'X' always starts
+    let gameActive = false;
+    let mySymbol = 'X';           // only used in online
+    let currentGameId = null;
+    let unsubscribeGame = null;
+    let unsubscribeChat = null;
 
-        // Globals
-        window.mode = 'online'; window.size = 3; window.winLength = 3; window.timerSetting = 'off';
-        let boardState = [], currentPlayer = 'X', gameActive = false, timerInterval, timeLeft;
-        let currentUser = null, myProfile = null, currentGameId = null, mySymbol = 'X'; 
-        let unsubscribeGame = null, unsubscribeChat = null;
+    // helper functions
+    const showToast = (msg) => {
+        const toast = document.getElementById('toast');
+        toast.innerText = msg;
+        toast.style.display = 'block';
+        setTimeout(() => toast.style.display = 'none', 2800);
+    };
+    const switchScreen = (id) => {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+    };
+    const generateInviteCode = () => Math.random().toString(36).substring(2, 6).toUpperCase();
 
-        // Utils
-        const switchScreen = (id) => { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); };
-        const showToast = (msg) => { const t = document.getElementById('toast'); t.innerText = msg; t.style.display = 'block'; setTimeout(() => t.style.display = 'none', 3000); };
-        const generateInviteCode = () => Math.random().toString(36).substring(2, 8).toUpperCase();
+    // ----------------------------- WIN / DRAW LOGIC -----------------------------
+    function checkWinOrDraw(board) {
+        const winPatterns = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+        for (let p of winPatterns) {
+            if (board[p[0]] && board[p[0]] === board[p[1]] && board[p[0]] === board[p[2]]) return 'win';
+        }
+        return board.includes('') ? 'continue' : 'draw';
+    }
 
-        // UI Setters
-        window.setMode = (m) => {
-            window.mode = m;
-            ['1p', '2p', 'online'].forEach(x => document.getElementById(`btn-${x}`).classList.toggle('active', x === m));
-            document.getElementById('online-group').style.display = m === 'online' ? 'block' : 'none';
-            document.getElementById('start-game-btn').innerText = m === 'online' ? 'Invite & Start' : 'Start Offline Game';
-        };
-        window.setTimer = (t) => { window.timerSetting = t; ['off', '10', '15'].forEach(x => document.getElementById(`btn-timer-${x}`).classList.toggle('active', x == t)); };
-        window.updateGridDisplay = (val) => {
-            window.size = parseInt(val); document.getElementById('g-val').innerText = window.size; document.getElementById('g-val2').innerText = window.size;
-            const w = document.getElementById('win-slider'); w.max = window.size; if (parseInt(w.value) > window.size) w.value = window.size; window.updateWinDisplay(w.value);
-        };
-        window.updateWinDisplay = (val) => { window.winLength = parseInt(val); document.getElementById('w-val').innerText = window.winLength; };
-
-        // Auth
-        document.getElementById('login-btn').addEventListener('click', async () => {
-            const e = document.getElementById('email').value, p = document.getElementById('password').value;
-            if(!e || !p) return showToast("Enter email and password!");
-            document.getElementById('login-btn').innerText = "Loading...";
-            try { await signInWithEmailAndPassword(auth, e, p); showToast("Welcome back!"); } 
-            catch (err) {
-                if (err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential') {
-                    try { await createUserWithEmailAndPassword(auth, e, p); showToast("Account created successfully!"); } 
-                    catch(e2) { showToast(e2.message); }
-                } else { showToast(err.message); }
-            }
-            document.getElementById('login-btn').innerText = "Secure Login";
+    // ----------------------------- RENDER BOARD WITH SVG + ANIMATION -----------------------------
+    function renderBoardUI() {
+        const cells = document.querySelectorAll('.cell');
+        cells.forEach((cell, i) => {
+            const val = boardState[i];
+            if (val === 'X' && !cell.innerHTML.includes('path-x')) cell.innerHTML = svgX;
+            else if (val === 'O' && !cell.innerHTML.includes('path-o')) cell.innerHTML = svgO;
+            else if (val === '') cell.innerHTML = '';
         });
+    }
 
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                currentUser = user;
-                const userRef = doc(db, 'users', user.uid);
-                const docSnap = await getDoc(userRef);
-                if (docSnap.exists()) { myProfile = docSnap.data(); } 
-                else { myProfile = { uid: user.uid, name: user.email.split('@')[0], inviteCode: generateInviteCode() }; await setDoc(userRef, myProfile); }
-                
-                document.getElementById('user-name').innerText = myProfile.name;
-                document.getElementById('my-invite-code').innerText = myProfile.inviteCode;
-                switchScreen('home-screen'); listenForInvites();
-            } else { switchScreen('auth-screen'); }
-        });
+    // ----------------------------- OFFLINE MODE -----------------------------
+    function initOfflineBoard() {
+        boardState = ['', '', '', '', '', '', '', '', ''];
+        currentPlayer = 'X';
+        gameActive = true;
+        document.getElementById('celebration-screen').style.display = 'none';
+        document.getElementById('status-text').innerText = "PLAYER X TURN";
+        document.getElementById('status-text').style.color = "#fff";
+        renderBoardUI();
+    }
 
-        // Lobby & Invites
-        window.handleStartBtn = async () => {
-            if (window.mode === 'online') {
-                const fCode = document.getElementById('friend-code').value.toUpperCase();
-                if(!fCode) return showToast("Enter friend's code!");
-                if(fCode === myProfile.inviteCode) return showToast("Can't invite yourself!");
+    window.playOffline = () => {
+        mode = 'offline';
+        document.getElementById('chat-container').style.display = 'none';
+        switchScreen('game-screen');
+        initOfflineBoard();
+    };
 
-                const snap = await getDocs(query(collection(db, "users"), where("inviteCode", "==", fCode)));
-                if(!snap.empty) {
-                    const friend = snap.docs[0].data(); showToast("Invite sent! Waiting for response...");
-                    const invRef = await addDoc(collection(db, 'invites'), {
-                        senderUid: currentUser.uid, senderName: myProfile.name, receiverUid: friend.uid, status: 'pending',
-                        settings: { size: window.size, winLength: window.winLength, timerSetting: window.timerSetting }
-                    });
-                    
-                    onSnapshot(doc(db, 'invites', invRef.id), (dSnap) => {
-                        const data = dSnap.data();
-                        if(data?.status === 'accepted' && data.gameId) { startOnlineGame(data.gameId, 'X'); deleteDoc(doc(db, 'invites', invRef.id)); } 
-                        else if (data?.status === 'rejected') showToast("Invite declined!");
-                    });
-                } else showToast("Player not found!");
-            } else { document.getElementById('chat-container').style.display = 'none'; switchScreen('game-screen'); initBoard(); }
-        };
-
-        function listenForInvites() {
-            onSnapshot(query(collection(db, 'invites'), where('receiverUid', '==', currentUser.uid), where('status', '==', 'pending')), (snap) => {
-                snap.docChanges().forEach((change) => {
-                    if (change.type === "added") {
-                        const inv = change.doc.data();
-                        document.getElementById('inviter-name').innerText = inv.senderName;
-                        document.getElementById('invite-popup').style.display = 'block';
-                        
-                        document.getElementById('accept-invite').onclick = async () => {
-                            window.size = inv.settings.size; window.winLength = inv.settings.winLength; window.timerSetting = inv.settings.timerSetting;
-                            const gRef = await addDoc(collection(db, 'games'), {
-                                players: [inv.senderUid, currentUser.uid], board: Array(window.size * window.size).fill(""),
-                                turn: 'X', status: 'playing', size: window.size, winLength: window.winLength, timerSetting: window.timerSetting
-                            });
-                            await updateDoc(doc(db, 'invites', change.doc.id), { status: 'accepted', gameId: gRef.id });
-                            document.getElementById('invite-popup').style.display = 'none';
-                            startOnlineGame(gRef.id, 'O');
-                        };
-                        document.getElementById('reject-invite').onclick = async () => {
-                            await updateDoc(doc(db, 'invites', change.doc.id), { status: 'rejected' });
-                            document.getElementById('invite-popup').style.display = 'none';
-                        };
-                    }
-                });
-            });
-        }
-
-        // Online Game Logic & OPPONENT LEAVE/AUTO-DELETE
-        function startOnlineGame(gameId, symbol) {
-            currentGameId = gameId; mySymbol = symbol;
-            document.getElementById('chat-container').style.display = 'flex';
-            switchScreen('game-screen');
-            
-            unsubscribeGame = onSnapshot(doc(db, 'games', gameId), (docSnap) => {
-                // OPPONENT LEFT LOGIC
-                if(!docSnap.exists()) {
-                    if(gameActive) { showToast("Opponent left the game!"); window.leaveGame(true); }
-                    return;
-                }
-                
-                const game = docSnap.data();
-                window.size = game.size; window.winLength = game.winLength; window.timerSetting = game.timerSetting;
-                boardState = game.board; currentPlayer = game.turn; gameActive = game.status === 'playing';
-                
-                renderBoardUI();
-                
-                if(game.status === 'win') handleWinUI(game.winner);
-                else if(game.status === 'draw') handleDrawUI();
-                else if(game.status === 'timeout') handleWinUI(game.winner, `Opponent ran out of time!`);
-                else {
-                    document.getElementById('status-text').innerText = currentPlayer === mySymbol ? "Your Turn!" : "Opponent's Turn";
-                    document.getElementById('status-text').style.color = currentPlayer === mySymbol ? "var(--success)" : "white";
-                    startTurnTimer(); 
-                }
-            });
-
-            unsubscribeChat = onSnapshot(query(collection(db, `games/${gameId}/chat`)), (snap) => {
-                const box = document.getElementById('chat-messages'); box.innerHTML = ''; let msgs = [];
-                snap.forEach(d => msgs.push(d.data()));
-                msgs.sort((a,b) => (a.timestamp?.toMillis() || 0) - (b.timestamp?.toMillis() || 0)).forEach(m => {
-                    box.innerHTML += `<div class="chat-msg"><span>${m.sender}:</span> ${m.text}</div>`;
-                });
-                box.scrollTop = box.scrollHeight;
-            });
-        }
-
-        // Board Render
-        window.initBoard = () => {
-            clearInterval(timerInterval); boardState = Array(window.size * window.size).fill("");
-            currentPlayer = 'X'; gameActive = true; document.getElementById('restart-btn').style.display = 'none';
-            renderBoardUI(); document.getElementById('status-text').innerText = "Player X Turn"; startTurnTimer();
-        };
-
-        function renderBoardUI() {
-            document.getElementById('rule-display').innerText = `MATCH ${window.winLength} TO WIN`;
-            if(window.timerSetting !== 'off') { document.getElementById('timer-container').style.display = 'block'; }
-            else { document.getElementById('timer-container').style.display = 'none'; }
-
-            const b = document.getElementById('board'); b.style.gridTemplateColumns = `repeat(${window.size}, 1fr)`; b.innerHTML = '';
-            let fSize = window.size <= 4 ? 2.5 : 1.8;
-
-            for(let i=0; i < window.size * window.size; i++) {
-                const cell = document.createElement('div');
-                cell.className = `cell ${boardState[i] !== '' ? boardState[i].toLowerCase() : ''}`;
-                cell.dataset.idx = i; cell.style.fontSize = `${fSize}rem`; cell.innerText = boardState[i];
-                cell.addEventListener('click', () => handleMove(i)); b.appendChild(cell);
+    // win/draw UI (with animation delay)
+    function handleWinUI(winner, winnerSymbol = null) {
+        gameActive = false;
+        renderBoardUI();
+        setTimeout(() => {
+            let msg = (mode === 'online') ? (winner === mySymbol ? "YOU WIN!" : "OPPONENT WINS!") : `PLAYER ${winner} WINS!`;
+            document.getElementById('winner-msg-text').innerText = msg;
+            const winnerColor = (winnerSymbol === 'X' || winner === 'X') ? 'var(--x-color)' : 'var(--o-color)';
+            document.getElementById('winner-msg-text').style.color = winnerColor;
+            document.getElementById('celebration-screen').style.display = 'flex';
+            if ((mode === 'online' && winner === mySymbol) || mode === 'offline') {
+                canvasConfetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, startVelocity: 15 });
             }
-        }
+        }, 600);
+    }
+    function handleDrawUI() {
+        gameActive = false;
+        renderBoardUI();
+        setTimeout(() => {
+            document.getElementById('winner-msg-text').innerText = "DRAW!";
+            document.getElementById('winner-msg-text').style.color = "white";
+            document.getElementById('celebration-screen').style.display = 'flex';
+        }, 600);
+    }
 
-        // Movement (X plays X bug fixed)
-        window.handleMove = async (idx) => {
-            if(!gameActive || boardState[idx] !== "") return;
-            if (window.mode === 'online') {
-                if(currentPlayer !== mySymbol) return showToast("Not your turn!");
-                boardState[idx] = mySymbol; const res = checkWinOrDraw(boardState);
-                if (res === 'win') await updateDoc(doc(db, 'games', currentGameId), { board: boardState, status: 'win', winner: mySymbol });
-                else if (res === 'draw') await updateDoc(doc(db, 'games', currentGameId), { board: boardState, status: 'draw' });
-                else await updateDoc(doc(db, 'games', currentGameId), { board: boardState, turn: mySymbol === 'X' ? 'O' : 'X' });
+    // cell click handler (both modes)
+    async function onCellClick(index) {
+        if (!gameActive) return;
+        if (boardState[index] !== '') return;
+
+        if (mode === 'offline') {
+            boardState[index] = currentPlayer;
+            renderBoardUI();   // instant SVG draw animation
+            const result = checkWinOrDraw(boardState);
+            if (result === 'win') handleWinUI(currentPlayer);
+            else if (result === 'draw') handleDrawUI();
+            else {
+                currentPlayer = (currentPlayer === 'X') ? 'O' : 'X';
+                document.getElementById('status-text').innerText = `PLAYER ${currentPlayer} TURN`;
+            }
+        } 
+        else if (mode === 'online') {
+            if (currentPlayer !== mySymbol) {
+                showToast("Wait for your turn!");
+                return;
+            }
+            boardState[index] = mySymbol;
+            renderBoardUI();   // immediate visual feedback
+            const result = checkWinOrDraw(boardState);
+            if (result === 'win') {
+                await updateDoc(doc(db, 'games', currentGameId), { board: boardState, status: 'win', winner: mySymbol });
+            } else if (result === 'draw') {
+                await updateDoc(doc(db, 'games', currentGameId), { board: boardState, status: 'draw' });
             } else {
-                boardState[idx] = currentPlayer; const res = checkWinOrDraw(boardState);
-                if (res === 'win') handleWinUI(currentPlayer); else if (res === 'draw') handleDrawUI();
-                else {
-                    currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
-                    document.getElementById('status-text').innerText = `Player ${currentPlayer} Turn`;
-                    renderBoardUI(); startTurnTimer();
-                    if (window.mode === '1p' && currentPlayer === 'O') { gameActive = false; setTimeout(cpuMove, 600); }
-                }
+                const nextTurn = (mySymbol === 'X') ? 'O' : 'X';
+                await updateDoc(doc(db, 'games', currentGameId), { board: boardState, turn: nextTurn });
             }
-        };
-
-        // Timer
-        function startTurnTimer() {
-            if(window.timerSetting === 'off' || !gameActive) return;
-            if(window.mode === '1p' && currentPlayer === 'O') { document.getElementById('timer-bar').style.width = '100%'; return; }
-
-            clearInterval(timerInterval); timeLeft = parseInt(window.timerSetting); updateTimerUI();
-            timerInterval = setInterval(async () => {
-                timeLeft--; updateTimerUI();
-                if(timeLeft <= 0) {
-                    clearInterval(timerInterval);
-                    if(window.mode === 'online' && currentPlayer === mySymbol && gameActive) {
-                        gameActive = false; await updateDoc(doc(db, 'games', currentGameId), { status: 'timeout', winner: mySymbol === 'X' ? 'O' : 'X' });
-                    } else if (window.mode !== 'online') { handleWinUI(currentPlayer === 'X' ? 'O' : 'X', "Time Out!"); }
-                }
-            }, 1000);
         }
+    }
 
-        function updateTimerUI() {
-            const bar = document.getElementById('timer-bar');
-            bar.style.width = `${(timeLeft / parseInt(window.timerSetting)) * 100}%`;
-            bar.style.backgroundColor = timeLeft <= 3 ? "var(--danger)" : "var(--success)";
-        }
+    // ----------------------------- ONLINE GAME SYNC -----------------------------
+    function startOnlineGame(gameId, symbol) {
+        currentGameId = gameId;
+        mySymbol = symbol;
+        mode = 'online';
+        document.getElementById('chat-container').style.display = 'flex';
+        switchScreen('game-screen');
+        document.getElementById('celebration-screen').style.display = 'none';
 
-        // Logic & End
-        function checkWinOrDraw(board) { let w = getWinningCells(currentPlayer, board); if(w) return 'win'; if(!board.includes("")) return 'draw'; return 'continue'; }
-
-        function getWinningCells(p, b) {
-            let s = window.size, wl = window.winLength;
-            for(let r=0; r<s; r++) for(let c=0; c<=s-wl; c++) { let a=[]; for(let i=0; i<wl; i++) if(b[r*s+(c+i)]===p) a.push(r*s+(c+i)); if(a.length===wl) return a; }
-            for(let c=0; c<s; c++) for(let r=0; r<=s-wl; r++) { let a=[]; for(let i=0; i<wl; i++) if(b[(r+i)*s+c]===p) a.push((r+i)*s+c); if(a.length===wl) return a; }
-            for(let r=0; r<=s-wl; r++) for(let c=0; c<=s-wl; c++) { let a=[]; for(let i=0; i<wl; i++) if(b[(r+i)*s+(c+i)]===p) a.push((r+i)*s+(c+i)); if(a.length===wl) return a; }
-            for(let r=0; r<=s-wl; r++) for(let c=wl-1; c<s; c++) { let a=[]; for(let i=0; i<wl; i++) if(b[(r+i)*s+(c-i)]===p) a.push((r+i)*s+(c-i)); if(a.length===wl) return a; }
-            return null;
-        }
-
-        function handleWinUI(winner, msg = "") {
-            gameActive = false; clearInterval(timerInterval); renderBoardUI();
-            let wc = getWinningCells(winner, boardState);
-            if(wc) wc.forEach(i => document.querySelector(`.cell[data-idx='${i}']`)?.classList.add('win-highlight'));
-            
-            setTimeout(() => {
-                let msgText = winner === 'O' && window.mode === '1p' ? "CPU Wins!" : `Player ${winner} Wins!`;
-                if (window.mode === 'online') msgText = winner === mySymbol ? "You Win! 🎉" : "You Lost! 💔";
-                
-                document.getElementById('winner-msg-text').innerText = msgText;
-                document.getElementById('sub-msg-text').innerText = msg;
-                document.getElementById('celebration-screen').style.display = 'flex';
-                document.getElementById('restart-btn').style.display = 'block';
-                if(winner === mySymbol || window.mode !== 'online') confetti({ particleCount: 100, spread: 70, zIndex: 200 });
-            }, 500);
-        }
-
-        function handleDrawUI() {
-            gameActive = false; clearInterval(timerInterval); renderBoardUI();
-            document.getElementById('status-text').innerText = "Draw!"; document.getElementById('restart-btn').style.display = 'block';
-        }
-
-        // CPU Move
-        function cpuMove() {
-            if(!gameActive) return; gameActive = true;
-            let move = -1, empty = boardState.map((v, i) => v === "" ? i : null).filter(v => v !== null);
-            if(move === -1) move = empty[Math.floor(Math.random() * empty.length)];
-            window.handleMove(move);
-        }
-
-        // Leave & Cleanup Logic
-        window.leaveGame = async (isForced = false) => {
-            if (!isForced && window.mode === 'online' && currentGameId) {
-                // AUTO DELETE GAME & CHAT
-                try {
-                    const chatSnaps = await getDocs(query(collection(db, `games/${currentGameId}/chat`)));
-                    chatSnaps.forEach((d) => deleteDoc(doc(db, `games/${currentGameId}/chat`, d.id)));
-                    await deleteDoc(doc(db, 'games', currentGameId));
-                } catch(e) { console.error("Error deleting:", e); }
+        if (unsubscribeGame) unsubscribeGame();
+        unsubscribeGame = onSnapshot(doc(db, 'games', gameId), (docSnap) => {
+            if (!docSnap.exists()) {
+                if (gameActive) showToast("Opponent left the game");
+                window.leaveGame(true);
+                return;
             }
-            if(unsubscribeGame) unsubscribeGame(); if(unsubscribeChat) unsubscribeChat();
-            currentGameId = null; gameActive = false; switchScreen('home-screen');
-        };
+            const game = docSnap.data();
+            boardState = game.board;
+            currentPlayer = game.turn;
+            gameActive = (game.status === 'playing');
+            renderBoardUI();
 
-        window.requestRestart = async () => {
-            if(window.mode === 'online') await updateDoc(doc(db, 'games', currentGameId), { board: Array(window.size * window.size).fill(""), status: 'playing', turn: 'X' });
-            else window.initBoard();
-        };
-
-        window.closeCelebration = () => { document.getElementById('celebration-screen').style.display = 'none'; };
-
-        // Chat
-        document.getElementById('send-chat').addEventListener('click', async () => {
-            const input = document.getElementById('chat-input');
-            if(input.value.trim() !== '' && window.mode === 'online') {
-                await addDoc(collection(db, `games/${currentGameId}/chat`), { sender: myProfile.name, text: input.value, timestamp: serverTimestamp() });
-                input.value = '';
+            if (game.status === 'win') handleWinUI(game.winner, game.winner);
+            else if (game.status === 'draw') handleDrawUI();
+            else {
+                const statusDiv = document.getElementById('status-text');
+                if (currentPlayer === mySymbol) {
+                    statusDiv.innerText = "✨ YOUR TURN";
+                    statusDiv.style.color = "#2ed573";
+                } else {
+                    statusDiv.innerText = "⏳ OPPONENT'S TURN";
+                    statusDiv.style.color = "#f0f0f0";
+                }
             }
         });
-        document.getElementById('chat-input').addEventListener('keypress', (e) => { if (e.key === 'Enter') document.getElementById('send-chat').click(); });
-    </script>
+
+        // Chat listener
+        if (unsubscribeChat) unsubscribeChat();
+        unsubscribeChat = onSnapshot(query(collection(db, `games/${gameId}/chat`)), (snap) => {
+            const container = document.getElementById('chat-messages');
+            container.innerHTML = '';
+            const msgs = [];
+            snap.forEach(d => msgs.push(d.data()));
+            msgs.sort((a,b) => (a.timestamp?.toMillis()||0) - (b.timestamp?.toMillis()||0)).forEach(m => {
+                container.innerHTML += `<div class="chat-msg"><span>${m.sender}:</span> ${m.text}</div>`;
+            });
+            container.scrollTop = container.scrollHeight;
+        });
+    }
+
+    // leave game & cleanup
+    window.leaveGame = async (isForced = false) => {
+        if (!isForced && mode === 'online' && currentGameId) {
+            try {
+                const chats = await getDocs(query(collection(db, `games/${currentGameId}/chat`)));
+                for (const c of chats.docs) await deleteDoc(doc(db, `games/${currentGameId}/chat`, c.id));
+                await deleteDoc(doc(db, 'games', currentGameId));
+            } catch(e) { console.warn(e); }
+        }
+        if (unsubscribeGame) unsubscribeGame();
+        if (unsubscribeChat) unsubscribeChat();
+        currentGameId = null;
+        gameActive = false;
+        document.getElementById('celebration-screen').style.display = 'none';
+        switchScreen('home-screen');
+    };
+
+    window.requestRestart = async () => {
+        if (mode === 'online' && currentGameId) {
+            document.getElementById('celebration-screen').style.display = 'none';
+            await updateDoc(doc(db, 'games', currentGameId), {
+                board: ['', '', '', '', '', '', '', '', ''],
+                status: 'playing',
+                turn: 'X'
+            });
+        } else if (mode === 'offline') {
+            initOfflineBoard();
+            document.getElementById('celebration-screen').style.display = 'none';
+        }
+    };
+
+    // ----------------------------- INVITE SYSTEM -----------------------------
+    window.handleInvite = async () => {
+        mode = 'online';
+        const fCode = document.getElementById('friend-code').value.toUpperCase().trim();
+        if (!fCode) return showToast("Enter friend's invite code");
+        if (fCode === myProfile.inviteCode) return showToast("That's your own code!");
+
+        const qSnap = await getDocs(query(collection(db, "users"), where("inviteCode", "==", fCode)));
+        if (qSnap.empty) return showToast("No player with that code");
+        const friend = qSnap.docs[0].data();
+        const invRef = await addDoc(collection(db, 'invites'), {
+            senderUid: currentUser.uid,
+            senderName: myProfile.name,
+            receiverUid: friend.uid,
+            status: 'pending'
+        });
+        showToast("Challenge sent! Waiting for response...");
+        onSnapshot(doc(db, 'invites', invRef.id), (docSnap) => {
+            const data = docSnap.data();
+            if (data?.status === 'accepted' && data.gameId) {
+                startOnlineGame(data.gameId, 'X');
+                deleteDoc(doc(db, 'invites', invRef.id));
+            } else if (data?.status === 'rejected') {
+                showToast("Friend declined the challenge");
+                deleteDoc(doc(db, 'invites', invRef.id));
+            }
+        });
+    };
+
+    function listenForInvites() {
+        onSnapshot(query(collection(db, 'invites'), where('receiverUid', '==', currentUser?.uid), where('status', '==', 'pending')), (snap) => {
+            snap.docChanges().forEach(async (change) => {
+                if (change.type === 'added') {
+                    const inv = change.doc.data();
+                    document.getElementById('inviter-name').innerText = inv.senderName;
+                    document.getElementById('invite-popup').style.display = 'flex';
+
+                    document.getElementById('accept-invite').onclick = async () => {
+                        const gameRef = await addDoc(collection(db, 'games'), {
+                            players: [inv.senderUid, currentUser.uid],
+                            board: ['','','','','','','','',''],
+                            turn: 'X',
+                            status: 'playing'
+                        });
+                        await updateDoc(doc(db, 'invites', change.doc.id), { status: 'accepted', gameId: gameRef.id });
+                        document.getElementById('invite-popup').style.display = 'none';
+                        startOnlineGame(gameRef.id, 'O');
+                    };
+                    document.getElementById('reject-invite').onclick = async () => {
+                        await updateDoc(doc(db, 'invites', change.doc.id), { status: 'rejected' });
+                        document.getElementById('invite-popup').style.display = 'none';
+                    };
+                }
+            });
+        });
+    }
+
+    // ----------------------------- AUTH & INIT -----------------------------
+    document.getElementById('login-btn').addEventListener('click', async () => {
+        const email = document.getElementById('email').value;
+        const pass = document.getElementById('password').value;
+        if (!email || !pass) return showToast("Enter email & password");
+        document.getElementById('login-btn').innerText = "🔄 ...";
+        try {
+            await signInWithEmailAndPassword(auth, email, pass);
+            showToast("Welcome back!");
+        } catch (err) {
+            if (err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential') {
+                try {
+                    await createUserWithEmailAndPassword(auth, email, pass);
+                    showToast("Account created!");
+                } catch (e2) { showToast(e2.message); }
+            } else { showToast(err.message); }
+        }
+        document.getElementById('login-btn').innerText = "PLAY NOW";
+    });
+
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            currentUser = user;
+            const userRef = doc(db, 'users', user.uid);
+            const snap = await getDoc(userRef);
+            if (snap.exists()) myProfile = snap.data();
+            else {
+                myProfile = { uid: user.uid, name: user.email.split('@')[0], inviteCode: generateInviteCode() };
+                await setDoc(userRef, myProfile);
+            }
+            document.getElementById('user-name').innerText = myProfile.name;
+            document.getElementById('my-invite-code').innerText = myProfile.inviteCode;
+            switchScreen('home-screen');
+            listenForInvites();
+        } else {
+            switchScreen('auth-screen');
+        }
+    });
+
+    // create board cells
+    const boardDiv = document.getElementById('board');
+    for (let i = 0; i < 9; i++) {
+        const cell = document.createElement('div');
+        cell.className = 'cell';
+        cell.setAttribute('data-index', i);
+        cell.addEventListener('click', () => onCellClick(i));
+        boardDiv.appendChild(cell);
+    }
+
+    // chat functionality
+    document.getElementById('send-chat').addEventListener('click', async () => {
+        const input = document.getElementById('chat-input');
+        if (input.value.trim() && mode === 'online' && currentGameId) {
+            await addDoc(collection(db, `games/${currentGameId}/chat`), {
+                sender: myProfile.name,
+                text: input.value,
+                timestamp: serverTimestamp()
+            });
+            input.value = '';
+        }
+    });
+    document.getElementById('chat-input').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') document.getElementById('send-chat').click();
+    });
+</script>
 </body>
 </html>
