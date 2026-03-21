@@ -1,609 +1,766 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr" data-theme="quantum-dark" class="titan-os-core">
+<html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     <meta name="theme-color" content="#05070a" />
-    <meta name="description" content="Nitesh Titan - Enterprise Grade Multiplayer Tic-Tac-Toe with Quantum Sync." />
-    <meta name="author" content="Nitesh WTR Lab" />
-    <meta name="robots" content="index, follow" />
-
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="apple-mobile-web-app-title" content="Titan TTT" />
-    <meta name="application-name" content="Titan TTT" />
-    <meta name="msapplication-TileColor" content="#05070a" />
-
-    <meta property="og:title" content="Nitesh Titan | Quantum Sync" />
-    <meta property="og:description" content="Join my lobby in Titan TTT for a 1ms zero-latency battle." />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://nitesh-titan.web.app" />
-    <meta property="og:image" content="https://source.unsplash.com/1200x630/?cyberpunk,neon" />
-
-    <title>Nitesh Titan | Quantum Sync Engine</title>
+    <title>Nitesh Titan | Premium Sync</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="preconnect" href="https://source.unsplash.com" />
-    <link rel="dns-prefetch" href="https://firestore.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Poppins:wght@300;400;600;800;900&display=swap" rel="stylesheet" />
 
-    <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Poppins:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+    <style>
+        /* ==========================================================================
+           [01] CORE DYNAMIC VARIABLES (SKIN SYSTEM BASE)
+           In variables ko JavaScript dynamically change karega jab user skin equip karega.
+           ========================================================================== */
+        :root {
+            /* Default Base Colors */
+            --bg-base: #05070a;
+            --text-main: #ffffff;
+            --text-muted: #8b9bb4;
+            --glass-bg: rgba(15, 20, 25, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            
+            /* DYNAMIC EQUIPPED SKINS (Store se change honge) */
+            --active-grid-color: #5f6a6d; /* Default Solid Grid */
+            --active-x-color: #ff4757;    /* Default Neon Red */
+            --active-o-color: #2ed573;    /* Default Neon Green */
+            --active-glow-x: 0 0 20px rgba(255, 71, 87, 0.4);
+            --active-glow-o: 0 0 20px rgba(46, 213, 115, 0.4);
+            
+            /* UI Colors */
+            --color-gold: #fbbf24;
+            --glow-gold: 0 0 25px rgba(251, 191, 36, 0.3);
+            --font-marker: 'Permanent Marker', cursive;
+            --font-main: 'Poppins', sans-serif;
+        }
 
-    <link rel="stylesheet" href="style.css" />
+        /* ==========================================================================
+           [02] GLOBAL RESET & LAYOUT
+           ========================================================================== */
+        *, *::before, *::after {
+            margin: 0; padding: 0; box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent; outline: none;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: var(--font-main);
+            width: 100vw; height: 100vh;
+            overflow: hidden; position: relative;
+            user-select: none;
+        }
+
+        /* Dynamic Background Layer (Changes via Store) */
+        #dynamic-bg-layer {
+            position: absolute; inset: 0; z-index: -10;
+            background-size: cover; background-position: center;
+            filter: brightness(0.5); transition: background-image 0.5s ease;
+        }
+
+        .bg-overlay {
+            position: absolute; inset: 0; z-index: -9;
+            background: radial-gradient(circle at center, transparent 20%, rgba(0,0,0,0.9) 100%);
+        }
+
+        /* Custom Scrollbar for Shop & History */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 10px; }
+
+        /* ==========================================================================
+           [03] SCREEN NAVIGATION SYSTEM
+           ========================================================================== */
+        .app-screen {
+            position: absolute; inset: 0;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            opacity: 0; visibility: hidden; transform: scale(0.95);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 10;
+        }
+        .app-screen.active {
+            opacity: 1; visibility: visible; transform: scale(1); z-index: 20;
+        }
+
+        /* ==========================================================================
+           [04] UI COMPONENTS (GLASS & BUTTONS)
+           ========================================================================== */
+        .glass-panel {
+            background: var(--glass-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border); border-radius: 30px;
+            padding: 30px 25px; width: 90%; max-width: 420px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.8);
+        }
+
+        .premium-input {
+            width: 100%; background: rgba(0,0,0,0.6); border: 1px solid var(--glass-border);
+            border-radius: 50px; padding: 18px 25px; color: #fff; font-family: var(--font-main);
+            font-size: 1rem; margin-bottom: 15px; transition: 0.3s; text-align: center;
+        }
+        .premium-input:focus { border-color: var(--color-gold); box-shadow: var(--glow-gold); }
+
+        .btn {
+            width: 100%; padding: 18px; border-radius: 50px; border: none;
+            font-family: var(--font-main); font-weight: 800; font-size: 1.1rem;
+            text-transform: uppercase; cursor: pointer; transition: 0.2s;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        .btn:active { transform: scale(0.96); }
+        .btn-gold { background: var(--color-gold); color: #000; box-shadow: 0 8px 20px rgba(251, 191, 36, 0.4); }
+        .btn-x { background: var(--active-x-color); color: #fff; box-shadow: var(--active-glow-x); }
+        .btn-outline { background: transparent; border: 2px solid var(--glass-border); color: #fff; }
+        
+        /* Point Badge */
+        .point-badge {
+            background: rgba(251, 191, 36, 0.15); border: 1px solid rgba(251, 191, 36, 0.4);
+            color: var(--color-gold); padding: 8px 15px; border-radius: 50px;
+            font-weight: 800; font-size: 0.9rem; display: flex; align-items: center; gap: 5px;
+            box-shadow: var(--glow-gold);
+        }
+
+        /* ==========================================================================
+           [05] THE COMBAT ARENA (DYNAMIC GRID SYSTEM)
+           ========================================================================== */
+        .grid-wrapper { margin-bottom: 30px; display: flex; justify-content: center; }
+        .quantum-grid {
+            display: grid; grid-template-columns: repeat(3, 110px); grid-template-rows: repeat(3, 110px); gap: 0;
+        }
+        .cell {
+            width: 110px; height: 110px; display: flex; align-items: center; justify-content: center;
+            border: 6px solid var(--active-grid-color); cursor: pointer; position: relative; overflow: hidden;
+            transition: border-color 0.3s ease;
+        }
+        /* Solid H-Shape Rule */
+        .cell[data-index="0"], .cell[data-index="1"], .cell[data-index="2"] { border-top: none; }
+        .cell[data-index="6"], .cell[data-index="7"], .cell[data-index="8"] { border-bottom: none; }
+        .cell[data-index="0"], .cell[data-index="3"], .cell[data-index="6"] { border-left: none; }
+        .cell[data-index="2"], .cell[data-index="5"], .cell[data-index="8"] { border-right: none; }
+
+        .cell svg { width: 70px; height: 70px; position: absolute; filter: drop-shadow(0 0 12px currentColor); }
+        .draw-x { stroke-dasharray: 140; stroke-dashoffset: 140; animation: draw 0.2s ease-out forwards; stroke: var(--active-x-color); }
+        .draw-o { stroke-dasharray: 220; stroke-dashoffset: 220; animation: draw 0.25s ease-out forwards; stroke: var(--active-o-color); }
+        @keyframes draw { to { stroke-dashoffset: 0; } }
+
+        /* ==========================================================================
+           [06] IN-GAME STORE UI
+           ========================================================================== */
+        .store-header {
+            display: flex; justify-content: space-between; align-items: center;
+            width: 100%; padding: 20px; position: absolute; top: 0; left: 0; z-index: 50;
+            background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); border-bottom: 1px solid var(--glass-border);
+        }
+        .store-title { font-family: var(--font-marker); font-size: 1.5rem; color: var(--color-gold); }
+        
+        .store-tabs { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 5px; }
+        .store-tab {
+            padding: 10px 20px; background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border);
+            border-radius: 20px; color: #fff; font-weight: 700; cursor: pointer; white-space: nowrap;
+        }
+        .store-tab.active { background: var(--color-gold); color: #000; }
+
+        .store-grid {
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;
+            max-height: 60vh; overflow-y: auto; padding-right: 5px;
+        }
+        .store-item {
+            background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);
+            border-radius: 20px; padding: 15px; text-align: center; position: relative;
+        }
+        .store-item.owned { border-color: var(--active-o-color); }
+        .store-item.equipped { background: rgba(46, 213, 115, 0.1); border-color: var(--active-o-color); box-shadow: 0 0 15px rgba(46, 213, 115, 0.2); }
+        
+        .item-preview { height: 60px; margin-bottom: 10px; border-radius: 10px; background: #000; display: flex; align-items: center; justify-content: center; }
+        .item-name { font-size: 0.8rem; font-weight: 800; margin-bottom: 5px; }
+        .item-price { font-size: 0.9rem; color: var(--color-gold); font-weight: 900; }
+        
+        .btn-buy { margin-top: 10px; padding: 8px; font-size: 0.8rem; border-radius: 15px; }
+
+        /* ==========================================================================
+           [07] MODALS & TOASTS
+           ========================================================================== */
+        dialog { margin: auto; background: transparent; border: none; padding: 0; max-width: 90vw; width: 400px; }
+        dialog::backdrop { background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); }
+        
+        .toast-box {
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+            background: var(--color-gold); color: #000; padding: 12px 25px; border-radius: 50px;
+            font-weight: 900; font-size: 0.85rem; z-index: 9999; pointer-events: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            animation: slideUp 0.3s forwards;
+        }
+        @keyframes slideUp { from { transform: translate(-50%, 50px); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
+
+        /* Top Nav */
+        .top-nav {
+            position: absolute; top: 0; width: 100%; padding: 20px; display: flex;
+            justify-content: space-between; align-items: center; z-index: 30;
+        }
+        .nav-icons { display: flex; gap: 15px; }
+        .icon-btn { background: transparent; border: none; color: #fff; font-size: 1.5rem; cursor: pointer; }
+
+    </style>
 </head>
+<body>
 
-<body id="titan-os-body" class="system-loading state-booting" oncontextmenu="return false;">
-
-    <svg aria-hidden="true" style="position: absolute; width: 0; height: 0; overflow: hidden;" version="1.1" xmlns="http://www.w3.org/2000/svg">
+    <svg aria-hidden="true" style="display: none;">
         <defs>
-            <symbol id="icon-x" viewBox="0 0 100 100">
-                <path class="draw-path-x" d="M 20 20 L 80 80 M 80 20 L 20 80" stroke="currentColor" stroke-width="12" stroke-linecap="round" fill="none" />
-            </symbol>
-            <symbol id="icon-o" viewBox="0 0 100 100">
-                <circle class="draw-path-o" cx="50" cy="50" r="35" stroke="currentColor" stroke-width="12" fill="none" stroke-linecap="round" />
-            </symbol>
-
-            <symbol id="icon-user" viewBox="0 0 24 24">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                <circle cx="12" cy="7" r="4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-            </symbol>
-            <symbol id="icon-settings" viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-            </symbol>
-            <symbol id="icon-send" viewBox="0 0 24 24">
-                <line x1="22" y1="2" x2="11" y2="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                <polygon points="22 2 15 22 11 13 2 9 22 2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-            </symbol>
-            <symbol id="icon-trophy" viewBox="0 0 24 24">
-                <path d="M8 21h8M12 17v4M7 4h10v3a5 5 0 0 1-10 0V4zM4 4h3v3a2 2 0 0 0 2 2h0M20 4h-3v3a2 2 0 0 1-2 2h0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-            </symbol>
-            <symbol id="icon-history" viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                <polyline points="12 6 12 12 16 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-            </symbol>
-            <symbol id="icon-copy" viewBox="0 0 24 24">
-                <rect x="9" y="9" width="13" height="13" rx="2" ry="2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-            </symbol>
-            <symbol id="icon-swords" viewBox="0 0 24 24">
-                <path d="M14.5 17.5L3 6V3h3l11.5 11.5M13 19l6-6M16 16l4 4M19 21l2-2M14.5 6.5L18 3h3v3l-3.5 3.5M6 14l-4 4M3 21l2-2M5 19l4-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </symbol>
-            <symbol id="icon-shield" viewBox="0 0 24 24">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </symbol>
-            <symbol id="icon-close" viewBox="0 0 24 24">
-                <line x1="18" y1="6" x2="6" y2="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <line x1="6" y1="6" x2="18" y2="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </symbol>
-            <symbol id="icon-logout" viewBox="0 0 24 24">
-                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </symbol>
-            <symbol id="icon-network" viewBox="0 0 24 24">
-                <rect x="16" y="16" width="6" height="6" rx="1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <rect x="2" y="16" width="6" height="6" rx="1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <rect x="9" y="2" width="6" height="6" rx="1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M5 16v-3a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v3M12 8v3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </symbol>
+            <symbol id="ic-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+            <symbol id="ic-store" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></symbol>
+            <symbol id="ic-settings" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></symbol>
         </defs>
     </svg>
 
-    <div id="fx-layer-background" class="sys-layer bg-engine" aria-hidden="true">
-        <div id="fx-dynamic-image" class="bg-dynamic-image"></div>
-        <div class="bg-gradient-top"></div>
-        <div class="bg-gradient-bottom"></div>
-        <div class="bg-vignette-heavy"></div>
-        <div class="bg-noise-texture"></div>
+    <div id="dynamic-bg-layer" style="background-image: url('https://source.unsplash.com/featured/?cyberpunk,dark');"></div>
+    <div class="bg-overlay"></div>
+
+    <div id="screen-splash" class="app-screen active">
+        <h1 style="font-family: var(--font-marker); font-size: 3.5rem; color: var(--color-gold); text-shadow: var(--glow-gold);">WTR LAB</h1>
+        <p style="margin-top: 10px; font-weight: 800; letter-spacing: 3px; color: var(--text-muted);">LOADING ENGINE...</p>
     </div>
 
-    <canvas id="fx-layer-particles" class="sys-layer particles-engine" aria-hidden="true"></canvas>
-
-    <section id="module-boot" class="ui-screen is-active" aria-label="System Boot Sequence">
-        <div class="boot-wrapper">
-            <div class="quantum-loader-complex" role="progressbar" aria-label="Loading Engine">
-                <div class="q-ring q-ring-1"></div>
-                <div class="q-ring q-ring-2"></div>
-                <div class="q-ring q-ring-3"></div>
-                <div class="q-core-glow"></div>
-            </div>
-            
-            <h1 class="boot-brand-title">WTR LAB</h1>
-            
-            <div class="boot-terminal-window">
-                <div class="terminal-header">
-                    <span class="dot red"></span>
-                    <span class="dot yellow"></span>
-                    <span class="dot green"></span>
-                    <span class="terminal-title">boot_sequence.exe</span>
-                </div>
-                <div class="terminal-body" id="ui-terminal-logs">
-                    <p class="t-log">> INITIALIZING QUANTUM CORE...</p>
-                    <p class="t-log">> MOUNTING INDEXED-DB (LOCAL STORAGE)... <span class="t-success">[OK]</span></p>
-                    <p class="t-log">> PINGING FIREBASE SOCKETS... <span class="t-success">[0.8ms]</span></p>
-                    <p class="t-log t-active">> AWAITING HANDSHAKE<span class="blink-cursor">_</span></p>
-                </div>
-            </div>
-            
-            <div class="boot-progress-container">
-                <div class="boot-progress-bar" id="ui-boot-bar"></div>
-            </div>
+    <div id="screen-auth" class="app-screen">
+        <div class="glass-panel text-center">
+            <h1 style="font-family: var(--font-marker); font-size: 3rem; margin-bottom: 5px;">TITAN</h1>
+            <p style="color: var(--color-gold); font-weight: 800; letter-spacing: 2px; margin-bottom: 30px;">PREMIUM EDITION</p>
+            <input type="email" id="inp-email" class="premium-input" placeholder="AGENT EMAIL">
+            <input type="password" id="inp-pass" class="premium-input" placeholder="SECURITY KEY">
+            <button class="btn btn-x" id="btn-login" style="margin-top: 10px;">ESTABLISH LINK</button>
         </div>
-    </section>
+    </div>
 
-    <main id="module-auth" class="ui-screen" aria-hidden="true">
-        <div class="glass-panel auth-panel main-depth-shadow">
-            
-            <header class="auth-header">
-                <div class="auth-icon-wrapper">
-                    <svg class="auth-shield-icon"><use href="#icon-shield"></use></svg>
-                </div>
-                <h1 class="auth-mega-title">TITAN</h1>
-                <p class="auth-sub-title glow-gold">SECURE NETWORK ACCESS</p>
-            </header>
-
-            <form id="form-auth" class="auth-form-container" autocomplete="on">
-                
-                <div class="input-group">
-                    <label for="inp-auth-email" class="input-label">AGENT FREQUENCY EMAIL</label>
-                    <div class="input-icon-wrapper">
-                        <svg class="input-prefix-icon"><use href="#icon-user"></use></svg>
-                        <input 
-                            type="email" 
-                            id="inp-auth-email" 
-                            class="titan-glass-input" 
-                            placeholder="agent@wtr.lab" 
-                            required 
-                            autocomplete="email"
-                        />
-                    </div>
-                </div>
-
-                <div class="input-group">
-                    <label for="inp-auth-pass" class="input-label">DECRYPTION KEY</label>
-                    <div class="input-icon-wrapper">
-                        <svg class="input-prefix-icon"><use href="#icon-settings"></use></svg>
-                        <input 
-                            type="password" 
-                            id="inp-auth-pass" 
-                            class="titan-glass-input" 
-                            placeholder="••••••••" 
-                            required 
-                            autocomplete="current-password"
-                        />
-                    </div>
-                </div>
-
-                <div class="auth-actions-group">
-                    <button type="submit" id="btn-auth-submit" class="titan-btn btn-x-theme btn-glow hover-lift">
-                        <span class="btn-text">INITIALIZE LINK</span>
-                        <svg class="btn-suffix-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                    </button>
-                    
-                    <div class="auth-divider">
-                        <span class="divider-line"></span>
-                        <span class="divider-text">OR</span>
-                        <span class="divider-line"></span>
-                    </div>
-
-                    <button type="button" id="btn-auth-guest" class="titan-btn btn-outline hover-lift">
-                        ENTER AS GUEST
-                    </button>
-                </div>
-            </form>
-
-            <div class="auth-footer">
-                <p class="auth-footer-text">Powered by WTR Lab Neural Engine v6.0</p>
+    <div id="screen-lobby" class="app-screen">
+        <nav class="top-nav">
+            <div class="point-badge">
+                🪙 <span id="ui-nav-points">0</span>
             </div>
-        </div>
-    </main>
-
-    <section id="module-lobby" class="ui-screen" aria-hidden="true">
-        
-        <nav class="top-nav-bar glass-nav">
-            <div class="nav-brand-area">
-                <div class="nav-logo-dot"></div>
-                <span class="nav-brand-text">TITAN OS</span>
-                <span class="nav-ping-indicator" id="ui-nav-ping">
-                    <svg class="ping-icon" width="12" height="12"><use href="#icon-network"></use></svg> 12ms
-                </span>
-            </div>
-            
-            <div class="nav-action-area">
-                <button id="nav-btn-history" class="nav-icon-btn tooltip-trigger" aria-label="Combat Logs" data-tooltip="Match History">
-                    <svg><use href="#icon-history"></use></svg>
-                </button>
-                <button id="nav-btn-leaderboard" class="nav-icon-btn tooltip-trigger" aria-label="Global Ranks" data-tooltip="Leaderboard">
-                    <svg><use href="#icon-trophy"></use></svg>
-                </button>
-                <button id="nav-btn-settings" class="nav-icon-btn tooltip-trigger" aria-label="System Config" data-tooltip="Settings">
-                    <svg><use href="#icon-settings"></use></svg>
-                </button>
+            <div class="nav-icons">
+                <button class="icon-btn" onclick="openStore()"><svg width="24" height="24"><use href="#ic-store"></use></svg></button>
+                <button class="icon-btn" onclick="document.getElementById('modal-settings').showModal()"><svg width="24" height="24"><use href="#ic-settings"></use></svg></button>
             </div>
         </nav>
 
-        <div class="lobby-content-wrapper scrollable-y">
-            
-            <div class="profile-card glass-panel main-depth-shadow">
-                <div class="profile-header-bg"></div>
-                
-                <div class="profile-avatar-container">
-                    <div class="avatar-ring color-gold"></div>
-                    <img id="ui-avatar-img" class="avatar-image" src="https://api.dicebear.com/7.x/bottts/svg?seed=Nitesh&backgroundColor=transparent" alt="Agent Avatar" />
-                    <div class="avatar-level-badge">Lv. <span id="ui-agent-level">1</span></div>
-                </div>
+        <div class="glass-panel text-center" style="margin-top: 50px;">
+            <div style="width: 80px; height: 80px; background: rgba(0,0,0,0.8); border: 2px solid var(--color-gold); border-radius: 50%; margin: 0 auto 15px auto; display: flex; align-items: center; justify-content: center;">
+                <svg width="40" height="40" color="var(--color-gold)"><use href="#ic-user"></use></svg>
+            </div>
+            <p style="font-size: 0.8rem; font-weight: 800; color: var(--text-muted);">WELCOME AGENT</p>
+            <h2 id="ui-agent-name" style="font-size: 1.8rem; font-weight: 900; margin-bottom: 25px;">AWAITING...</h2>
 
-                <div class="profile-info-container">
-                    <p class="profile-status text-gold">ACTIVE AGENT</p>
-                    <h2 id="ui-agent-name" class="profile-name">AWAITING SYNC...</h2>
-                    
-                    <div class="xp-bar-container">
-                        <div class="xp-bar-labels">
-                            <span class="xp-label">XP Progress</span>
-                            <span class="xp-value">0 / 1000</span>
-                        </div>
-                        <div class="xp-bar-track">
-                            <div class="xp-bar-fill" style="width: 0%;"></div>
-                        </div>
-                    </div>
-
-                    <div class="profile-stats-row">
-                        <div class="stat-box">
-                            <span class="stat-value color-x" id="stat-val-wins">0</span>
-                            <span class="stat-label">VICTORIES</span>
-                        </div>
-                        <div class="stat-divider"></div>
-                        <div class="stat-box">
-                            <span class="stat-value color-gold" id="stat-val-draws">0</span>
-                            <span class="stat-label">DRAWS</span>
-                        </div>
-                        <div class="stat-divider"></div>
-                        <div class="stat-box">
-                            <span class="stat-value color-o" id="stat-val-losses">0</span>
-                            <span class="stat-label">DEFEATS</span>
-                        </div>
-                    </div>
-                </div>
+            <div style="background: rgba(0,0,0,0.5); border: 1px dashed var(--color-gold); border-radius: 15px; padding: 15px; margin-bottom: 25px;">
+                <p style="font-size: 0.7rem; color: var(--text-muted);">YOUR COMBAT ID</p>
+                <h3 id="ui-agent-code" style="font-family: var(--font-marker); font-size: 2.5rem; color: var(--color-gold); letter-spacing: 5px;">----</h3>
             </div>
 
-            <div class="frequency-card glass-panel">
-                <div class="freq-header">
-                    <svg class="freq-icon color-gold"><use href="#icon-network"></use></svg>
-                    <span class="freq-title">YOUR COMBAT FREQUENCY ID</span>
-                </div>
-                
-                <div class="freq-display-box">
-                    <h3 id="ui-agent-code" class="freq-code-text font-marker">----</h3>
-                    <button id="btn-copy-id" class="freq-copy-btn hover-lift" aria-label="Copy Frequency ID">
-                        <svg><use href="#icon-copy"></use></svg>
-                        <span>COPY</span>
-                    </button>
-                </div>
-                <p class="freq-hint">Share this ID with an agent to initiate a direct combat link.</p>
-            </div>
-
-            <div class="matchmaking-card glass-panel main-depth-shadow">
-                <h3 class="mm-title">ENGAGE ENEMY PROTOCOL</h3>
-                
-                <div class="target-input-group">
-                    <label for="inp-target-id" class="sr-only">Target Frequency ID</label>
-                    <input 
-                        type="text" 
-                        id="inp-target-id" 
-                        class="titan-glass-input text-center font-marker text-large" 
-                        placeholder="ENTER TARGET ID" 
-                        maxlength="6"
-                        autocomplete="off"
-                    />
-                </div>
-                
-                <button id="btn-engage-target" class="titan-btn btn-primary-x btn-glow full-width hover-lift mt-3">
-                    <svg class="btn-prefix-icon"><use href="#icon-swords"></use></svg>
-                    INITIATE QUANTUM SYNC
-                </button>
-
-                <div class="auth-divider my-4">
-                    <span class="divider-line"></span>
-                    <span class="divider-text">TRAINING MODE</span>
-                    <span class="divider-line"></span>
-                </div>
-
-                <button id="btn-play-offline" class="titan-btn btn-outline full-width hover-lift">
-                    LOCAL 1v1 SIMULATION
-                </button>
-            </div>
-            
-            <div style="height: 40px;"></div>
+            <input type="text" id="inp-target" class="premium-input" placeholder="ENTER TARGET ID" maxlength="6">
+            <button class="btn btn-x" id="btn-challenge">ENGAGE TARGET</button>
+            <button class="btn btn-outline" id="btn-offline" style="margin-top: 15px;">LOCAL TRAINING</button>
         </div>
-    </section>
-    <section id="module-arena" class="ui-screen" aria-hidden="true">
+    </div>
+    <div id="screen-store" class="app-screen" style="background: rgba(0,0,0,0.95); backdrop-filter: blur(20px);">
+        <div class="store-header">
+            <div class="store-title">TITAN ARMORY 🛒</div>
+            <div class="point-badge">🪙 <span id="ui-store-points-display">0</span></div>
+            <button class="icon-btn" onclick="closeStore()"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--color-gold)" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+        </div>
         
-        <div class="arena-content-wrapper">
-            <header class="arena-hud-board">
-                
-                <div class="hud-agent-card is-active-turn" id="hud-p1">
-                    <div class="hud-symbol-box symbol-x">
-                        <svg class="hud-icon"><use href="#icon-x"></use></svg>
-                    </div>
-                    <div class="hud-info text-left">
-                        <span class="hud-name text-truncate" id="arena-p1-name">YOU</span>
-                        <span class="hud-score color-gold">Score: <b id="arena-p1-score">0</b></span>
-                    </div>
-                </div>
-                
-                <div class="hud-vs-divider">
-                    <span class="vs-text">VS</span>
-                </div>
-
-                <div class="hud-agent-card" id="hud-p2">
-                    <div class="hud-info text-right">
-                        <span class="hud-name text-truncate" id="arena-p2-name">ENEMY</span>
-                        <span class="hud-score color-gold">Score: <b id="arena-p2-score">0</b></span>
-                    </div>
-                    <div class="hud-symbol-box symbol-o">
-                        <svg class="hud-icon"><use href="#icon-o"></use></svg>
-                    </div>
-                </div>
-            </header>
-
-            <div class="turn-announcer-box">
-                <div class="turn-pulse-indicator" id="ui-turn-pulse"></div>
-                <h2 id="ui-turn-text" class="turn-status-text">SYSTEM STANDBY</h2>
+        <div style="width: 100%; max-width: 500px; margin-top: 80px; padding: 0 20px;">
+            <div class="store-tabs">
+                <button class="store-tab active" id="tab-skins" onclick="switchStoreTab('skins')">QUANTUM SKINS 🎨</button>
+                <button class="store-tab" id="tab-bgs" onclick="switchStoreTab('bgs')">ENVIRONMENTS 🌌</button>
             </div>
 
-            <div class="combat-grid-container">
-                <div id="ui-combat-grid" class="quantum-grid" role="grid" aria-label="Titan Combat Board">
-                    <div class="grid-cell" data-index="0" role="gridcell" tabindex="0"></div>
-                    <div class="grid-cell" data-index="1" role="gridcell" tabindex="0"></div>
-                    <div class="grid-cell" data-index="2" role="gridcell" tabindex="0"></div>
-                    <div class="grid-cell" data-index="3" role="gridcell" tabindex="0"></div>
-                    <div class="grid-cell" data-index="4" role="gridcell" tabindex="0"></div>
-                    <div class="grid-cell" data-index="5" role="gridcell" tabindex="0"></div>
-                    <div class="grid-cell" data-index="6" role="gridcell" tabindex="0"></div>
-                    <div class="grid-cell" data-index="7" role="gridcell" tabindex="0"></div>
-                    <div class="grid-cell" data-index="8" role="gridcell" tabindex="0"></div>
-                </div>
-            </div>
-
-            <div class="comms-panel glass-panel main-depth-shadow">
-                <div class="comms-header">
-                    <span class="comms-title">
-                        <svg class="comms-icon"><use href="#icon-network"></use></svg>
-                        SECURE COMMS
-                    </span>
-                    <span class="comms-badge">E2E ENCRYPTED</span>
-                </div>
-                
-                <div class="comms-chat-stream scrollable-y" id="ui-chat-stream" role="log" aria-live="polite">
-                    <div class="chat-system-msg">Link Established. Comms Online.</div>
-                </div>
-                
-                <div class="comms-input-area">
-                    <input 
-                        type="text" 
-                        id="inp-chat-msg" 
-                        class="titan-glass-input comms-text-input" 
-                        placeholder="Transmit message..." 
-                        autocomplete="off"
-                        maxlength="100"
-                    />
-                    <button id="btn-send-msg" class="comms-send-btn hover-lift" aria-label="Send Message">
-                        <svg><use href="#icon-send"></use></svg>
-                    </button>
-                </div>
-            </div>
-
-            <div class="arena-footer-actions">
-                <button id="btn-abort-match" class="titan-btn btn-danger-outline full-width">
-                    <svg class="btn-prefix-icon"><use href="#icon-close"></use></svg>
-                    ABORT MISSION
-                </button>
-            </div>
-            
-            <div style="height: 30px;"></div>
+            <div class="store-grid" id="ui-store-grid"></div>
         </div>
-    </section>
+    </div>
 
-    <dialog id="modal-settings" class="titan-modal" aria-label="System Settings">
-        <div class="glass-panel modal-content-box">
-            <header class="modal-header">
-                <h2 class="modal-title font-marker">SYSTEM CONFIG</h2>
-                <button class="modal-close-btn" id="btn-close-settings" aria-label="Close">
-                    <svg><use href="#icon-close"></use></svg>
-                </button>
-            </header>
+    <div id="screen-arena" class="app-screen">
+        <div class="glass-panel" style="padding: 15px; width: 90%; max-width: 450px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center;">
+            <div style="text-align: left;">
+                <span style="font-size: 0.7rem; color: var(--text-muted); font-weight: 800;">YOU</span><br>
+                <b id="ui-p1-name" style="color: var(--active-x-color); font-size: 1.1rem;">PLAYER</b>
+            </div>
+            <div style="font-family: var(--font-marker); color: var(--color-gold); font-size: 1.5rem; text-shadow: var(--glow-gold);">VS</div>
+            <div style="text-align: right;">
+                <span style="font-size: 0.7rem; color: var(--text-muted); font-weight: 800;">ENEMY</span><br>
+                <b id="ui-p2-name" style="color: var(--active-o-color); font-size: 1.1rem;">TARGET</b>
+            </div>
+        </div>
+
+        <h2 id="ui-turn-text" style="font-family: var(--font-marker); font-size: 1.5rem; margin-bottom: 30px; letter-spacing: 2px;">SYSTEM STANDBY</h2>
+
+        <div class="grid-wrapper">
+            <div class="quantum-grid" id="ui-combat-grid">
+                <div class="cell" data-index="0"></div><div class="cell" data-index="1"></div><div class="cell" data-index="2"></div>
+                <div class="cell" data-index="3"></div><div class="cell" data-index="4"></div><div class="cell" data-index="5"></div>
+                <div class="cell" data-index="6"></div><div class="cell" data-index="7"></div><div class="cell" data-index="8"></div>
+            </div>
+        </div>
+
+        <button class="btn btn-outline" style="width: 80%; max-width: 350px; border-color: var(--active-x-color); color: var(--active-x-color);" onclick="abortMission()">ABORT MISSION</button>
+    </div>
+
+    <dialog id="modal-result">
+        <div class="glass-panel text-center" style="width: 100%;">
+            <h2 id="ui-result-title" style="font-family: var(--font-marker); font-size: 3.5rem; line-height: 1;">VICTORY</h2>
+            <p id="ui-result-sub" style="color: var(--text-muted); font-weight: 800; letter-spacing: 3px; margin-bottom: 20px;">TARGET TERMINATED</p>
             
-            <div class="modal-body settings-list">
-                
-                <div class="setting-item">
-                    <div class="setting-info">
-                        <span class="setting-name">Combat Audio (SFX)</span>
-                        <span class="setting-desc">Enable game sound effects</span>
-                    </div>
-                    <label class="titan-switch">
-                        <input type="checkbox" id="toggle-sfx" checked>
-                        <span class="switch-slider"></span>
-                    </label>
-                </div>
-                
-                <div class="setting-item">
-                    <div class="setting-info">
-                        <span class="setting-name">Haptic Feedback</span>
-                        <span class="setting-desc">Vibrate on touch (Mobile only)</span>
-                    </div>
-                    <label class="titan-switch">
-                        <input type="checkbox" id="toggle-haptic" checked>
-                        <span class="switch-slider"></span>
-                    </label>
-                </div>
+            <div style="background: rgba(0,0,0,0.5); border-radius: 15px; padding: 15px; margin-bottom: 20px; border: 1px solid var(--color-gold);">
+                <span style="font-size: 0.8rem; color: var(--text-muted);">POINTS EARNED</span><br>
+                <span id="ui-earned-points" style="font-size: 2rem; color: var(--color-gold); font-family: var(--font-marker);">+50</span>
+            </div>
 
-                <div class="setting-divider"></div>
+            <button class="btn btn-gold" id="btn-rematch" style="margin-bottom: 10px;">RE-ENGAGE</button>
+            <button class="btn btn-outline" onclick="abortMission()">RETURN TO LOBBY</button>
+        </div>
+    </dialog>
 
-                <div class="setting-item action-item">
-                    <div class="setting-info">
-                        <span class="setting-name text-danger">Purge Local Database</span>
-                        <span class="setting-desc">Clear WhatsApp-style local history</span>
-                    </div>
-                    <button id="btn-clear-db" class="titan-btn btn-danger-outline btn-small">PURGE</button>
-                </div>
+    <dialog id="modal-settings">
+        <div class="glass-panel" style="width: 100%;">
+            <h2 style="font-family: var(--font-marker); font-size: 1.5rem; margin-bottom: 20px; border-bottom: 1px solid var(--glass-border); padding-bottom: 10px;">SYSTEM SETTINGS ⚙️</h2>
+            
+            <div style="background: rgba(255,51,51,0.1); border: 1px dashed var(--active-x-color); border-radius: 15px; padding: 15px; margin-bottom: 20px; text-align: center;">
+                <p style="font-size: 0.75rem; color: var(--active-x-color); font-weight: 800; margin-bottom: 10px;">DEVELOPER OVERRIDE</p>
+                <input type="text" id="inp-cheat" class="premium-input" placeholder="ENTER CHEAT CODE" style="margin-bottom: 10px; padding: 12px; font-size: 0.9rem;">
+                <button class="btn btn-x" onclick="applyCheatCode()" style="padding: 12px; font-size: 0.9rem;">EXECUTE</button>
+            </div>
 
-                <div class="setting-item action-item">
-                    <div class="setting-info">
-                        <span class="setting-name">Disconnect Profile</span>
-                        <span class="setting-desc">Logout of Quantum Sync</span>
-                    </div>
-                    <button id="btn-logout" class="titan-btn btn-outline btn-small">
-                        <svg class="btn-prefix-icon" style="width: 16px; height: 16px;"><use href="#icon-logout"></use></svg>
-                        LOGOUT
-                    </button>
-                </div>
+            <button class="btn btn-outline" id="btn-logout" style="margin-bottom: 10px;">LOGOUT</button>
+            <button class="btn btn-outline" style="border-color: var(--text-muted); color: var(--text-muted);" onclick="document.getElementById('modal-settings').close()">CLOSE</button>
+        </div>
+    </dialog>
+
+    <dialog id="modal-challenge">
+        <div class="glass-panel text-center" style="border-color: var(--color-gold); box-shadow: var(--glow-gold); width: 100%;">
+            <h2 style="font-family: var(--font-marker); font-size: 2rem; color: var(--color-gold); margin-bottom: 10px;">INCOMING THREAT!</h2>
+            <p>Agent <b id="ui-challenger-id" style="color: #fff;">UNKNOWN</b> is challenging you.</p>
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button class="btn btn-gold" id="btn-accept-sync" style="flex: 1; padding: 15px;">ACCEPT</button>
+                <button class="btn btn-outline" id="btn-decline-sync" style="flex: 1; padding: 15px; border-color: var(--active-x-color); color: var(--active-x-color);">DECLINE</button>
             </div>
         </div>
     </dialog>
 
-    <dialog id="modal-history" class="titan-modal modal-tall" aria-label="Combat Logs">
-        <div class="glass-panel modal-content-box">
-            <header class="modal-header">
-                <h2 class="modal-title font-marker">COMBAT LOGS</h2>
-                <button class="modal-close-btn" id="btn-close-history" aria-label="Close">
-                    <svg><use href="#icon-close"></use></svg>
-                </button>
-            </header>
+    <div id="toast-container"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, query, where, onSnapshot, getDocs, addDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBldLyB9d18ZGStroUC0-yjuUrp31DFQ28",
+            authDomain: "online-tic-tac-toe-d919f.firebaseapp.com",
+            projectId: "online-tic-tac-toe-d919f",
+            storageBucket: "online-tic-tac-toe-d919f.firebasestorage.app",
+            messagingSenderId: "644365665798",
+            appId: "1:644365665798:web:f90b64bdc3aa6912032587"
+        };
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // GLOBAL STATE
+        window.State = {
+            user: null, profile: null, mode: 'online', gameId: null,
+            board: Array(9).fill(''), mySym: 'X', turn: 'X', active: false,
+            points: 0, inventory: { skins: ['default'], bgs: ['default'] },
+            equipped: { skin: 'default', bg: 'default' }
+        };
+
+        // UI HELPERS
+        window.showToast = (msg) => {
+            const toast = document.createElement('div');
+            toast.className = 'toast-box'; toast.innerText = msg;
+            document.getElementById('toast-container').appendChild(toast);
+            setTimeout(() => { toast.style.animation = 'slideUp 0.3s reverse forwards'; setTimeout(() => toast.remove(), 300); }, 2500);
+        };
+
+        window.switchScreen = (id) => {
+            document.querySelectorAll('.app-screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        };
+
+        // ==========================================================================
+        // [09] TITAN ARMORY (STORE SYSTEM DATABASE)
+        // ==========================================================================
+        const StoreDB = {
+            skins: [
+                { id: 'default', name: 'CLASSIC NEON', price: 0, colorX: '#ff4757', colorO: '#2ed573' },
+                { id: 'cyber_gold', name: 'CYBER GOLD', price: 500, colorX: '#fbbf24', colorO: '#f59e0b' },
+                { id: 'matrix', name: 'MATRIX HACKER', price: 1200, colorX: '#00ff00', colorO: '#00cc00' },
+                { id: 'blood_moon', name: 'BLOOD MOON', price: 2500, colorX: '#ff0000', colorO: '#990000' },
+                { id: 'quantum_ice', name: 'QUANTUM ICE', price: 5000, colorX: '#00d2d3', colorO: '#0abde3' }
+            ],
+            bgs: [
+                { id: 'default', name: 'CYBERPUNK CITY', price: 0, url: 'https://source.unsplash.com/featured/?cyberpunk,dark' },
+                { id: 'space_nebula', name: 'DEEP SPACE', price: 800, url: 'https://source.unsplash.com/featured/?galaxy,stars' },
+                { id: 'synthwave', name: 'SYNTHWAVE GRID', price: 2000, url: 'https://source.unsplash.com/featured/?synthwave,neon' },
+                { id: 'hacker_code', name: 'BINARY MATRIX', price: 4000, url: 'https://source.unsplash.com/featured/?matrix,code,green' }
+            ]
+        };
+
+        // ==========================================================================
+        // [10] CHEAT CODE & POINTS LOGIC
+        // ==========================================================================
+        window.applyCheatCode = async () => {
+            const code = document.getElementById('inp-cheat').value.trim();
+            if(code === 'nk@99390') {
+                State.points += 1000000; // Add 1 Million Points
+                await saveProfileData();
+                showToast("🔥 CHEAT ACTIVATED: +1,000,000 POINTS 🔥");
+                canvasConfetti({ particleCount: 500, spread: 160, origin: { y: 0.5 }, colors: ['#fbbf24', '#ff4757'] });
+                document.getElementById('inp-cheat').value = '';
+                document.getElementById('modal-settings').close();
+                updatePointsUI();
+            } else {
+                showToast("INVALID CHEAT CODE");
+            }
+        };
+
+        const updatePointsUI = () => {
+            document.getElementById('ui-nav-points').innerText = State.points.toLocaleString();
+            document.getElementById('ui-store-points-display').innerText = State.points.toLocaleString();
+        };
+
+        const saveProfileData = async () => {
+            if(!State.user) return;
+            await updateDoc(doc(db, 'users', State.user.uid), {
+                points: State.points,
+                inventory: State.inventory,
+                equipped: State.equipped
+            });
+            applyEquippedCosmetics();
+        };
+        const applyEquippedCosmetics = () => {
+            const skin = StoreDB.skins.find(s => s.id === State.equipped.skin) || StoreDB.skins[0];
+            const bg = StoreDB.bgs.find(b => b.id === State.equipped.bg) || StoreDB.bgs[0];
             
-            <div class="modal-body scrollable-y pb-2" id="ui-history-list">
-                <div class="empty-state-message">
-                    <svg class="empty-icon"><use href="#icon-history"></use></svg>
-                    <p>NO COMBAT DATA FOUND IN LOCAL STORAGE</p>
-                </div>
-            </div>
-        </div>
-    </dialog>
-
-    <dialog id="modal-leaderboard" class="titan-modal modal-tall" aria-label="Global Rankings">
-        <div class="glass-panel modal-content-box">
-            <header class="modal-header">
-                <h2 class="modal-title font-marker text-gold">GLOBAL RANKS</h2>
-                <button class="modal-close-btn" id="btn-close-leaderboard" aria-label="Close">
-                    <svg><use href="#icon-close"></use></svg>
-                </button>
-            </header>
+            // Injecting CSS Variables Dynamically
+            document.documentElement.style.setProperty('--active-x-color', skin.colorX);
+            document.documentElement.style.setProperty('--active-o-color', skin.colorO);
+            document.documentElement.style.setProperty('--active-glow-x', `0 0 20px ${skin.colorX}66`);
+            document.documentElement.style.setProperty('--active-glow-o', `0 0 20px ${skin.colorO}66`);
             
-            <div class="lb-tabs">
-                <button class="lb-tab active" data-target="top-agents">TOP AGENTS</button>
-                <button class="lb-tab" data-target="my-rank">MY RANK</button>
-            </div>
+            document.getElementById('dynamic-bg-layer').style.backgroundImage = `url('${bg.url}')`;
+        };
 
-            <div class="modal-body scrollable-y pb-2" id="ui-leaderboard-list">
-                <div class="lb-loading-state">
-                    <div class="small-spinner"></div>
-                    <p>SYNCING RANKS...</p>
-                </div>
-            </div>
-        </div>
-    </dialog>
+        // STORE UI CONTROLLERS
+        window.openStore = () => {
+            updatePointsUI();
+            switchScreen('screen-store');
+            switchStoreTab('skins'); // Default tab
+        };
+        window.closeStore = () => switchScreen('screen-lobby');
 
-    <dialog id="modal-result" class="titan-modal full-screen-overlay" aria-label="Match Results">
-        <div class="result-glass-container">
+        window.switchStoreTab = (tab) => {
+            document.querySelectorAll('.store-tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(`tab-${tab}`).classList.add('active');
+            renderStoreGrid(tab);
+        };
+
+        const renderStoreGrid = (category) => {
+            const grid = document.getElementById('ui-store-grid');
+            grid.innerHTML = '';
             
-            <div class="result-hero-section">
-                <h2 id="ui-result-title" class="result-mega-text font-marker">VICTORY</h2>
-                <p id="ui-result-subtitle" class="result-sub-text">AGENT ANNIHILATED</p>
-            </div>
+            const items = StoreDB[category];
+            const inventory = State.inventory[category] || [];
+            const equippedId = State.equipped[category === 'skins' ? 'skin' : 'bg'];
+
+            items.forEach(item => {
+                const isOwned = inventory.includes(item.id);
+                const isEquipped = equippedId === item.id;
+                
+                let btnHTML = '';
+                if(isEquipped) {
+                    btnHTML = `<button class="btn btn-outline" style="border-color: var(--active-o-color); color: var(--active-o-color);" disabled>EQUIPPED</button>`;
+                } else if(isOwned) {
+                    btnHTML = `<button class="btn btn-outline" onclick="equipItem('${category}', '${item.id}')">EQUIP</button>`;
+                } else {
+                    btnHTML = `<button class="btn btn-gold" onclick="buyItem('${category}', '${item.id}', ${item.price})">BUY 🪙 ${item.price}</button>`;
+                }
+
+                grid.innerHTML += `
+                    <div class="store-item ${isOwned ? 'owned' : ''} ${isEquipped ? 'equipped' : ''}">
+                        <div class="item-preview" style="${category === 'skins' ? `box-shadow: 0 0 15px ${item.colorX}44;` : `background-image: url('${item.url}'); background-size: cover;`}">
+                            ${category === 'skins' ? `<span style="color: ${item.colorX}; font-weight: 900; font-size: 1.5rem;">X</span> <span style="color: ${item.colorO}; font-weight: 900; font-size: 1.5rem; margin-left:10px;">O</span>` : ''}
+                        </div>
+                        <div class="item-name">${item.name}</div>
+                        ${btnHTML}
+                    </div>
+                `;
+            });
+        };
+
+        window.buyItem = async (category, itemId, price) => {
+            if(State.points < price) {
+                return showToast("INSUFFICIENT POINTS!");
+            }
+            State.points -= price;
+            State.inventory[category].push(itemId);
+            await saveProfileData();
+            showToast("ITEM SECURED IN ARMORY!");
+            renderStoreGrid(category);
+            updatePointsUI();
+        };
+
+        window.equipItem = async (category, itemId) => {
+            State.equipped[category === 'skins' ? 'skin' : 'bg'] = itemId;
+            await saveProfileData();
+            showToast("GEAR EQUIPPED!");
+            renderStoreGrid(category);
+        };
+
+        // ==========================================================================
+        // [11] QUANTUM ZERO-LATENCY GRID LOGIC (pointerdown)
+        // ==========================================================================
+        const SYMBOL_X = `<svg viewBox="0 0 100 100"><path class="draw-x" d="M 20 20 L 80 80 M 80 20 L 20 80" stroke-width="12" stroke-linecap="round" fill="none"/></svg>`;
+        const SYMBOL_O = `<svg viewBox="0 0 100 100"><circle class="draw-o" cx="50" cy="50" r="35" stroke-width="12" fill="none" stroke-linecap="round"/></svg>`;
+
+        const initGrid = () => {
+            const cells = document.querySelectorAll('.cell');
+            cells.forEach((cell, idx) => {
+                // 0ms Latency Touch Event
+                cell.addEventListener('pointerdown', (e) => {
+                    e.preventDefault();
+                    executeMove(idx);
+                });
+            });
+        };
+
+        const renderGrid = () => {
+            const cells = document.querySelectorAll('.cell');
+            cells.forEach((cell, idx) => {
+                const val = State.board[idx];
+                if(val === 'X' && !cell.innerHTML.includes('draw-x')) cell.innerHTML = SYMBOL_X;
+                else if(val === 'O' && !cell.innerHTML.includes('draw-o')) cell.innerHTML = SYMBOL_O;
+                else if(!val) cell.innerHTML = '';
+            });
+        };
+
+        const checkWin = (b) => {
+            const lines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+            for(let p of lines) if(b[p[0]] && b[p[0]] === b[p[1]] && b[p[0]] === b[p[2]]) return 'win';
+            return b.includes('') ? 'continue' : 'draw';
+        };
+
+        const executeMove = async (idx) => {
+            if(!State.active || State.board[idx] !== '') return;
+            if(State.mode === 'online' && State.turn !== State.mySym) return showToast("WAIT FOR TARGET");
+
+            // Optimistic UI (0ms)
+            State.board[idx] = State.mySym;
+            renderGrid();
+            if(navigator.vibrate) navigator.vibrate(30);
+
+            const result = checkWin(State.board);
+            const nextTurn = State.mySym === 'X' ? 'O' : 'X';
+
+            if(State.mode === 'offline') {
+                if(result === 'win') processCombatResult(State.mySym);
+                else if(result === 'draw') processCombatResult('draw');
+                else { State.turn = nextTurn; updateTurnHUD(); }
+            } else {
+                // Cloud Sync (Compressed String)
+                const gRef = doc(db, 'games', State.gameId);
+                try {
+                    if(result === 'win') await updateDoc(gRef, { b: State.board.join(''), s: 'win', w: State.mySym });
+                    else if(result === 'draw') await updateDoc(gRef, { b: State.board.join(''), s: 'draw' });
+                    else await updateDoc(gRef, { b: State.board.join(''), t: nextTurn });
+                } catch(e) { console.log(e); }
+            }
+        };
+
+        const processCombatResult = async (winner) => {
+            State.active = false;
+            let earnedPoints = 0;
+
+            const title = document.getElementById('ui-result-title');
+            const sub = document.getElementById('ui-result-sub');
+            const pointsUI = document.getElementById('ui-earned-points');
+
+            if(winner === 'draw') {
+                title.innerText = "DRAW"; title.style.color = "#fff";
+                sub.innerText = "NO AGENT TERMINATED";
+                pointsUI.innerText = "+10";
+                earnedPoints = 10;
+            } else {
+                const isMe = (State.mode === 'online' && winner === State.mySym) || State.mode === 'offline';
+                if(isMe) {
+                    title.innerText = "VICTORY"; title.style.color = "var(--active-o-color)";
+                    sub.innerText = "TARGET ANNIHILATED";
+                    pointsUI.innerText = "+50";
+                    earnedPoints = 50;
+                    canvasConfetti({ particleCount: 150, spread: 100, origin: { y: 0.6 } });
+                } else {
+                    title.innerText = "DEFEAT"; title.style.color = "var(--active-x-color)";
+                    sub.innerText = "YOU WERE TERMINATED";
+                    pointsUI.innerText = "+5"; // Consolation points
+                    earnedPoints = 5;
+                }
+            }
+
+            // Reward Points
+            if(State.mode === 'online') {
+                State.points += earnedPoints;
+                await saveProfileData();
+            }
+
+            setTimeout(() => document.getElementById('modal-result').showModal(), 600);
+        };
+
+        const updateTurnHUD = () => {
+            const isMyTurn = State.turn === State.mySym;
+            const textUI = document.getElementById('ui-turn-text');
+            textUI.innerText = isMyTurn ? "YOUR TURN" : "TARGET MOVING...";
+            textUI.style.color = isMyTurn ? "var(--active-o-color)" : "var(--text-muted)";
+        };
+
+        // ==========================================================================
+        // [12] FIREBASE MULTIPLAYER & MATCHMAKING
+        // ==========================================================================
+        let unsubGame = null, unsubInv = null;
+
+        const establishOnlineLink = (gameId, mySym, enemyName) => {
+            State.gameId = gameId; State.mySym = mySym; State.mode = 'online'; State.active = true;
+            document.getElementById('ui-p1-name').innerText = State.profile.name;
+            document.getElementById('ui-p2-name').innerText = enemyName;
+            switchScreen('screen-arena');
+
+            if(unsubGame) unsubGame();
+            unsubGame = onSnapshot(doc(db, 'games', gameId), (snap) => {
+                if(!snap.exists()) { showToast("TARGET DISCONNECTED"); return abortMission(); }
+                const data = snap.data();
+                State.board = data.b ? data.b.split('') : Array(9).fill('');
+                State.turn = data.t || 'X';
+                State.active = (data.s === 'playing');
+                
+                renderGrid();
+                if(data.s === 'win') processCombatResult(data.w);
+                else if(data.s === 'draw') processCombatResult('draw');
+                else updateTurnHUD();
+            });
+        };
+
+        document.getElementById('btn-challenge').onclick = async () => {
+            const targetCode = document.getElementById('inp-target').value.toUpperCase();
+            if(!targetCode || targetCode === State.profile.code) return showToast("INVALID TARGET");
             
-            <div class="result-stats-board">
-                <div class="r-stat-box">
-                    <span class="r-stat-val" id="res-val-time">0:00</span>
-                    <span class="r-stat-label">TIME</span>
-                </div>
-                <div class="r-stat-divider"></div>
-                <div class="r-stat-box">
-                    <span class="r-stat-val color-gold" id="res-val-turns">0</span>
-                    <span class="r-stat-label">TURNS</span>
-                </div>
-                <div class="r-stat-divider"></div>
-                <div class="r-stat-box">
-                    <span class="r-stat-val" id="res-val-xp">+0</span>
-                    <span class="r-stat-label">XP GAINED</span>
-                </div>
-            </div>
+            document.getElementById('btn-challenge').innerText = 'SCANNING...';
+            const snap = await getDocs(query(collection(db, 'users'), where('code', '==', targetCode)));
+            if(snap.empty) { document.getElementById('btn-challenge').innerText = 'ENGAGE TARGET'; return showToast("TARGET NOT FOUND"); }
             
-            <div class="result-actions-stack">
-                <button id="btn-result-rematch" class="titan-btn btn-primary-x btn-glow btn-large hover-lift">
-                    RE-ENGAGE TARGET
-                </button>
-                <button id="btn-result-lobby" class="titan-btn btn-outline btn-large hover-lift mt-3">
-                    RETURN TO LOBBY
-                </button>
-            </div>
-
-        </div>
-    </dialog>
-
-    <dialog id="modal-challenge" class="titan-modal alert-modal" aria-label="Incoming Challenge">
-        <div class="glass-panel modal-content-box text-center">
+            const targetData = snap.docs[0].data();
+            const invRef = await addDoc(collection(db, 'invites'), { sUid: State.user.uid, sName: State.profile.name, rUid: targetData.uid, status: 'pending' });
             
-            <div class="alert-radar-animation">
-                <div class="radar-ring"></div>
-                <div class="radar-ring delay-1"></div>
-                <svg class="radar-icon color-x"><use href="#icon-network"></use></svg>
-            </div>
+            document.getElementById('btn-challenge').innerText = 'WAITING FOR SYNC...';
             
-            <h2 class="alert-title font-marker color-x">INCOMING THREAT!</h2>
-            <p class="alert-desc">Agent <strong id="ui-challenger-id" class="color-gold">UNKNOWN</strong> has requested a Quantum Sync.</p>
-            
-            <div class="alert-actions-row mt-4">
-                <button id="btn-accept-sync" class="titan-btn btn-primary-o btn-glow flex-1">
-                    ACCEPT
-                </button>
-                <button id="btn-decline-sync" class="titan-btn btn-danger-outline flex-1">
-                    DECLINE
-                </button>
-            </div>
-        </div>
-    </dialog>
+            const uInv = onSnapshot(doc(db, 'invites', invRef.id), (dSnap) => {
+                const d = dSnap.data();
+                if(d?.status === 'accepted') {
+                    establishOnlineLink(d.gId, 'X', targetData.name);
+                    deleteDoc(doc(db, 'invites', invRef.id)); uInv();
+                    document.getElementById('btn-challenge').innerText = 'ENGAGE TARGET';
+                } else if(d?.status === 'rejected') {
+                    showToast("TARGET EVADED"); deleteDoc(doc(db, 'invites', invRef.id)); uInv();
+                    document.getElementById('btn-challenge').innerText = 'ENGAGE TARGET';
+                }
+            });
+        };
 
-    <div id="sys-toast-container" class="toast-wrapper" aria-live="polite">
-        </div>
+        const listenInvites = () => {
+            if(unsubInv) unsubInv();
+            unsubInv = onSnapshot(query(collection(db, 'invites'), where('rUid', '==', State.user.uid), where('status', '==', 'pending')), (snap) => {
+                snap.docChanges().forEach(c => {
+                    if(c.type === 'added') {
+                        const inv = c.doc.data();
+                        document.getElementById('ui-challenger-id').innerText = inv.sName;
+                        document.getElementById('modal-challenge').showModal();
+                        
+                        document.getElementById('btn-accept-sync').onclick = async () => {
+                            const gRef = await addDoc(collection(db, 'games'), { b: '         ', t: 'X', s: 'playing' });
+                            await updateDoc(doc(db, 'invites', c.doc.id), { status: 'accepted', gId: gRef.id });
+                            document.getElementById('modal-challenge').close();
+                            establishOnlineLink(gRef.id, 'O', inv.sName);
+                        };
+                        
+                        document.getElementById('btn-decline-sync').onclick = async () => {
+                            await updateDoc(doc(db, 'invites', c.doc.id), { status: 'rejected' });
+                            document.getElementById('modal-challenge').close();
+                        };
+                    }
+                });
+            });
+        };
 
-    <template id="tpl-chat-msg">
-        <div class="chat-message-row">
-            <div class="chat-bubble">
-                <span class="chat-sender font-marker"></span>
-                <span class="chat-text"></span>
-                <span class="chat-time"></span>
-            </div>
-        </div>
-    </template>
+        window.abortMission = async () => {
+            if(State.gameId) { try { await deleteDoc(doc(db, 'games', State.gameId)); } catch(e){} }
+            if(unsubGame) unsubGame();
+            State.active = false; State.gameId = null;
+            document.getElementById('modal-result').close();
+            switchScreen('screen-lobby');
+        };
 
-    <template id="tpl-history-card">
-        <div class="history-card glass-panel-light">
-            <div class="hc-left">
-                <div class="hc-result-badge font-marker"></div>
-                <div class="hc-details">
-                    <span class="hc-vs-text">vs <strong class="hc-enemy-name"></strong></span>
-                    <span class="hc-date text-muted"></span>
-                </div>
-            </div>
-            <div class="hc-right">
-                <span class="hc-score-label">Moves: <b class="hc-moves-val"></b></span>
-            </div>
-        </div>
-    </template>
+        document.getElementById('btn-play-offline').onclick = () => {
+            State.mode = 'offline'; State.active = true; State.board = Array(9).fill(''); State.turn = 'X'; State.mySym = 'X';
+            document.getElementById('ui-p1-name').innerText = "PLAYER X"; document.getElementById('ui-p2-name').innerText = "PLAYER O";
+            switchScreen('screen-arena'); renderGrid(); updateTurnHUD();
+        };
 
-    <template id="tpl-lb-row">
-        <div class="lb-row-card glass-panel-light">
-            <div class="lb-rank font-marker"></div>
-            <div class="lb-agent-info">
-                <span class="lb-name font-bold"></span>
-                <span class="lb-stats text-muted">Win Rate: <b class="lb-wr-val"></b>%</span>
-            </div>
-            <div class="lb-score-box">
-                <span class="lb-score-val color-gold font-bold"></span>
-                <span class="lb-score-label text-muted">XP</span>
-            </div>
-        </div>
-    </template>
+        document.getElementById('btn-rematch').onclick = async () => {
+            document.getElementById('modal-result').close();
+            if(State.mode === 'online' && State.gameId) {
+                await updateDoc(doc(db, 'games', State.gameId), { b: '         ', t: 'X', s: 'playing' });
+            } else { document.getElementById('btn-play-offline').click(); }
+        };
 
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js" defer></script>
-    
-    </body>
+        // ==========================================================================
+        // [13] AUTHENTICATION & BOOT
+        // ==========================================================================
+        initGrid();
+
+        onAuthStateChanged(auth, async (user) => {
+            setTimeout(async () => {
+                if(user) {
+                    State.user = user;
+                    const pSnap = await getDoc(doc(db, 'users', user.uid));
+                    if(pSnap.exists()) {
+                        const d = pSnap.data();
+                        State.profile = d;
+                        State.points = d.points || 0;
+                        State.inventory = d.inventory || { skins: ['default'], bgs: ['default'] };
+                        State.equipped = d.equipped || { skin: 'default', bg: 'default' };
+                    } else {
+                        State.profile = { uid: user.uid, name: user.email.split('@')[0].toUpperCase(), code: Math.random().toString(36).substring(2,6).toUpperCase() };
+                        await setDoc(doc(db, 'users', user.uid), { ...State.profile, points: 0, inventory: State.inventory, equipped: State.equipped });
+                    }
+                    
+                    document.getElementById('ui-agent-name').innerText = State.profile.name;
+                    document.getElementById('ui-agent-code').innerText = State.profile.code;
+                    updatePointsUI(); applyEquippedCosmetics();
+                    switchScreen('screen-lobby');
+                    listenInvites(); showToast("ACCESS GRANTED");
+                } else {
+                    switchScreen('screen-auth');
+                }
+            }, 1500); // Fake boot delay
+        });
+
+        document.getElementById('btn-login').onclick = async () => {
+            const e = document.getElementById('inp-email').value, p = document.getElementById('inp-pass').value;
+            document.getElementById('btn-login').innerText = 'SYNCING...';
+            try { await signInWithEmailAndPassword(auth, e, p); } 
+            catch {
+                try { await createUserWithEmailAndPassword(auth, e, p); } 
+                catch(err) { showToast(err.message.toUpperCase()); document.getElementById('btn-login').innerText = 'ESTABLISH LINK'; }
+            }
+        };
+
+        document.getElementById('btn-logout').onclick = () => { signOut(auth); document.getElementById('modal-settings').close(); };
+
+    </script>
+</body>
 </html>
