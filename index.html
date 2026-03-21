@@ -1,374 +1,234 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr" data-theme="quantum-dark">
+<html lang="en" dir="ltr">
 <head>
-    <meta charset="UTF-8" />
+    <meta charset="UTF-8">
     <meta 
         name="viewport" 
-        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" 
-    />
-    <meta 
-        name="theme-color" 
-        content="#05070a" 
-    />
-    <title>Nitesh Titan | Quantum Engine</title>
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    >
+    <meta name="theme-color" content="#05070a">
+    <title>Nitesh Titan | Quantum Polished</title>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link 
         href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Poppins:wght@300;400;600;800;900&family=JetBrains+Mono:wght@400;700&display=swap" 
-        rel="stylesheet" 
-    />
-
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-
+        rel="stylesheet"
+    >
+    
     <style>
         /* ==========================================================================
-        [01] MASTER VARIABLES & DYNAMIC SKIN SYSTEM
-        ========================================================================== 
-        */
+           [01] ADVANCED DESIGN TOKENS (CSS VARIABLES)
+           ========================================================================== */
         :root {
-            /* Core Backgrounds */
-            --bg-base: #05070a;
-            --glass-bg: rgba(15, 20, 25, 0.7);
-            --glass-bg-light: rgba(255, 255, 255, 0.05);
-            --glass-border: rgba(255, 255, 255, 0.1);
+            /* Branding Colors */
+            --wtr-color-bg: #05070a;
+            --wtr-grid-color: #5f6a6d; /* Image 1 Strict Match */
+            --wtr-color-x: #ff4757;
+            --wtr-color-o: #2ed573;
+            --wtr-color-gold: #fbbf24;
+            --wtr-color-danger: #ff3333;
             
-            /* Text & Typography */
-            --text-main: #ffffff;
-            --text-muted: #8b9bb4;
-            --font-marker: 'Permanent Marker', cursive;
-            --font-main: 'Poppins', sans-serif;
-            --font-terminal: 'JetBrains Mono', monospace;
-
-            /* UI Elements */
-            --color-gold: #fbbf24;
-            --color-danger: #ff4757;
-            --glow-gold: 0 0 25px rgba(251, 191, 36, 0.3);
-            --shadow-depth: 0 30px 60px rgba(0, 0, 0, 0.8);
+            /* Glassmorphism Design */
+            --wtr-glass-bg: rgba(10, 15, 20, 0.85);
+            --wtr-glass-border: rgba(255, 255, 255, 0.08);
+            --wtr-glass-blur: blur(25px);
             
-            /* DYNAMIC SKIN TOKENS (Managed by JS Store Logic)
-               Default is Neon Theme. 
-            */
-            --active-grid: #5f6a6d; 
-            --active-x: #ff4757;    
-            --active-o: #2ed573;    
-            --active-glow-x: 0 0 20px rgba(255, 71, 87, 0.4);
-            --active-glow-o: 0 0 20px rgba(46, 213, 115, 0.4);
+            /* Shadows & Effects */
+            --wtr-shadow-heavy: 0 30px 60px rgba(0,0,0,0.9);
+            --wtr-glow-gold: 0 0 30px rgba(251, 191, 36, 0.3);
+            
+            /* Typography */
+            --wtr-font-brand: 'Permanent Marker', cursive;
+            --wtr-font-main: 'Poppins', sans-serif;
+            --wtr-font-code: 'JetBrains Mono', monospace;
         }
 
         /* ==========================================================================
-        [02] GLOBAL RESET & BASE LAYOUT
-        ========================================================================== 
-        */
+           [02] GLOBAL ARCHITECTURE & DYNAMIC BG
+           ========================================================================== */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            user-select: none;
             -webkit-tap-highlight-color: transparent;
             outline: none;
         }
 
         body {
-            background-color: var(--bg-base);
-            color: var(--text-main);
-            font-family: var(--font-main);
-            width: 100vw;
-            height: 100vh;
-            overflow: hidden;
-            position: relative;
-            user-select: none;
-        }
-
-        /* Dynamic Background Layer (Changes with Store Environments) 
-        */
-        #dynamic-bg-layer {
-            position: absolute;
-            inset: 0;
-            z-index: -10;
+            background-color: var(--wtr-color-bg);
             background-size: cover;
             background-position: center;
-            filter: brightness(0.4);
-            transition: background-image 0.8s ease-in-out;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            font-family: var(--wtr-font-main);
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
+            position: relative;
+            transition: background-image 1.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .bg-overlay {
+        /* Static Overlay for Readability */
+        body::before {
+            content: '';
             position: absolute;
             inset: 0;
-            z-index: -9;
-            background: radial-gradient(circle at center, transparent 10%, rgba(0,0,0,0.95) 100%);
+            background: radial-gradient(circle at center, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.9) 100%);
+            z-index: -1;
         }
 
-        /* Scrollbar Styling for Modals & Store */
+        /* Custom Modern Scrollbar */
         ::-webkit-scrollbar {
-            width: 6px;
+            width: 5px;
         }
         ::-webkit-scrollbar-track {
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 10px;
+            background: transparent;
         }
         ::-webkit-scrollbar-thumb {
-            background: var(--glass-border);
+            background: var(--wtr-glass-border);
             border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--color-gold);
         }
 
         /* ==========================================================================
-        [03] SCREEN NAVIGATION SYSTEM (SPA LOGIC)
-        ========================================================================== 
-        */
-        .app-screen {
-            position: absolute;
+           [03] WTR SPLASH ENGINE
+           ========================================================================== */
+        #splash-sequence {
+            position: fixed;
             inset: 0;
+            background: #000;
+            z-index: 10000;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            opacity: 0;
-            visibility: hidden;
-            transform: scale(0.95);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 10;
+            transition: opacity 1s var(--wtr-glass-blur);
         }
 
-        .app-screen.active {
-            opacity: 1;
-            visibility: visible;
-            transform: scale(1);
-            z-index: 20;
-        }
-
-        /* ==========================================================================
-        [04] GLASS UI COMPONENTS & TYPOGRAPHY
-        ========================================================================== 
-        */
-        .glass-panel {
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            border-radius: 30px;
-            padding: 40px 30px;
-            width: 90%;
-            max-width: 420px;
-            box-shadow: var(--shadow-depth);
+        .quantum-loader {
+            width: 140px;
+            height: 140px;
             position: relative;
-            overflow: hidden;
-        }
-
-        /* Inner Highlight for Premium Feel */
-        .glass-panel::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-        }
-
-        .text-center { text-align: center; }
-        .font-marker { font-family: var(--font-marker); }
-        .text-muted { color: var(--text-muted); }
-        .text-gold { color: var(--color-gold); text-shadow: var(--glow-gold); }
-        .mt-15 { margin-top: 15px; }
-        .mb-20 { margin-bottom: 20px; }
-
-        /* ==========================================================================
-        [05] FORM INPUTS & BUTTONS
-        ========================================================================== 
-        */
-        .premium-input {
-            width: 100%;
-            background: rgba(0, 0, 0, 0.6);
-            border: 1px solid var(--glass-border);
-            border-radius: 50px;
-            padding: 18px 25px;
-            color: #fff;
-            font-family: var(--font-main);
-            font-size: 1rem;
-            margin-bottom: 15px;
-            text-align: center;
-            transition: all 0.3s ease;
-        }
-
-        .premium-input:focus {
-            border-color: var(--color-gold);
-            background: rgba(0, 0, 0, 0.8);
-            box-shadow: var(--glow-gold);
-        }
-
-        .premium-input::placeholder {
-            color: var(--text-muted);
-            letter-spacing: 1px;
-        }
-
-        .btn {
-            width: 100%;
-            padding: 18px;
-            border-radius: 50px;
-            border: none;
-            font-family: var(--font-main);
-            font-weight: 800;
-            font-size: 1.1rem;
-            text-transform: uppercase;
-            cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
         }
 
-        .btn:active {
-            transform: scale(0.96) translateY(2px);
-        }
-
-        .btn-gold {
-            background: var(--color-gold);
-            color: #000;
-            box-shadow: 0 8px 20px rgba(251, 191, 36, 0.4);
-        }
-
-        .btn-x {
-            background: var(--active-x);
-            color: #fff;
-            box-shadow: var(--active-glow-x);
-        }
-
-        .btn-outline {
-            background: transparent;
-            border: 2px solid var(--glass-border);
-            color: #fff;
-        }
-        /* ==========================================================================
-        [06] POINT BADGES & TOP NAVIGATION
-        ========================================================================== 
-        */
-        .point-badge {
-            background: rgba(251, 191, 36, 0.15);
-            border: 1px solid rgba(251, 191, 36, 0.4);
-            color: var(--color-gold);
-            padding: 10px 20px;
-            border-radius: 50px;
-            font-weight: 800;
-            font-size: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            box-shadow: var(--glow-gold);
-        }
-
-        .top-nav {
+        .loader-ring {
             position: absolute;
-            top: 0;
+            inset: 0;
+            border: 4px solid transparent;
+            border-radius: 50%;
+            animation: loader-spin 2s linear infinite;
+        }
+
+        .loader-ring-outer {
+            border-top-color: var(--wtr-color-gold);
+            border-bottom-color: var(--wtr-color-gold);
+            box-shadow: var(--wtr-glow-gold);
+        }
+
+        .loader-ring-inner {
+            inset: 20px;
+            border-left-color: var(--wtr-color-x);
+            border-right-color: var(--wtr-color-o);
+            animation-direction: reverse;
+            animation-duration: 1.2s;
+        }
+
+        @keyframes loader-spin {
+            100% { transform: rotate(360deg); }
+        }
+
+        .branding-text {
+            margin-top: 50px;
+            font-family: var(--wtr-font-brand);
+            font-size: 3.5rem;
+            color: var(--wtr-color-gold);
+            letter-spacing: 15px;
+            text-shadow: 0 0 30px rgba(251, 191, 36, 0.5);
+        }
+
+        /* ==========================================================================
+           [04] APPLICATION SCREENS
+           ========================================================================== */
+        .screen-module {
+            display: none;
             width: 100%;
-            padding: 25px 30px;
-            display: flex;
-            justify-content: space-between;
+            max-width: 440px;
+            flex-direction: column;
             align-items: center;
-            z-index: 30;
-            /* Support for iPhone notches */
-            padding-top: max(25px, env(safe-area-inset-top));
+            z-index: 10;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        .nav-icons {
+        .screen-module.is-active {
             display: flex;
-            gap: 20px;
-        }
-
-        .icon-btn {
-            background: transparent;
-            border: none;
-            color: #fff;
-            font-size: 1.5rem;
-            cursor: pointer;
-            transition: transform 0.2s ease, color 0.2s ease;
-        }
-
-        .icon-btn:hover {
-            color: var(--color-gold);
-            transform: scale(1.1);
+            opacity: 1;
+            transform: translateY(0);
         }
 
         /* ==========================================================================
-        [07] BOOT TERMINAL (LOADING ANIMATIONS)
-        ========================================================================== 
-        */
-        .boot-log-container {
-            width: 85%;
-            max-width: 350px;
-            background: rgba(0, 0, 0, 0.85);
-            border: 1px solid #333;
-            border-radius: 12px;
-            padding: 20px;
-            margin-top: 35px;
-            font-family: var(--font-terminal);
-            font-size: 0.8rem;
-            text-align: left;
-            color: #00ff00; /* Hacker Green */
-            box-shadow: 0 10px 30px rgba(0,0,0,0.9);
-        }
-
-        .log-line {
-            margin-bottom: 8px;
-            opacity: 0.8;
-        }
-
-        .log-success {
-            color: var(--active-o);
-        }
-
-        /* ==========================================================================
-        [08] QUANTUM COMBAT GRID (ZERO-LATENCY 110px FIXED BOXES)
-        This ensures the grid never resizes when an SVG is drawn.
-        ========================================================================== 
-        */
-        .grid-wrapper {
+           [05] COMBAT GRID (STRICT 110px ARCHITECTURE)
+           ========================================================================== */
+        .arena-hud {
+            background: rgba(0,0,0,0.85);
+            padding: 15px 40px;
+            border-radius: 60px;
+            font-family: var(--wtr-font-brand);
+            font-size: 1.6rem;
             margin-bottom: 40px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            border: 1px solid var(--wtr-glass-border);
+            box-shadow: var(--wtr-shadow-heavy);
+            backdrop-filter: var(--wtr-glass-blur);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-align: center;
         }
 
-        .quantum-grid {
+        .combat-grid-layout {
             display: grid;
-            /* STRICT 110px sizing to prevent layout shift */
             grid-template-columns: repeat(3, 110px);
             grid-template-rows: repeat(3, 110px);
+            justify-content: center;
+            align-content: center;
             gap: 0;
+            margin-bottom: 35px;
+            /* Prevents grid from shifting on SVG load */
+            contain: layout;
         }
 
-        .cell {
+        .combat-cell {
             width: 110px;
             height: 110px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 6px solid var(--active-grid);
+            border: 6px solid var(--wtr-grid-color);
+            background: transparent;
             cursor: pointer;
             position: relative;
-            /* Hidden overflow prevents SVG from expanding the cell */
             overflow: hidden;
-            transition: background-color 0.2s ease, border-color 0.3s ease;
         }
 
-        .cell:active {
-            background-color: rgba(255, 255, 255, 0.05);
+        /* H-SHAPE LOGIC */
+        .combat-cell[data-index="0"], .combat-cell[data-index="1"], .combat-cell[data-index="2"] { border-top: none; }
+        .combat-cell[data-index="6"], .combat-cell[data-index="7"], .combat-cell[data-index="8"] { border-bottom: none; }
+        .combat-cell[data-index="0"], .combat-cell[data-index="3"], .combat-cell[data-index="6"] { border-left: none; }
+        .combat-cell[data-index="2"], .combat-cell[data-index="5"], .combat-cell[data-index="8"] { border-right: none; }
+
+        .combat-cell:active {
+            background: rgba(255,255,255,0.08);
         }
 
-        /* Solid H-Shape Architecture (Image 1 Exact Match) */
-        .cell[data-index="0"], .cell[data-index="1"], .cell[data-index="2"] { border-top: none; }
-        .cell[data-index="6"], .cell[data-index="7"], .cell[data-index="8"] { border-bottom: none; }
-        .cell[data-index="0"], .cell[data-index="3"], .cell[data-index="6"] { border-left: none; }
-        .cell[data-index="2"], .cell[data-index="5"], .cell[data-index="8"] { border-right: none; }
-
-        /* SVG Inner Styling */
-        .cell svg {
+        /* SVG SYMBOLS */
+        .combat-symbol {
             width: 75px;
             height: 75px;
             position: absolute;
@@ -376,1294 +236,169 @@
             left: 50%;
             transform: translate(-50%, -50%);
             filter: drop-shadow(0 0 15px currentColor);
+            /* Prevents SVG from expanding cell size */
+            pointer-events: none;
         }
 
-        /* Quantum Drawing Animations */
-        .draw-x {
-            stroke-dasharray: 140;
-            stroke-dashoffset: 140;
-            animation: draw-line 0.2s ease-out forwards;
-            stroke: var(--active-x);
-        }
-
-        .draw-o {
-            stroke-dasharray: 220;
-            stroke-dashoffset: 220;
-            animation: draw-line 0.25s ease-out forwards;
-            stroke: var(--active-o);
-        }
-
-        @keyframes draw-line {
+        .draw-path-x { stroke-dasharray: 140; stroke-dashoffset: 140; animation: titan-draw 0.25s ease-out forwards; }
+        .draw-path-o { stroke-dasharray: 220; stroke-dashoffset: 220; animation: titan-draw 0.3s ease-out forwards; }
+        
+        @keyframes titan-draw {
             to { stroke-dashoffset: 0; }
         }
 
         /* ==========================================================================
-        [09] TITAN ARMORY (STORE UI STYLING)
-        ========================================================================== 
-        */
-        .store-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-            padding: 25px 30px;
-            position: absolute;
-            top: 0;
-            left: 0;
-            z-index: 50;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(15px);
-            border-bottom: 1px solid var(--glass-border);
-            padding-top: max(25px, env(safe-area-inset-top));
-        }
-
-        .store-title {
-            font-family: var(--font-marker);
-            font-size: 1.6rem;
-            color: var(--color-gold);
-            text-shadow: var(--glow-gold);
-        }
-        
-        .store-tabs {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 25px;
-            overflow-x: auto;
-            padding-bottom: 10px;
-            width: 100%;
-        }
-
-        .store-tab {
-            flex: 1;
-            padding: 15px 25px;
-            background: rgba(0, 0, 0, 0.6);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            color: #fff;
-            font-weight: 800;
-            cursor: pointer;
-            white-space: nowrap;
-            transition: all 0.3s ease;
-        }
-
-        .store-tab.active {
-            background: var(--color-gold);
-            color: #000;
-            box-shadow: var(--glow-gold);
-            border-color: var(--color-gold);
-        }
-
-        .store-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-            max-height: 65vh;
-            overflow-y: auto;
-            padding-right: 10px;
-            width: 100%;
-        }
-
-        .store-item {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--glass-border);
-            border-radius: 25px;
-            padding: 20px;
-            text-align: center;
+           [06] ENTERPRISE COMPONENTS (BUTTONS & INPUTS)
+           ========================================================================== */
+        .glass-container {
+            background: var(--wtr-glass-bg);
+            backdrop-filter: var(--wtr-glass-blur);
+            border-radius: 40px;
+            padding: 45px 35px;
+            width: 92%;
+            border: 1px solid var(--wtr-glass-border);
+            box-shadow: var(--wtr-shadow-heavy);
             position: relative;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
-        .store-item.owned {
-            border-color: rgba(46, 213, 115, 0.5);
+        .titan-input {
+            width: 100%;
+            padding: 20px 25px;
+            margin-bottom: 20px;
+            border-radius: 50px;
+            border: 1px solid rgba(255,255,255,0.15);
+            background: rgba(0,0,0,0.6);
+            color: #fff;
+            font-family: var(--wtr-font-main);
+            font-size: 1rem;
+            text-align: center;
+            transition: all 0.3s var(--wtr-font-main);
         }
 
-        .store-item.equipped {
-            background: rgba(46, 213, 115, 0.1);
-            border-color: var(--active-o);
-            box-shadow: 0 0 20px rgba(46, 213, 115, 0.25);
+        .titan-input:focus {
+            border-color: var(--wtr-color-gold);
+            box-shadow: var(--wtr-glow-gold);
+            background: rgba(0,0,0,0.85);
         }
 
-        .item-preview {
-            height: 70px;
-            margin-bottom: 15px;
-            border-radius: 12px;
-            background: #000;
+        .btn-titan {
+            width: 100%;
+            padding: 20px;
+            margin-top: 15px;
+            border-radius: 50px;
+            border: none;
+            font-family: var(--wtr-font-main);
+            font-weight: 900;
+            font-size: 1.1rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.2s ease;
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow: hidden;
+            gap: 10px;
         }
 
-        .item-name {
-            font-size: 0.85rem;
-            font-weight: 900;
-            margin-bottom: 8px;
-            letter-spacing: 1px;
-        }
-
-        .btn-buy {
-            margin-top: 15px;
-            padding: 12px;
-            font-size: 0.85rem;
-            border-radius: 15px;
-        }
+        .btn-primary-x { background: var(--wtr-color-x); color: #fff; box-shadow: 0 10px 30px rgba(255, 71, 87, 0.4); }
+        .btn-primary-o { background: var(--wtr-color-o); color: #000; box-shadow: 0 10px 30px rgba(46, 213, 115, 0.4); }
+        .btn-ghost { background: transparent; border: 2px solid var(--wtr-grid-color); color: #fff; }
+        
+        .btn-titan:active { transform: scale(0.95); opacity: 0.9; }
 
         /* ==========================================================================
-        [10] NATIVE DIALOGS (MODALS) & TOAST NOTIFICATIONS
-        ========================================================================== 
-        */
-        dialog {
-            margin: auto;
+           [07] LOBBY & STORE NAV
+           ========================================================================== */
+        .nav-top-bar {
+            position: absolute;
+            top: 25px;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 30px;
+            z-index: 50;
+        }
+
+        .stats-badge {
+            background: rgba(251, 191, 36, 0.15);
+            border: 1px solid rgba(251, 191, 36, 0.3);
+            color: var(--wtr-color-gold);
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: 800;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* WhatsApp-Style Comms */
+        .comms-module {
+            width: 100%;
+            max-width: 400px;
+            background: rgba(0,0,0,0.8);
+            border-radius: 30px;
+            border: 1px solid var(--wtr-glass-border);
+            margin-top: 20px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--wtr-shadow-heavy);
+        }
+
+        .comms-readout {
+            height: 120px;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            font-size: 0.9rem;
+        }
+
+        .bubble {
+            background: rgba(255,255,255,0.08);
+            padding: 10px 18px;
+            border-radius: 20px;
+            width: fit-content;
+            max-width: 85%;
+            border-bottom-left-radius: 4px;
+        }
+
+        .bubble.self {
+            align-self: flex-end;
+            background: rgba(46, 213, 115, 0.15);
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 4px;
+        }
+
+        .bubble strong { color: var(--wtr-color-gold); margin-right: 6px; }
+
+        .comms-input-row {
+            display: flex;
+            border-top: 1px solid var(--wtr-glass-border);
+            background: rgba(255,255,255,0.03);
+        }
+
+        .comms-field {
+            flex: 1;
             background: transparent;
             border: none;
-            padding: 0;
-            max-width: 90vw;
-            width: 420px;
-            overflow: visible;
+            color: #fff;
+            padding: 18px;
+            font-family: var(--wtr-font-main);
         }
 
-        dialog::backdrop {
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(12px);
-        }
-        
-        .toast-box {
-            position: fixed;
-            bottom: 40px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--color-gold);
-            color: #000;
-            padding: 15px 30px;
-            border-radius: 50px;
+        .comms-send {
+            background: var(--wtr-color-o);
+            border: none;
+            padding: 0 30px;
             font-weight: 900;
-            font-size: 0.95rem;
-            z-index: 9999;
-            pointer-events: none;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.6);
-            animation: slideUpToast 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            color: #000;
+            cursor: pointer;
+            text-transform: uppercase;
             letter-spacing: 1px;
-            text-align: center;
-            white-space: nowrap;
         }
-
-        @keyframes slideUpToast {
-            from { transform: translate(-50%, 60px); opacity: 0; }
-            to { transform: translate(-50%, 0); opacity: 1; }
-        }
-
     </style>
 </head>
-
-<body>
-
-    <svg aria-hidden="true" style="display: none;">
-        <defs>
-            <symbol id="ic-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                <circle cx="12" cy="7" r="4"/>
-            </symbol>
-            
-            <symbol id="ic-store" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
-                <line x1="3" y1="6" x2="21" y2="6"/>
-                <path d="M16 10a4 4 0 0 1-8 0"/>
-            </symbol>
-            
-            <symbol id="ic-settings" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="3"/>
-                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-            </symbol>
-        </defs>
-    </svg>
-
-    <div id="dynamic-bg-layer" style="background-image: url('https://source.unsplash.com/featured/?cyberpunk,dark');"></div>
-    <div class="bg-overlay"></div>
-
-    <div id="screen-splash" class="app-screen active">
-        <h1 class="font-marker text-gold" style="font-size: 4rem; line-height: 1;">
-            WTR LAB 🚀
-        </h1>
-        <p class="text-muted" style="margin-top: 15px; font-weight: 900; letter-spacing: 4px;">
-            BOOTING QUANTUM ENGINE...
-        </p>
-        
-        <div class="boot-log-container" id="ui-boot-log">
-            <div class="log-line">> INITIALIZING SYSTEM CORE...</div>
-            <div class="log-line" id="log-fb" style="color: #666;">> MOUNTING FIREBASE COMPAT...</div>
-        </div>
-    </div>
-
-    <div id="screen-auth" class="app-screen">
-        <div class="glass-panel text-center">
-            <h1 class="font-marker" style="font-size: 3.5rem; margin-bottom: 5px;">
-                TITAN 🔐
-            </h1>
-            <p class="text-gold" style="font-weight: 800; letter-spacing: 3px; margin-bottom: 35px;">
-                PREMIUM ACCESS
-            </p>
-            
-            <input 
-                type="email" 
-                id="inp-email" 
-                class="premium-input" 
-                placeholder="AGENT EMAIL"
-                autocomplete="email"
-            >
-            
-            <input 
-                type="password" 
-                id="inp-pass" 
-                class="premium-input mb-20" 
-                placeholder="SECURITY KEY"
-                autocomplete="current-password"
-            >
-            
-            <button class="btn btn-x" id="btn-login" style="margin-top: 15px;">
-                ESTABLISH LINK
-            </button>
-        </div>
-    </div>
-
-    <div id="screen-lobby" class="app-screen">
-        
-        <nav class="top-nav">
-            <div class="point-badge">
-                🪙 <span id="ui-nav-points">0</span>
-            </div>
-            <div class="nav-icons">
-                <button class="icon-btn" onclick="openStore()" aria-label="Open Store">
-                    <svg width="28" height="28"><use href="#ic-store"></use></svg>
-                </button>
-                <button class="icon-btn" onclick="document.getElementById('modal-settings').showModal()" aria-label="Open Settings">
-                    <svg width="28" height="28"><use href="#ic-settings"></use></svg>
-                </button>
-            </div>
-        </nav>
-
-        <div class="glass-panel text-center" style="margin-top: 60px;">
-            
-            <div style="width: 90px; height: 90px; background: rgba(0,0,0,0.8); border: 2px solid var(--color-gold); border-radius: 50%; margin: 0 auto 20px auto; display: flex; align-items: center; justify-content: center; box-shadow: var(--glow-gold);">
-                <svg width="45" height="45" color="var(--color-gold)"><use href="#ic-user"></use></svg>
-            </div>
-            
-            <p class="text-muted" style="font-size: 0.85rem; font-weight: 800; letter-spacing: 1px;">
-                ACTIVE AGENT
-            </p>
-            <h2 id="ui-agent-name" style="font-size: 2rem; font-weight: 900; margin-bottom: 30px;">
-                AWAITING...
-            </h2>
-
-            <div style="background: rgba(0,0,0,0.6); border: 1px dashed var(--color-gold); border-radius: 20px; padding: 20px; margin-bottom: 30px;">
-                <p class="text-muted" style="font-size: 0.75rem; font-weight: 700; letter-spacing: 1px;">
-                    COMBAT FREQUENCY ID 📡
-                </p>
-                <h3 id="ui-agent-code" class="font-marker text-gold" style="font-size: 3rem; letter-spacing: 6px;">
-                    ----
-                </h3>
-            </div>
-
-            <input 
-                type="text" 
-                id="inp-target" 
-                class="premium-input" 
-                placeholder="ENTER TARGET ID" 
-                maxlength="6"
-            >
-            
-            <button class="btn btn-x" id="btn-challenge">
-                ENGAGE TARGET ⚔️
-            </button>
-            
-            <button class="btn btn-outline mt-15" id="btn-offline">
-                LOCAL TRAINING
-            </button>
-        </div>
-    </div>
-    <div id="screen-store" class="app-screen" style="background: rgba(0,0,0,0.95); backdrop-filter: blur(20px);">
-        
-        <div class="store-header">
-            <div class="store-title">
-                TITAN ARMORY 🛒
-            </div>
-            
-            <div class="point-badge">
-                🪙 <span id="ui-store-points-display">0</span>
-            </div>
-            
-            <button class="icon-btn" onclick="closeStore()" aria-label="Close Store">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--color-gold)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="18" y1="6" x2="6" y2="18"></line>
-                    <line x1="6" y1="6" x2="18" y2="18"></line>
-                </svg>
-            </button>
-        </div>
-        
-        <div style="width: 100%; max-width: 500px; margin-top: 90px; padding: 0 20px;">
-            
-            <div class="store-tabs">
-                <button class="store-tab active" id="tab-skins" onclick="switchStoreTab('skins')">
-                    QUANTUM SKINS 🎨
-                </button>
-                <button class="store-tab" id="tab-bgs" onclick="switchStoreTab('bgs')">
-                    ENVIRONMENTS 🌌
-                </button>
-            </div>
-
-            <div class="store-grid" id="ui-store-grid"></div>
-            
-        </div>
-    </div>
-
-    <div id="screen-arena" class="app-screen">
-        
-        <div class="glass-panel" style="padding: 20px; width: 90%; max-width: 450px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center;">
-            
-            <div style="text-align: left;">
-                <span class="text-muted" style="font-size: 0.75rem; font-weight: 800;">YOU</span><br>
-                <b id="ui-p1-name" style="color: var(--active-x); font-size: 1.2rem;">PLAYER</b>
-            </div>
-            
-            <div class="font-marker text-gold" style="font-size: 1.8rem;">
-                VS
-            </div>
-            
-            <div style="text-align: right;">
-                <span class="text-muted" style="font-size: 0.75rem; font-weight: 800;">ENEMY</span><br>
-                <b id="ui-p2-name" style="color: var(--active-o); font-size: 1.2rem;">TARGET</b>
-            </div>
-            
-        </div>
-
-        <h2 id="ui-turn-text" class="font-marker" style="font-size: 1.8rem; margin-bottom: 40px; letter-spacing: 2px;">
-            SYSTEM STANDBY
-        </h2>
-
-        <div class="grid-wrapper">
-            <div class="quantum-grid" id="ui-combat-grid">
-                <div class="cell" data-index="0"></div>
-                <div class="cell" data-index="1"></div>
-                <div class="cell" data-index="2"></div>
-                
-                <div class="cell" data-index="3"></div>
-                <div class="cell" data-index="4"></div>
-                <div class="cell" data-index="5"></div>
-                
-                <div class="cell" data-index="6"></div>
-                <div class="cell" data-index="7"></div>
-                <div class="cell" data-index="8"></div>
-            </div>
-        </div>
-
-        <button class="btn btn-outline" style="width: 80%; max-width: 350px; border-color: var(--active-x); color: var(--active-x);" onclick="abortMission()">
-            ABORT MISSION
-        </button>
-        
-    </div>
-
-    <dialog id="modal-result">
-        <div class="glass-panel text-center" style="width: 100%;">
-            
-            <h2 id="ui-result-title" class="font-marker" style="font-size: 4rem; line-height: 1; margin-bottom: 10px;">
-                VICTORY 🎉
-            </h2>
-            
-            <p id="ui-result-sub" class="text-muted" style="font-weight: 900; letter-spacing: 4px; margin-bottom: 25px;">
-                TARGET TERMINATED
-            </p>
-            
-            <div style="background: rgba(0,0,0,0.6); border-radius: 20px; padding: 20px; margin-bottom: 25px; border: 1px solid var(--color-gold); box-shadow: var(--glow-gold);">
-                <span class="text-muted" style="font-size: 0.85rem; font-weight: 800;">POINTS EARNED</span><br>
-                <span id="ui-earned-points" class="font-marker text-gold" style="font-size: 2.5rem;">+50</span>
-            </div>
-
-            <button class="btn btn-gold" id="btn-rematch" style="margin-bottom: 15px;">
-                RE-ENGAGE
-            </button>
-            
-            <button class="btn btn-outline" onclick="abortMission()">
-                RETURN TO LOBBY
-            </button>
-            
-        </div>
-    </dialog>
-
-    <dialog id="modal-settings">
-        <div class="glass-panel" style="width: 100%;">
-            
-            <h2 class="font-marker" style="font-size: 1.8rem; margin-bottom: 25px; border-bottom: 1px solid var(--glass-border); padding-bottom: 15px; text-align: center;">
-                SETTINGS ⚙️
-            </h2>
-            
-            <div style="background: rgba(255, 71, 87, 0.1); border: 1px dashed var(--active-x); border-radius: 20px; padding: 20px; margin-bottom: 25px; text-align: center;">
-                
-                <p style="font-size: 0.8rem; color: var(--active-x); font-weight: 900; letter-spacing: 1px; margin-bottom: 15px;">
-                    DEVELOPER OVERRIDE
-                </p>
-                
-                <input 
-                    type="text" 
-                    id="inp-cheat" 
-                    class="premium-input" 
-                    placeholder="ENTER CHEAT CODE" 
-                    style="margin-bottom: 15px; padding: 15px; font-size: 1rem; font-family: var(--font-terminal);"
-                >
-                
-                <button class="btn btn-x" onclick="applyCheat()" style="padding: 15px; font-size: 1rem;">
-                    EXECUTE COMMAND
-                </button>
-                
-            </div>
-
-            <button class="btn btn-outline" onclick="logout()" style="margin-bottom: 15px;">
-                LOGOUT
-            </button>
-            
-            <button class="btn btn-outline" style="border-color: var(--text-muted); color: var(--text-muted);" onclick="document.getElementById('modal-settings').close()">
-                CLOSE
-            </button>
-            
-        </div>
-    </dialog>
-
-    <dialog id="modal-challenge">
-        <div class="glass-panel text-center" style="border-color: var(--color-gold); box-shadow: var(--glow-gold); width: 100%;">
-            
-            <h2 class="font-marker text-gold" style="font-size: 2.2rem; margin-bottom: 15px;">
-                THREAT DETECTED! ⚠️
-            </h2>
-            
-            <p style="font-size: 1.1rem;">
-                Agent <b id="ui-challenger-id" style="color: #fff; font-size: 1.3rem;">UNKNOWN</b> is challenging you to a sync.
-            </p>
-            
-            <div style="display: flex; gap: 15px; margin-top: 30px;">
-                <button class="btn btn-gold" id="btn-accept-sync" style="flex: 1; padding: 18px;">
-                    ACCEPT
-                </button>
-                
-                <button class="btn btn-outline" id="btn-decline-sync" style="flex: 1; padding: 18px; border-color: var(--active-x); color: var(--active-x);">
-                    DECLINE
-                </button>
-            </div>
-            
-        </div>
-    </dialog>
-
-    <div id="toast-container"></div>
-
-    <script type="module">
-    <script>
-        /* ==========================================================================
-        [11] FIREBASE CONFIGURATION (COMPATIBILITY MODE)
-        Works perfectly on file:// protocol without strict MIME type errors.
-        ========================================================================== 
-        */
-        const firebaseConfig = {
-            apiKey: "AIzaSyBldLyB9d18ZGStroUC0-yjuUrp31DFQ28",
-            authDomain: "online-tic-tac-toe-d919f.firebaseapp.com",
-            projectId: "online-tic-tac-toe-d919f",
-            storageBucket: "online-tic-tac-toe-d919f.firebasestorage.app",
-            messagingSenderId: "644365665798",
-            appId: "1:644365665798:web:f90b64bdc3aa6912032587"
-        };
-
-        // Initialize Firebase using Global Compat Object
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.firestore();
-
-        /* ==========================================================================
-        [12] GLOBAL STATE MANAGEMENT (SINGLE SOURCE OF TRUTH)
-        ========================================================================== 
-        */
-        window.State = {
-            user: null,
-            profile: null,
-            mode: 'online',
-            gameId: null,
-            board: Array(9).fill(''),
-            mySym: 'X',
-            turn: 'X',
-            active: false,
-            points: 0,
-            inventory: { 
-                skins: ['default'], 
-                bgs: ['default'] 
-            },
-            equipped: { 
-                skin: 'default', 
-                bg: 'default' 
-            }
-        };
-
-        /* ==========================================================================
-        [13] GLOBAL UI HELPERS & TOAST SYSTEM
-        ========================================================================== 
-        */
-        window.showToast = (message) => {
-            const toastContainer = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            
-            toast.className = 'toast-box';
-            toast.innerText = message;
-            
-            toastContainer.appendChild(toast);
-            
-            // Auto remove toast after 3 seconds
-            setTimeout(() => {
-                toast.style.animation = 'slideUpToast 0.4s reverse forwards';
-                setTimeout(() => {
-                    toast.remove();
-                }, 400);
-            }, 3000);
-        };
-
-        window.switchScreen = (screenId) => {
-            // Hide all screens
-            const allScreens = document.querySelectorAll('.app-screen');
-            allScreens.forEach(screen => {
-                screen.classList.remove('active');
-            });
-            
-            // Show target screen
-            const targetScreen = document.getElementById(screenId);
-            if (targetScreen) {
-                targetScreen.classList.add('active');
-            }
-        };
-
-        /* ==========================================================================
-        [14] TITAN ARMORY (STORE SYSTEM DATABASE)
-        ========================================================================== 
-        */
-        const StoreDB = {
-            skins: [
-                { 
-                    id: 'default', 
-                    name: 'CLASSIC NEON', 
-                    price: 0, 
-                    colorX: '#ff4757', 
-                    colorO: '#2ed573' 
-                },
-                { 
-                    id: 'cyber_gold', 
-                    name: 'CYBER GOLD', 
-                    price: 500, 
-                    colorX: '#fbbf24', 
-                    colorO: '#f59e0b' 
-                },
-                { 
-                    id: 'matrix', 
-                    name: 'MATRIX HACKER', 
-                    price: 1200, 
-                    colorX: '#00ff00', 
-                    colorO: '#00cc00' 
-                },
-                { 
-                    id: 'blood_moon', 
-                    name: 'BLOOD MOON', 
-                    price: 2500, 
-                    colorX: '#ff0000', 
-                    colorO: '#990000' 
-                },
-                { 
-                    id: 'quantum_ice', 
-                    name: 'QUANTUM ICE', 
-                    price: 5000, 
-                    colorX: '#00d2d3', 
-                    colorO: '#0abde3' 
-                }
-            ],
-            bgs: [
-                { 
-                    id: 'default', 
-                    name: 'CYBERPUNK CITY', 
-                    price: 0, 
-                    url: 'https://source.unsplash.com/featured/?cyberpunk,dark' 
-                },
-                { 
-                    id: 'space_nebula', 
-                    name: 'DEEP SPACE', 
-                    price: 800, 
-                    url: 'https://source.unsplash.com/featured/?galaxy,stars' 
-                },
-                { 
-                    id: 'synthwave', 
-                    name: 'SYNTHWAVE GRID', 
-                    price: 2000, 
-                    url: 'https://source.unsplash.com/featured/?synthwave,neon' 
-                },
-                { 
-                    id: 'hacker_code', 
-                    name: 'BINARY MATRIX', 
-                    price: 4000, 
-                    url: 'https://source.unsplash.com/featured/?matrix,code,green' 
-                }
-            ]
-        };
-
-        /* ==========================================================================
-        [15] CHEAT CODE LOGIC & POINT MANAGER (nk@99390)
-        ========================================================================== 
-        */
-        window.applyCheat = async () => {
-            const cheatInput = document.getElementById('inp-cheat');
-            const code = cheatInput.value.trim();
-            
-            if (code === 'nk@99390') {
-                // Add 1 Million Points instantly
-                State.points += 1000000; 
-                
-                await saveProfileData();
-                
-                showToast("🔥 DEVELOPER OVERRIDE: +1,000,000 POINTS 🔥");
-                
-                // Massive Confetti Blast
-                canvasConfetti({ 
-                    particleCount: 500, 
-                    spread: 160, 
-                    origin: { y: 0.5 }, 
-                    colors: ['#fbbf24', '#ff4757', '#00ff00'] 
-                });
-                
-                // Cleanup UI
-                cheatInput.value = '';
-                document.getElementById('modal-settings').close();
-                updatePointsUI();
-                
-            } else {
-                showToast("ERROR: INVALID CHEAT CODE");
-            }
-        };
-
-        window.updatePointsUI = () => {
-            const navPoints = document.getElementById('ui-nav-points');
-            const storePoints = document.getElementById('ui-store-points-display');
-            
-            const formattedPoints = State.points.toLocaleString();
-            
-            if (navPoints) navPoints.innerText = formattedPoints;
-            if (storePoints) storePoints.innerText = formattedPoints;
-        };
-
-        window.saveProfileData = async () => {
-            if (!State.user) return;
-            
-            try {
-                await db.collection('users').doc(State.user.uid).update({
-                    points: State.points,
-                    inventory: State.inventory,
-                    equipped: State.equipped
-                });
-                
-                applyEquippedCosmetics();
-                
-            } catch (error) {
-                console.error("Failed to save profile:", error);
-            }
-        };
-
-        window.applyEquippedCosmetics = () => {
-            // Find equipped items from StoreDB
-            const skin = StoreDB.skins.find(s => s.id === State.equipped.skin) || StoreDB.skins[0];
-            const bg = StoreDB.bgs.find(b => b.id === State.equipped.bg) || StoreDB.bgs[0];
-            
-            // Inject dynamic CSS Variables for the current skin
-            document.documentElement.style.setProperty('--active-x', skin.colorX);
-            document.documentElement.style.setProperty('--active-o', skin.colorO);
-            document.documentElement.style.setProperty('--active-glow-x', `0 0 20px ${skin.colorX}66`);
-            document.documentElement.style.setProperty('--active-glow-o', `0 0 20px ${skin.colorO}66`);
-            
-            // Update Dynamic Background Layer
-            const bgLayer = document.getElementById('dynamic-bg-layer');
-            if (bgLayer) {
-                bgLayer.style.backgroundImage = `url('${bg.url}')`;
-            }
-        };
-        /* ==========================================================================
-        [16] STORE UI CONTROLLERS (TITAN ARMORY)
-        ========================================================================== 
-        */
-        window.openStore = () => {
-            updatePointsUI();
-            switchScreen('screen-store');
-            switchStoreTab('skins'); // Hamesha Skins tab se open hoga
-        };
-
-        window.closeStore = () => {
-            switchScreen('screen-lobby');
-        };
-
-        window.switchStoreTab = (tabId) => {
-            // Remove active class from all tabs
-            const tabs = document.querySelectorAll('.store-tab');
-            tabs.forEach(tab => {
-                tab.classList.remove('active');
-            });
-            
-            // Add active class to clicked tab
-            const activeTab = document.getElementById(`tab-${tabId}`);
-            if (activeTab) {
-                activeTab.classList.add('active');
-            }
-            
-            // Render the items for the selected tab
-            renderStoreGrid(tabId);
-        };
-
-        window.renderStoreGrid = (category) => {
-            const gridContainer = document.getElementById('ui-store-grid');
-            gridContainer.innerHTML = ''; // Clear purana grid
-            
-            const items = StoreDB[category];
-            const inventory = State.inventory[category] || [];
-            
-            // Get currently equipped item id
-            const equippedId = State.equipped[category === 'skins' ? 'skin' : 'bg'];
-
-            items.forEach(item => {
-                const isOwned = inventory.includes(item.id);
-                const isEquipped = equippedId === item.id;
-                
-                let buttonHTML = '';
-                
-                if (isEquipped) {
-                    buttonHTML = `
-                        <button class="btn btn-outline" style="border-color: var(--active-o); color: var(--active-o);" disabled>
-                            EQUIPPED
-                        </button>`;
-                } else if (isOwned) {
-                    buttonHTML = `
-                        <button class="btn btn-outline" onclick="equipItem('${category}', '${item.id}')">
-                            EQUIP
-                        </button>`;
-                } else {
-                    buttonHTML = `
-                        <button class="btn btn-gold" onclick="buyItem('${category}', '${item.id}', ${item.price})">
-                            BUY 🪙 ${item.price.toLocaleString()}
-                        </button>`;
-                }
-
-                // Render Preview based on category (Color box ya Image)
-                let previewHTML = '';
-                if (category === 'skins') {
-                    previewHTML = `
-                        <div class="item-preview" style="box-shadow: 0 0 20px ${item.colorX}44;">
-                            <span style="color: ${item.colorX}; font-weight: 900; font-size: 1.8rem; font-family: var(--font-main);">X</span> 
-                            <span style="color: ${item.colorO}; font-weight: 900; font-size: 1.8rem; margin-left: 15px; font-family: var(--font-main);">O</span>
-                        </div>
-                    `;
-                } else {
-                    previewHTML = `
-                        <div class="item-preview" style="background-image: url('${item.url}'); background-size: cover; background-position: center;"></div>
-                    `;
-                }
-
-                // Inject into Grid
-                gridContainer.innerHTML += `
-                    <div class="store-item ${isOwned ? 'owned' : ''} ${isEquipped ? 'equipped' : ''}">
-                        ${previewHTML}
-                        <div class="item-name">${item.name}</div>
-                        ${buttonHTML}
-                    </div>
-                `;
-            });
-        };
-
-        window.buyItem = async (category, itemId, price) => {
-            if (State.points < price) {
-                showToast("ERROR: INSUFFICIENT POINTS!");
-                return;
-            }
-            
-            // Deduct points and add to inventory
-            State.points -= price;
-            State.inventory[category].push(itemId);
-            
-            await saveProfileData();
-            
-            showToast("ITEM SECURED IN ARMORY!");
-            renderStoreGrid(category);
-            updatePointsUI();
-        };
-
-        window.equipItem = async (category, itemId) => {
-            const equipKey = category === 'skins' ? 'skin' : 'bg';
-            State.equipped[equipKey] = itemId;
-            
-            await saveProfileData();
-            
-            showToast("GEAR EQUIPPED SUCCESSFULLY!");
-            renderStoreGrid(category);
-        };
-
-        /* ==========================================================================
-        [17] ZERO-LATENCY GRID LOGIC (0ms POINTERDOWN)
-        ========================================================================== 
-        */
-        const SYMBOL_X_SVG = `<svg viewBox="0 0 100 100"><path class="draw-x" d="M 20 20 L 80 80 M 80 20 L 20 80" stroke-width="12" stroke-linecap="round" fill="none"/></svg>`;
-        const SYMBOL_O_SVG = `<svg viewBox="0 0 100 100"><circle class="draw-o" cx="50" cy="50" r="35" stroke-width="12" fill="none" stroke-linecap="round"/></svg>`;
-
-        window.initGrid = () => {
-            const cells = document.querySelectorAll('.cell');
-            cells.forEach((cell, index) => {
-                // Using pointerdown for instant 0ms reaction. Faster than onclick!
-                cell.addEventListener('pointerdown', (e) => {
-                    e.preventDefault();
-                    executeMove(index);
-                });
-            });
-        };
-
-        window.renderGrid = () => {
-            const cells = document.querySelectorAll('.cell');
-            cells.forEach((cell, index) => {
-                const cellValue = State.board[index];
-                
-                if (cellValue === 'X' && !cell.innerHTML.includes('draw-x')) {
-                    cell.innerHTML = SYMBOL_X_SVG;
-                } else if (cellValue === 'O' && !cell.innerHTML.includes('draw-o')) {
-                    cell.innerHTML = SYMBOL_O_SVG;
-                } else if (!cellValue) {
-                    cell.innerHTML = '';
-                }
-            });
-        };
-
-        window.checkWinCondition = (boardState) => {
-            const winLines = [
-                [0, 1, 2], [3, 4, 5], [6, 7, 8], // Horizontal
-                [0, 3, 6], [1, 4, 7], [2, 5, 8], // Vertical
-                [0, 4, 8], [2, 4, 6]             // Diagonal
-            ];
-            
-            for (let line of winLines) {
-                if (boardState[line[0]] && 
-                    boardState[line[0]] === boardState[line[1]] && 
-                    boardState[line[0]] === boardState[line[2]]) {
-                    return 'win';
-                }
-            }
-            
-            return boardState.includes('') ? 'continue' : 'draw';
-        };
-
-        window.executeMove = async (cellIndex) => {
-            // Prevent move if game inactive or cell filled
-            if (!State.active || State.board[cellIndex] !== '') return;
-            
-            // Prevent moving out of turn online
-            if (State.mode === 'online' && State.turn !== State.mySym) {
-                showToast("WAIT FOR TARGET'S MOVE");
-                return;
-            }
-
-            // OPTIMISTIC UI: Update screen instantly locally (0ms Latency)
-            State.board[cellIndex] = State.mySym;
-            renderGrid();
-            
-            // Haptic Feedback for Mobile
-            if (navigator.vibrate) {
-                navigator.vibrate(40);
-            }
-
-            const result = checkWinCondition(State.board);
-            const nextTurn = State.mySym === 'X' ? 'O' : 'X';
-
-            if (State.mode === 'offline') {
-                // Offline Logic
-                if (result === 'win') {
-                    processCombatResult(State.mySym);
-                } else if (result === 'draw') {
-                    processCombatResult('draw');
-                } else {
-                    State.turn = nextTurn;
-                    updateTurnHUD();
-                }
-            } else {
-                // Online Logic: Compress board array into 9 char string ('X O      ')
-                const boardString = State.board.join('');
-                const gameRef = db.collection('games').doc(State.gameId);
-                
-                try {
-                    if (result === 'win') {
-                        await gameRef.update({ b: boardString, s: 'win', w: State.mySym });
-                    } else if (result === 'draw') {
-                        await gameRef.update({ b: boardString, s: 'draw' });
-                    } else {
-                        await gameRef.update({ b: boardString, t: nextTurn });
-                    }
-                } catch (error) {
-                    console.error("Sync Error:", error);
-                }
-            }
-        };
-
-        window.updateTurnHUD = () => {
-            const isMyTurn = State.turn === State.mySym;
-            const textUI = document.getElementById('ui-turn-text');
-            
-            if (isMyTurn) {
-                textUI.innerText = "YOUR TURN";
-                textUI.style.color = "var(--active-o)";
-            } else {
-                textUI.innerText = "TARGET MOVING...";
-                textUI.style.color = "var(--text-muted)";
-            }
-        };
-        /* ==========================================================================
-        [18] COMBAT RESULT PROCESSING & POINT REWARDS
-        ========================================================================== 
-        */
-        window.processCombatResult = async (winner) => {
-            State.active = false;
-            let earnedPoints = 0;
-
-            const titleUI = document.getElementById('ui-result-title');
-            const subUI = document.getElementById('ui-result-sub');
-            const pointsUI = document.getElementById('ui-earned-points');
-
-            if (winner === 'draw') {
-                titleUI.innerText = "DRAW";
-                titleUI.style.color = "#fff";
-                subUI.innerText = "NO AGENT TERMINATED";
-                pointsUI.innerText = "+10";
-                earnedPoints = 10;
-            } else {
-                const isMe = (State.mode === 'online' && winner === State.mySym) || (State.mode === 'offline');
-                
-                if (isMe) {
-                    titleUI.innerText = "VICTORY 🎉";
-                    titleUI.style.color = "var(--active-o)";
-                    subUI.innerText = "TARGET ANNIHILATED";
-                    pointsUI.innerText = "+50";
-                    earnedPoints = 50;
-                    
-                    // Fire Victory Confetti
-                    canvasConfetti({ 
-                        particleCount: 200, 
-                        spread: 120, 
-                        origin: { y: 0.6 },
-                        colors: ['#2ed573', '#fbbf24']
-                    });
-                } else {
-                    titleUI.innerText = "DEFEAT ☠️";
-                    titleUI.style.color = "var(--active-x)";
-                    subUI.innerText = "YOU WERE TERMINATED";
-                    pointsUI.innerText = "+5"; // Consolation points
-                    earnedPoints = 5;
-                }
-            }
-
-            // Reward Points to Profile
-            if (State.mode === 'online') {
-                State.points += earnedPoints;
-                await saveProfileData();
-                updatePointsUI();
-            }
-
-            // Show Modal after a short dramatic delay
-            setTimeout(() => {
-                document.getElementById('modal-result').showModal();
-            }, 800);
-        };
-
-        /* ==========================================================================
-        [19] FIREBASE MULTIPLAYER & REALTIME MATCHMAKING
-        ========================================================================== 
-        */
-        let unsubGame = null;
-        let unsubInvites = null;
-
-        window.establishOnlineLink = (gameId, mySymbol, enemyName) => {
-            State.gameId = gameId;
-            State.mySym = mySymbol;
-            State.mode = 'online';
-            State.active = true;
-            
-            document.getElementById('ui-p1-name').innerText = State.profile.name;
-            document.getElementById('ui-p2-name').innerText = enemyName;
-            
-            switchScreen('screen-arena');
-
-            if (unsubGame) unsubGame();
-            
-            // Realtime Listener for Combat Grid
-            unsubGame = db.collection('games').doc(gameId).onSnapshot((docSnapshot) => {
-                if (!docSnapshot.exists) {
-                    showToast("TARGET DISCONNECTED OR FLED!");
-                    abortMission();
-                    return;
-                }
-                
-                const data = docSnapshot.data();
-                
-                // Decompress the 9 char string back to array ('X O      ')
-                State.board = data.b ? data.b.split('') : Array(9).fill('');
-                State.turn = data.t || 'X';
-                State.active = (data.s === 'playing');
-                
-                renderGrid();
-                
-                if (data.s === 'win') {
-                    processCombatResult(data.w);
-                } else if (data.s === 'draw') {
-                    processCombatResult('draw');
-                } else {
-                    updateTurnHUD();
-                }
-            });
-        };
-
-        // Challenge Target
-        document.getElementById('btn-challenge').onclick = async () => {
-            const targetInput = document.getElementById('inp-target');
-            const targetCode = targetInput.value.toUpperCase().trim();
-            const btn = document.getElementById('btn-challenge');
-            
-            if (!targetCode) {
-                showToast("ENTER TARGET ID");
-                return;
-            }
-            
-            if (targetCode === State.profile.code) {
-                showToast("CANNOT ENGAGE YOURSELF");
-                return;
-            }
-            
-            btn.innerText = 'SCANNING NETWORK...';
-            
-            const querySnapshot = await db.collection('users').where('code', '==', targetCode).get();
-            
-            if (querySnapshot.empty) {
-                btn.innerText = 'ENGAGE TARGET ⚔️';
-                showToast("TARGET NOT FOUND ON NETWORK");
-                return;
-            }
-            
-            const targetData = querySnapshot.docs[0].data();
-            
-            // Transmit Invite
-            const inviteRef = await db.collection('invites').add({
-                sUid: State.user.uid,
-                sName: State.profile.name,
-                rUid: targetData.uid,
-                status: 'pending'
-            });
-            
-            btn.innerText = 'WAITING FOR SYNC...';
-            
-            // Listen for Target's Response
-            const unsubCurrentInvite = db.collection('invites').doc(inviteRef.id).onSnapshot((docSnap) => {
-                if (!docSnap.exists) return;
-                
-                const inviteData = docSnap.data();
-                
-                if (inviteData.status === 'accepted') {
-                    establishOnlineLink(inviteData.gId, 'X', targetData.name);
-                    db.collection('invites').doc(inviteRef.id).delete();
-                    unsubCurrentInvite();
-                    btn.innerText = 'ENGAGE TARGET ⚔️';
-                    targetInput.value = '';
-                } else if (inviteData.status === 'rejected') {
-                    showToast("TARGET EVADED CHALLENGE");
-                    db.collection('invites').doc(inviteRef.id).delete();
-                    unsubCurrentInvite();
-                    btn.innerText = 'ENGAGE TARGET ⚔️';
-                }
-            });
-        };
-
-        // Radar: Listen for Incoming Challenges
-        window.listenForInvites = () => {
-            if (unsubInvites) unsubInvites();
-            
-            unsubInvites = db.collection('invites')
-                .where('rUid', '==', State.user.uid)
-                .where('status', '==', 'pending')
-                .onSnapshot((snapshot) => {
-                    snapshot.docChanges().forEach(change => {
-                        if (change.type === 'added') {
-                            const inviteData = change.doc.data();
-                            const inviteId = change.doc.id;
-                            
-                            document.getElementById('ui-challenger-id').innerText = inviteData.sName;
-                            document.getElementById('modal-challenge').showModal();
-                            
-                            // ACCEPT COMBAT
-                            document.getElementById('btn-accept-sync').onclick = async () => {
-                                // Generate empty compressed grid
-                                const gameRef = await db.collection('games').add({
-                                    b: '         ', // 9 spaces
-                                    t: 'X',
-                                    s: 'playing'
-                                });
-                                
-                                await db.collection('invites').doc(inviteId).update({
-                                    status: 'accepted',
-                                    gId: gameRef.id
-                                });
-                                
-                                document.getElementById('modal-challenge').close();
-                                establishOnlineLink(gameRef.id, 'O', inviteData.sName);
-                            };
-                            
-                            // DECLINE COMBAT
-                            document.getElementById('btn-decline-sync').onclick = async () => {
-                                await db.collection('invites').doc(inviteId).update({
-                                    status: 'rejected'
-                                });
-                                document.getElementById('modal-challenge').close();
-                            };
-                        }
-                    });
-                });
-        };
-
-        /* ==========================================================================
-        [20] OFFLINE SIMULATION & MISSION CONTROLS
-        ========================================================================== 
-        */
-        document.getElementById('btn-offline').onclick = () => {
-            State.mode = 'offline';
-            State.active = true;
-            State.board = Array(9).fill('');
-            State.turn = 'X';
-            State.mySym = 'X';
-            
-            document.getElementById('ui-p1-name').innerText = "PLAYER X";
-            document.getElementById('ui-p2-name').innerText = "PLAYER O";
-            
-            switchScreen('screen-arena');
-            renderGrid();
-            updateTurnHUD();
-        };
-
-        window.abortMission = async () => {
-            if (State.gameId) {
-                try {
-                    await db.collection('games').doc(State.gameId).delete();
-                } catch (error) {
-                    console.error("Cleanup Error:", error);
-                }
-            }
-            
-            if (unsubGame) unsubGame();
-            
-            State.active = false;
-            State.gameId = null;
-            document.getElementById('modal-result').close();
-            switchScreen('screen-lobby');
-        };
-
-        document.getElementById('btn-rematch').onclick = async () => {
-            document.getElementById('modal-result').close();
-            
-            if (State.mode === 'online' && State.gameId) {
-                await db.collection('games').doc(State.gameId).update({
-                    b: '         ',
-                    t: 'X',
-                    s: 'playing'
-                });
-            } else {
-                document.getElementById('btn-offline').click();
-            }
-        };
-
-        /* ==========================================================================
-        [21] SYSTEM BOOTSTRAP & AUTHENTICATION PROTOCOLS
-        ========================================================================== 
-        */
-        
-        // 1. Bind the 0ms Grid System
-        initGrid();
-
-        // 2. Firebase Auth Listener
-        auth.onAuthStateChanged(async (user) => {
-            
-            // Fake Boot delay for Hacker Feel (Matches CSS)
-            setTimeout(async () => {
-                if (user) {
-                    State.user = user;
-                    
-                    const profileRef = db.collection('users').doc(user.uid);
-                    const pSnap = await profileRef.get();
-                    
-                    if (pSnap.exists) {
-                        const data = pSnap.data();
-                        State.profile = data;
-                        State.points = data.points || 0;
-                        State.inventory = data.inventory || { skins: ['default'], bgs: ['default'] };
-                        State.equipped = data.equipped || { skin: 'default', bg: 'default' };
-                    } else {
-                        // New Agent Registration
-                        State.profile = {
-                            uid: user.uid,
-                            name: user.email.split('@')[0].toUpperCase(),
-                            code: Math.random().toString(36).substring(2,6).toUpperCase()
-                        };
-                        
-                        await profileRef.set({
-                            ...State.profile,
-                            points: 0,
-                            inventory: State.inventory,
-                            equipped: State.equipped
-                        });
-                    }
-                    
-                    // Populate UI Data
-                    document.getElementById('ui-agent-name').innerText = State.profile.name;
-                    document.getElementById('ui-agent-code').innerText = State.profile.code;
-                    
-                    updatePointsUI();
-                    applyEquippedCosmetics();
-                    
-                    switchScreen('screen-lobby');
-                    listenForInvites();
-                    
-                    showToast("SYSTEM ACCESS GRANTED");
-                    
-                } else {
-                    // Not logged in -> Show Auth Screen
-                    switchScreen('screen-auth');
-                }
-            }, 2000); // 2 Seconds Terminal Boot Animation
-        });
-
-        // 3. Login Trigger
-        document.getElementById('btn-login').onclick = async () => {
-            const email = document.getElementById('inp-email').value;
-            const pass = document.getElementById('inp-pass').value;
-            const btn = document.getElementById('btn-login');
-            
-            if (!email || !pass) {
-                showToast("INPUT CREDENTIALS!");
-                return;
-            }
-            
-            btn.innerText = 'SYNCING SECURE CONNECTION...';
-            
-            try {
-                // Try Login
-                await auth.signInWithEmailAndPassword(email, pass);
-            } catch (error) {
-                try {
-                    // Auto-Register if user not found
-                    await auth.createUserWithEmailAndPassword(email, pass);
-                } catch (registerError) {
-                    showToast(registerError.message.toUpperCase());
-                    btn.innerText = 'ESTABLISH LINK';
-                }
-            }
-        };
-
-        // 4. Logout Trigger
-        window.logout = () => {
-            auth.signOut();
-            document.getElementById('modal-settings').close();
-        };
-
-    </script>
-</body>
-</html>
