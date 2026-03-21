@@ -2,15 +2,15 @@
 <html lang="en">
 <head>
     <link rel="manifest" href="/manifest.json">
-  <meta name="theme-color" content="#1e1e2f">
-  <link rel="icon" type="image/svg+xml" href="icon.svg">
-  
-  <link rel="stylesheet" href="style.css">
+    <meta name="theme-color" content="#1e1e2f">
+    <link rel="icon" type="image/svg+xml" href="icon.svg">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    
+    <link rel="stylesheet" href="style.css">
     <meta name="google-site-verification" content="Za1pEupQLM-LlPnODka_5pMgrC6DyOzmuDaZBepfg7Q" />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Tic Tac Toe – AlignIt Style</title>
-    <!-- Chalk font + clean body font -->
     <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <style>
         * {
@@ -58,15 +58,20 @@
             left: 50%;
             transform: translateX(-50%);
             backdrop-filter: blur(2px);
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
         }
-        .active { display: flex; }
+        .active { 
+            display: flex; 
+            opacity: 1;
+        }
 
         h1, h2, .chalk-text {
             font-family: 'Permanent Marker', cursive;
             letter-spacing: 2px;
             text-shadow: 3px 3px 0 rgba(0,0,0,0.5);
         }
-        h1 { font-size: 3rem; margin-bottom: 0.5rem; }
+        h1 { font-size: 3rem; margin-bottom: 0.5rem; text-align: center; }
         h2 { font-size: 2rem; margin-bottom: 1.5rem; }
 
         input {
@@ -81,11 +86,12 @@
             font-size: 1rem;
             text-align: center;
             outline: none;
-            transition: 0.2s;
+            transition: all 0.3s ease;
         }
         input:focus {
             border-color: #fff;
-            box-shadow: 0 0 12px var(--glow-white);
+            box-shadow: 0 0 15px var(--glow-white);
+            background: rgba(0,0,0,0.6);
         }
 
         .btn {
@@ -97,7 +103,7 @@
             font-weight: 600;
             font-size: 1rem;
             cursor: pointer;
-            transition: 0.2s;
+            transition: all 0.2s ease;
             width: 100%;
             max-width: 280px;
             margin: 6px auto;
@@ -106,6 +112,10 @@
         .btn:hover, .btn:active {
             background: rgba(255,255,255,0.15);
             box-shadow: 0 0 12px rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+        .btn:active {
+            transform: translateY(1px);
         }
         .btn-action {
             background: var(--o-color);
@@ -118,6 +128,10 @@
             border-color: var(--x-color);
             color: var(--x-color);
         }
+        .btn-danger:hover {
+            background: rgba(255, 71, 87, 0.15);
+            box-shadow: 0 0 12px rgba(255, 71, 87, 0.4);
+        }
 
         .invite-box {
             background: rgba(0,0,0,0.5);
@@ -128,6 +142,10 @@
             border: 1px dashed var(--chalk-line);
             width: 100%;
             max-width: 280px;
+            transition: transform 0.2s ease;
+        }
+        .invite-box:hover {
+            transform: scale(1.02);
         }
         .invite-code {
             font-family: 'Permanent Marker', cursive;
@@ -145,14 +163,16 @@
         }
         .status-area {
             font-family: 'Permanent Marker', cursive;
-            font-size: 1.8rem;
+            font-size: 1.5rem;
             margin-bottom: 20px;
             text-align: center;
             text-transform: uppercase;
             background: rgba(0,0,0,0.4);
-            padding: 6px 20px;
+            padding: 8px 24px;
             border-radius: 60px;
             letter-spacing: 1px;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.3s ease;
         }
         .board {
             display: grid;
@@ -169,7 +189,7 @@
             justify-content: center;
             cursor: pointer;
             border: 4px solid var(--chalk-line);
-            transition: 0.1s linear;
+            transition: background 0.2s linear;
         }
         /* clean chalkboard grid – outer borders removed */
         .cell[data-index="0"], .cell[data-index="1"], .cell[data-index="2"] { border-top: none; }
@@ -198,7 +218,7 @@
 
         /* O – perfect circle draw */
         .path-o {
-            stroke-dasharray: 220;   /* circumference of circle r=35 => 2*π*35 ≈ 220 */
+            stroke-dasharray: 220;   
             stroke-dashoffset: 220;
             animation: drawChalk 0.55s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards;
         }
@@ -217,36 +237,42 @@
             backdrop-filter: blur(2px);
             border: 1px solid var(--chalk-line);
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
         .chat-messages {
             height: 110px;
             overflow-y: auto;
             padding: 8px 12px;
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             display: flex;
             flex-direction: column;
-            gap: 5px;
+            gap: 6px;
         }
         .chat-msg {
             background: rgba(255,255,200,0.08);
-            padding: 5px 10px;
-            border-radius: 20px;
+            padding: 6px 12px;
+            border-radius: 16px;
             width: fit-content;
             max-width: 90%;
+            word-wrap: break-word;
         }
         .chat-msg span { color: #ffdd88; font-weight: bold; margin-right: 6px; }
         .chat-input-area {
             display: flex;
             border-top: 1px solid var(--chalk-line);
+            background: rgba(0,0,0,0.2);
         }
         .chat-input-area input {
             margin: 0;
             border: none;
             border-radius: 0;
             background: transparent;
-            padding: 10px;
+            padding: 12px;
             text-align: left;
+            flex-grow: 1;
         }
+        .chat-input-area input:focus { box-shadow: none; }
         .chat-input-area button {
             background: var(--chalk-line);
             border: none;
@@ -254,7 +280,9 @@
             font-weight: bold;
             cursor: pointer;
             color: black;
+            transition: background 0.2s;
         }
+        .chat-input-area button:hover { background: rgba(255,255,255,0.7); }
 
         /* Modals */
         .overlay {
@@ -269,38 +297,54 @@
             justify-content: center;
             z-index: 200;
             backdrop-filter: blur(6px);
+            opacity: 0;
+            animation: fadeIn 0.3s forwards;
         }
+        @keyframes fadeIn { to { opacity: 1; } }
+
         .modal {
             background: #1e2a2f;
-            padding: 28px 20px;
+            padding: 32px 24px;
             border-radius: 32px;
             border: 2px solid white;
             text-align: center;
             width: 85%;
             max-width: 320px;
-            box-shadow: 0 0 30px rgba(255,255,200,0.2);
+            box-shadow: 0 0 40px rgba(0,0,0,0.6), inset 0 0 15px rgba(255,255,255,0.05);
+            transform: translateY(20px);
+            animation: slideUp 0.3s ease-out forwards;
         }
+        @keyframes slideUp { to { transform: translateY(0); } }
+
         .winner-text {
             font-family: 'Permanent Marker', cursive;
             font-size: 3rem;
             margin-bottom: 20px;
             text-shadow: 0 0 15px currentColor;
         }
+        
         #toast {
             position: fixed;
             top: 20px;
             left: 50%;
-            transform: translateX(-50%);
-            background: #111;
+            transform: translateX(-50%) translateY(-20px);
+            background: rgba(17, 17, 17, 0.95);
             color: #ffdd88;
-            padding: 10px 22px;
+            padding: 12px 24px;
             border-radius: 40px;
             font-weight: bold;
-            z-index: 300;
+            z-index: 500;
             display: none;
-            font-family: monospace;
+            font-family: 'Poppins', sans-serif;
             white-space: nowrap;
-            box-shadow: 0 2px 15px rgba(0,0,0,0.4);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,221,136,0.2);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        .toast-visible {
+            transform: translateX(-50%) translateY(0) !important;
+            opacity: 1 !important;
         }
     </style>
 </head>
@@ -308,21 +352,19 @@
 
 <div id="toast">✨ Message</div>
 
-<!-- AUTH SCREEN -->
 <div id="auth-screen" class="screen active">
     <h1 class="chalk-text">TIC TAC TOE</h1>
-    <p style="margin-bottom: 24px;">⚡ Multiplayer Edition</p>
+    <p style="margin-bottom: 24px; color: #ffdd88; font-weight: 600;">⚡ Multiplayer Edition</p>
     <input type="email" id="email" placeholder="Email address">
     <input type="password" id="password" placeholder="Password (min 6)">
     <button class="btn btn-action" id="login-btn">PLAY NOW</button>
 </div>
 
-<!-- HOME / LOBBY -->
 <div id="home-screen" class="screen">
     <h2 class="chalk-text">LOBBY</h2>
-    <p>👤 <strong id="user-name" style="color: #ffdd88;">---</strong></p>
+    <p style="font-size: 1.1rem;">👤 <strong id="user-name" style="color: #ffdd88;">---</strong></p>
     <div class="invite-box">
-        <div style="font-size: 0.8rem;">YOUR INVITE CODE</div>
+        <div style="font-size: 0.85rem; color: #aaa; margin-bottom: 5px;">YOUR INVITE CODE</div>
         <div class="invite-code" id="my-invite-code">------</div>
     </div>
     <input type="text" id="friend-code" placeholder="Enter friend's code">
@@ -330,13 +372,11 @@
     <button class="btn" style="margin-top: 18px;" onclick="window.playOffline()">✏️ PRACTICE (OFFLINE)</button>
 </div>
 
-<!-- GAME SCREEN -->
 <div id="game-screen" class="screen">
     <div class="board-container">
         <div class="status-area" id="status-text">YOUR TURN</div>
         <div class="board" id="board">
-            <!-- 9 cells dynamically -->
-        </div>
+            </div>
         <div class="chat-wrapper" id="chat-container" style="display: none;">
             <div class="chat-messages" id="chat-messages"></div>
             <div class="chat-input-area">
@@ -344,21 +384,19 @@
                 <button id="send-chat">SEND</button>
             </div>
         </div>
-        <button class="btn btn-danger" style="margin-top: 18px;" onclick="window.leaveGame()">LEAVE MATCH</button>
+        <button class="btn btn-danger" style="margin-top: 24px;" onclick="window.leaveGame()">LEAVE MATCH</button>
     </div>
 </div>
 
-<!-- INVITE POPUP -->
 <div id="invite-popup" class="overlay">
     <div class="modal">
-        <h2 class="chalk-text">⚡ CHALLENGE!</h2>
-        <p><strong id="inviter-name" style="color: #ffdd88;">Someone</strong> invited you to play.</p>
+        <h2 class="chalk-text" style="color: #ffdd88;">⚡ CHALLENGE!</h2>
+        <p style="margin-bottom: 24px; font-size: 1.1rem;"><strong id="inviter-name" style="color: white;">Someone</strong> invited you to play.</p>
         <button class="btn btn-action" id="accept-invite">ACCEPT</button>
         <button class="btn btn-danger" id="reject-invite">DECLINE</button>
     </div>
 </div>
 
-<!-- WIN / DRAW CELEBRATION -->
 <div id="celebration-screen" class="overlay">
     <div class="modal">
         <div class="winner-text" id="winner-msg-text">WINNER!</div>
@@ -366,6 +404,65 @@
         <button class="btn" onclick="window.leaveGame()">BACK TO LOBBY</button>
     </div>
 </div>
+
+<div id="install-popup" class="overlay" style="z-index: 400;">
+    <div class="modal">
+        <h2 class="chalk-text" style="color: #2ed573;">📱 Install App</h2>
+        <p style="margin-bottom: 24px; font-size: 1rem; color: #ddd;">Install Tic Tac Toe for a faster, full-screen experience!</p>
+        <button class="btn btn-action" id="install-btn">INSTALL NOW</button>
+        <button class="btn" id="close-install-btn">MAYBE LATER</button>
+    </div>
+</div>
+
+<script>
+    // Register Service Worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(registration => {
+            console.log('ServiceWorker registered successfully');
+          })
+          .catch(err => {
+            console.log('ServiceWorker registration failed: ', err);
+          });
+      });
+    }
+
+    // PWA Install Prompt Logic
+    let deferredPrompt;
+    const installPopup = document.getElementById('install-popup');
+    const installBtn = document.getElementById('install-btn');
+    const closeInstallBtn = document.getElementById('close-install-btn');
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+        // Prevent the mini-infobar from appearing on mobile
+        e.preventDefault();
+        // Stash the event so it can be triggered later.
+        deferredPrompt = e;
+        // Show the install UI
+        installPopup.style.display = 'flex';
+    });
+
+    installBtn.addEventListener('click', async () => {
+        installPopup.style.display = 'none';
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            console.log(`User install response: ${outcome}`);
+            deferredPrompt = null;
+        }
+    });
+
+    closeInstallBtn.addEventListener('click', () => {
+        installPopup.style.display = 'none';
+    });
+
+    window.addEventListener('appinstalled', () => {
+        installPopup.style.display = 'none';
+        deferredPrompt = null;
+        console.log('PWA was installed successfully');
+    });
+</script>
 
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 <script type="module">
@@ -393,26 +490,37 @@
     // ----------------------------- GLOBAL STATE -----------------------------
     let currentUser = null;
     let myProfile = null;
-    let mode = 'online';          // 'online' or 'offline'
+    let mode = 'online';          
     let boardState = ['', '', '', '', '', '', '', '', ''];
-    let currentPlayer = 'X';     // 'X' always starts
+    let currentPlayer = 'X';     
     let gameActive = false;
-    let mySymbol = 'X';           // only used in online
+    let mySymbol = 'X';           
     let currentGameId = null;
     let unsubscribeGame = null;
     let unsubscribeChat = null;
 
-    // helper functions
+    // helper functions (Polished Toast)
     const showToast = (msg) => {
         const toast = document.getElementById('toast');
         toast.innerText = msg;
         toast.style.display = 'block';
-        setTimeout(() => toast.style.display = 'none', 2800);
+        
+        // Slight delay for animation to kick in
+        requestAnimationFrame(() => {
+            toast.classList.add('toast-visible');
+        });
+
+        setTimeout(() => {
+            toast.classList.remove('toast-visible');
+            setTimeout(() => toast.style.display = 'none', 300);
+        }, 2800);
     };
+
     const switchScreen = (id) => {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         document.getElementById(id).classList.add('active');
     };
+    
     const generateInviteCode = () => Math.random().toString(36).substring(2, 6).toUpperCase();
 
     // ----------------------------- WIN / DRAW LOGIC -----------------------------
@@ -453,7 +561,7 @@
         initOfflineBoard();
     };
 
-    // win/draw UI (with animation delay)
+    // win/draw UI
     function handleWinUI(winner, winnerSymbol = null) {
         gameActive = false;
         renderBoardUI();
@@ -468,6 +576,7 @@
             }
         }, 600);
     }
+    
     function handleDrawUI() {
         gameActive = false;
         renderBoardUI();
@@ -485,7 +594,7 @@
 
         if (mode === 'offline') {
             boardState[index] = currentPlayer;
-            renderBoardUI();   // instant SVG draw animation
+            renderBoardUI();   
             const result = checkWinOrDraw(boardState);
             if (result === 'win') handleWinUI(currentPlayer);
             else if (result === 'draw') handleDrawUI();
@@ -500,7 +609,7 @@
                 return;
             }
             boardState[index] = mySymbol;
-            renderBoardUI();   // immediate visual feedback
+            renderBoardUI();   
             const result = checkWinOrDraw(boardState);
             if (result === 'win') {
                 await updateDoc(doc(db, 'games', currentGameId), { board: boardState, status: 'win', winner: mySymbol });
@@ -542,9 +651,11 @@
                 if (currentPlayer === mySymbol) {
                     statusDiv.innerText = "✨ YOUR TURN";
                     statusDiv.style.color = "#2ed573";
+                    statusDiv.style.borderColor = "rgba(46,213,115,0.4)";
                 } else {
                     statusDiv.innerText = "⏳ OPPONENT'S TURN";
                     statusDiv.style.color = "#f0f0f0";
+                    statusDiv.style.borderColor = "rgba(255,255,255,0.1)";
                 }
             }
         });
@@ -610,7 +721,7 @@
             receiverUid: friend.uid,
             status: 'pending'
         });
-        showToast("Challenge sent! Waiting for response...");
+        showToast("Challenge sent! Waiting...");
         onSnapshot(doc(db, 'invites', invRef.id), (docSnap) => {
             const data = docSnap.data();
             if (data?.status === 'accepted' && data.gameId) {
