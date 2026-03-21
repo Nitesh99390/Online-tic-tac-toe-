@@ -1,11 +1,9 @@
-const CACHE_NAME = 'tictactoe-cache-v1';
+const CACHE_NAME = 'tictactoe-cache-v2';
 const urlsToCache = [
-  '/',
-  '/index.html',
-  '/style.css',
-  '/script.js',
-  '/manifest.json',
-  '/icon.svg'
+  './',
+  './index.html',
+  './manifest.json',
+  './icon.svg'
 ];
 
 self.addEventListener('install', event => {
@@ -25,4 +23,3 @@ self.addEventListener('fetch', event => {
       })
   );
 });
-
