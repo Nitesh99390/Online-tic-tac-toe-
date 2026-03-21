@@ -9,6 +9,7 @@
     <title>Tic Tac Toe – Nitesh WTR Pro</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Poppins:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
     <style>
@@ -17,12 +18,18 @@
            ========================================================================== 
         */
         :root {
+            /* Background and Grid Colors */
             --wtr-bg-dark: #0d1117;
-            --wtr-grid-color: #5f6a6d; /* FIXED IMAGE 1 STYLE */
-            --wtr-player-x: #ff4757;
-            --wtr-player-o: #2ed573;
+            --wtr-grid-color: #5f6a6d; 
+            
+            /* Player Colors (Will be dynamic based on Cosmetics) */
+            --wtr-player-x: #ff4757; 
+            --wtr-player-o: #2ed573; 
+            
+            /* Accents and Effects */
             --wtr-gold: #fbbf24;
             --wtr-glass: rgba(13, 17, 23, 0.85);
+            --wtr-glass-light: rgba(255, 255, 255, 0.05);
             --wtr-border: rgba(255, 255, 255, 0.1);
             --wtr-glow: 0 0 25px rgba(251, 191, 36, 0.2);
             --wtr-shadow-deep: 0 20px 50px rgba(0, 0, 0, 0.7);
@@ -43,7 +50,7 @@
 
         body {
             background-color: var(--wtr-bg-dark);
-            background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), 
+            background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8)), 
                               url('https://images.unsplash.com/photo-1614729939124-032f0b56c9ce?q=80&w=2500');
             background-size: cover;
             background-position: center;
@@ -59,7 +66,7 @@
         }
 
         /* ==========================================================================
-           3. BACKGROUND PARTICLE SYSTEM (VISUAL DEPTH)
+           3. BACKGROUND PARTICLE SYSTEM
            ========================================================================== 
         */
         #bg-canvas {
@@ -73,13 +80,13 @@
         }
 
         /* ==========================================================================
-           4. WTR LAB STARTUP SEQUENCE (INFINITY)
+           4. WTR LAB STARTUP SEQUENCE
            ========================================================================== 
         */
         #startup-sequence {
             position: fixed;
             inset: 0;
-            background: #000;
+            background: #000000;
             z-index: 10000;
             display: flex;
             flex-direction: column;
@@ -125,7 +132,7 @@
             100% { 
                 filter: hue-rotate(120deg) brightness(2); 
                 transform: scale(1.1) rotate(-45deg); 
-                border-color: var(--wtr-player-x);
+                border-color: var(--wtr-player-x); 
             }
         }
 
@@ -140,12 +147,18 @@
         }
 
         @keyframes text-pulse {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.7; transform: scale(0.95); }
+            0%, 100% { 
+                opacity: 1; 
+                transform: scale(1); 
+            }
+            50% { 
+                opacity: 0.7; 
+                transform: scale(0.95); 
+            }
         }
 
         /* ==========================================================================
-           5. NETWORK OPTIMIZATION HUD
+           5. NETWORK HUD & STATS BAR
            ========================================================================== 
         */
         .network-hud {
@@ -179,12 +192,12 @@
             border-radius: 50%;
             background: var(--wtr-player-o);
             box-shadow: 0 0 15px var(--wtr-player-o);
-            transition: 0.3s;
+            transition: all 0.3s ease;
         }
 
         .optimizer-label {
             background: var(--wtr-gold);
-            color: #000;
+            color: #000000;
             padding: 6px 15px;
             border-radius: 20px;
             font-weight: 800;
@@ -195,7 +208,7 @@
         }
 
         /* ==========================================================================
-           6. THE COMBAT GRID (IMAGE 1 SOLID DESIGN)
+           6. SCREENS & GLASS CARDS
            ========================================================================== 
         */
         .screen-container {
@@ -216,17 +229,167 @@
             transform: translateY(0);
         }
 
+        .glass-card {
+            background: var(--wtr-glass);
+            backdrop-filter: blur(25px);
+            border-radius: 35px;
+            padding: 40px 30px;
+            width: 92%;
+            max-width: 420px;
+            border: 1px solid var(--wtr-border);
+            box-shadow: var(--wtr-shadow-deep);
+            text-align: center;
+        }
+
+        .main-title {
+            font-family: 'Permanent Marker', cursive;
+            font-size: 3.2rem;
+            margin-bottom: 10px;
+            color: #ffffff;
+        }
+
+        .sub-heading {
+            color: var(--wtr-gold);
+            font-weight: 800;
+            letter-spacing: 3px;
+            margin-bottom: 35px;
+            font-size: 0.9rem;
+        }
+        
+        /* ==========================================================================
+           LOBBY STATS DASHBOARD
+           ========================================================================== 
+        */
+        .stats-dashboard {
+            display: flex;
+            justify-content: space-around;
+            background: var(--wtr-glass-light);
+            border: 1px solid var(--wtr-border);
+            border-radius: 20px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .stat-value { 
+            font-size: 1.5rem; 
+            font-weight: 800; 
+            color: var(--wtr-gold); 
+            font-family: 'JetBrains Mono', monospace; 
+        }
+
+        .stat-label { 
+            font-size: 0.7rem; 
+            color: #aaaaaa; 
+            letter-spacing: 1px; 
+        }
+
+        /* ==========================================================================
+           INPUTS & BUTTONS
+           ========================================================================== 
+        */
+        .wtr-input {
+            width: 100%;
+            padding: 18px 25px;
+            margin-bottom: 15px;
+            border-radius: 50px;
+            border: 1px solid var(--wtr-border);
+            background: rgba(0, 0, 0, 0.6);
+            color: #ffffff;
+            text-align: center;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .wtr-input:focus { 
+            border-color: var(--wtr-gold); 
+            box-shadow: 0 0 20px rgba(251, 191, 36, 0.3); 
+        }
+
+        .btn {
+            width: 100%;
+            padding: 18px;
+            margin: 10px 0;
+            border-radius: 50px;
+            border: none;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 800;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .btn-primary { 
+            background: var(--wtr-player-x); 
+            color: #ffffff; 
+            box-shadow: 0 8px 30px rgba(255, 71, 87, 0.4); 
+        }
+
+        .btn-primary:hover { 
+            transform: translateY(-4px); 
+            box-shadow: 0 12px 40px rgba(255, 71, 87, 0.6); 
+        }
+
+        .btn-success { 
+            background: var(--wtr-player-o); 
+            color: #000000; 
+            box-shadow: 0 8px 30px rgba(46, 213, 115, 0.4); 
+        }
+
+        .btn-success:hover { 
+            transform: translateY(-4px); 
+            box-shadow: 0 12px 40px rgba(46, 213, 115, 0.6); 
+        }
+
+        .btn-outline { 
+            background: transparent; 
+            border: 2px solid var(--wtr-grid-color); 
+            color: #ffffff; 
+        }
+
+        .btn-outline:hover { 
+            background: rgba(255, 255, 255, 0.1); 
+            border-color: #ffffff; 
+        }
+
+        .btn-gold { 
+            background: var(--wtr-gold); 
+            color: #000000; 
+            box-shadow: 0 8px 30px rgba(251, 191, 36, 0.4); 
+        }
+
+        .btn-gold:hover { 
+            transform: translateY(-4px); 
+            box-shadow: 0 12px 40px rgba(251, 191, 36, 0.6); 
+        }
+
+        /* ==========================================================================
+           7. THE COMBAT GRID (H-SHAPE DESIGN)
+           ========================================================================== 
+        */
         .combat-badge {
-            background: #000;
+            background: #000000;
             padding: 15px 50px;
             border-radius: 60px;
             font-family: 'Permanent Marker', cursive;
             font-size: 2rem;
             margin-bottom: 35px;
             border: 2px solid var(--wtr-border);
-            box-shadow: inset 0 0 20px rgba(255,255,255,0.05);
+            box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.05);
             text-transform: uppercase;
-            color: #fff;
+            color: #ffffff;
         }
 
         .grid-master {
@@ -248,129 +411,78 @@
             position: relative;
         }
 
-        /* CORE RULE: REMOVING OUTER BORDERS FOR EXACT H-SHAPE 
-        */
+        /* Removing outer borders to make the strict H-Shape */
         .grid-cell:nth-child(1), .grid-cell:nth-child(2), .grid-cell:nth-child(3) { border-top: none; }
         .grid-cell:nth-child(7), .grid-cell:nth-child(8), .grid-cell:nth-child(9) { border-bottom: none; }
         .grid-cell:nth-child(1), .grid-cell:nth-child(4), .grid-cell:nth-child(7) { border-left: none; }
         .grid-cell:nth-child(3), .grid-cell:nth-child(6), .grid-cell:nth-child(9) { border-right: none; }
 
-        .grid-cell:active {
-            background: rgba(255, 255, 255, 0.08);
+        .grid-cell:active { 
+            background: rgba(255, 255, 255, 0.08); 
         }
 
-        /* SVG SYMBOLS 
-        */
-        .svg-icon {
-            width: 70%;
-            height: 70%;
-            filter: drop-shadow(0 0 15px currentColor);
+        .svg-icon { 
+            width: 70%; 
+            height: 70%; 
+            filter: drop-shadow(0 0 15px currentColor); 
         }
 
-        .path-x {
-            stroke-dasharray: 200;
-            stroke-dashoffset: 200;
-            animation: draw-symbol 0.4s ease-out forwards;
+        .path-x { 
+            stroke-dasharray: 200; 
+            stroke-dashoffset: 200; 
+            animation: draw-symbol 0.4s ease-out forwards; 
         }
 
-        .path-o {
-            stroke-dasharray: 250;
-            stroke-dashoffset: 250;
-            animation: draw-symbol 0.5s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards;
+        .path-o { 
+            stroke-dasharray: 250; 
+            stroke-dashoffset: 250; 
+            animation: draw-symbol 0.5s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards; 
         }
 
-        @keyframes draw-symbol {
-            to { stroke-dashoffset: 0; }
+        @keyframes draw-symbol { 
+            to { stroke-dashoffset: 0; } 
         }
 
         /* ==========================================================================
-           7. INTERFACE COMPONENTS (GLASS CARD)
+           8. COSMETICS / ARMORY SECTION
            ========================================================================== 
         */
-        .glass-card {
-            background: var(--wtr-glass);
-            backdrop-filter: blur(25px);
-            border-radius: 35px;
-            padding: 40px 30px;
-            width: 92%;
-            max-width: 400px;
-            border: 1px solid var(--wtr-border);
-            box-shadow: var(--wtr-shadow-deep);
-            text-align: center;
-        }
-
-        .main-title {
-            font-family: 'Permanent Marker', cursive;
-            font-size: 3.2rem;
-            margin-bottom: 10px;
-            color: #fff;
-        }
-
-        .sub-heading {
-            color: var(--wtr-gold);
-            font-weight: 800;
-            letter-spacing: 3px;
-            margin-bottom: 35px;
-            font-size: 0.9rem;
-        }
-
-        /* INPUTS */
-        .wtr-input {
-            width: 100%;
-            padding: 18px 25px;
-            margin-bottom: 15px;
-            border-radius: 50px;
-            border: 1px solid var(--wtr-border);
-            background: rgba(0,0,0,0.6);
-            color: #fff;
-            text-align: center;
-            font-family: 'Poppins', sans-serif;
-            font-size: 1rem;
-            transition: 0.3s;
-        }
-
-        .wtr-input:focus {
-            border-color: var(--wtr-gold);
-            box-shadow: 0 0 20px rgba(251, 191, 36, 0.3);
-        }
-
-        /* BUTTONS */
-        .btn {
-            width: 100%;
-            padding: 18px;
-            margin: 10px 0;
-            border-radius: 50px;
-            border: none;
-            font-family: 'Poppins', sans-serif;
-            font-weight: 800;
-            font-size: 1.1rem;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            text-transform: uppercase;
-            letter-spacing: 1px;
+        .color-picker-container {
             display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
+            justify-content: space-around;
+            margin: 20px 0;
+            background: var(--wtr-glass-light);
+            padding: 20px;
+            border-radius: 20px;
+            border: 1px solid var(--wtr-border);
         }
 
-        .btn-primary { background: var(--wtr-player-x); color: #fff; box-shadow: 0 8px 30px rgba(255, 71, 87, 0.4); }
-        .btn-primary:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(255, 71, 87, 0.6); }
+        .color-option {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .color-option:hover { 
+            transform: scale(1.1); 
+        }
 
-        .btn-success { background: var(--wtr-player-o); color: #000; box-shadow: 0 8px 30px rgba(46, 213, 115, 0.4); }
-        .btn-success:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(46, 213, 115, 0.6); }
-
-        .btn-outline { background: transparent; border: 2px solid var(--wtr-grid-color); color: #fff; }
-        .btn-outline:hover { background: rgba(255,255,255,0.1); border-color: #fff; }
+        .color-option.selected { 
+            border-color: #ffffff; 
+            box-shadow: 0 0 15px currentColor; 
+        }
 
         /* ==========================================================================
-           8. CHAT ARRAY SYSTEM
+           9. CHAT ARRAY SYSTEM
            ========================================================================== 
         */
         .chat-container {
             width: 100%;
             max-width: 360px;
-            background: rgba(0,0,0,0.6);
+            background: rgba(0, 0, 0, 0.6);
             border-radius: 25px;
             margin-top: 25px;
             border: 1px solid var(--wtr-border);
@@ -398,40 +510,43 @@
             width: fit-content;
         }
 
-        .chat-bubble b { color: var(--wtr-gold); margin-right: 6px; }
-
-        .chat-input-row {
-            display: flex;
-            border-top: 1px solid var(--wtr-border);
-            background: rgba(0,0,0,0.3);
+        .chat-bubble b { 
+            color: var(--wtr-gold); 
+            margin-right: 6px; 
         }
 
-        #chat-message-in {
-            flex: 1;
-            background: transparent;
-            border: none;
-            padding: 15px;
-            color: #fff;
-            font-size: 0.9rem;
+        .chat-input-row { 
+            display: flex; 
+            border-top: 1px solid var(--wtr-border); 
+            background: rgba(0, 0, 0, 0.3); 
         }
 
-        #chat-trigger {
-            background: var(--wtr-player-o);
-            border: none;
-            padding: 0 25px;
-            font-weight: 900;
-            color: #000;
-            cursor: pointer;
+        #chat-message-in { 
+            flex: 1; 
+            background: transparent; 
+            border: none; 
+            padding: 15px; 
+            color: #ffffff; 
+            font-size: 0.9rem; 
+        }
+
+        #chat-trigger { 
+            background: var(--wtr-player-o); 
+            border: none; 
+            padding: 0 25px; 
+            font-weight: 900; 
+            color: #000000; 
+            cursor: pointer; 
         }
 
         /* ==========================================================================
-           9. MODALS & TOASTS
+           10. MODALS & TOASTS
            ========================================================================== 
         */
         .overlay {
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.92);
+            background: rgba(0, 0, 0, 0.92);
             z-index: 9000;
             display: none;
             align-items: center;
@@ -440,7 +555,10 @@
             animation: fade-in 0.4s forwards;
         }
 
-        @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fade-in { 
+            from { opacity: 0; } 
+            to { opacity: 1; } 
+        }
 
         #toast-notice {
             position: fixed;
@@ -448,22 +566,20 @@
             left: 50%;
             transform: translateX(-50%) translateY(120px);
             background: var(--wtr-gold);
-            color: #000;
+            color: #000000;
             padding: 15px 40px;
             border-radius: 60px;
             font-weight: 900;
             font-size: 1rem;
-            transition: 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             z-index: 11000;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
         }
 
-        .toast-active { transform: translateX(-50%) translateY(0) !important; }
+        .toast-active { 
+            transform: translateX(-50%) translateY(0) !important; 
+        }
 
-        /* ==========================================================================
-           10. RESPONSIVE MEDIA QUERIES
-           ========================================================================== 
-        */
         @media (max-height: 700px) {
             h1 { font-size: 2.5rem; }
             .grid-master { max-width: 300px; }
@@ -478,7 +594,7 @@
     <div id="startup-sequence">
         <div class="loader-wrapper"></div>
         <div class="brand-logo">WTR LAB</div>
-        <p style="color: #666; margin-top: 20px; font-weight: 700; letter-spacing: 4px;">INITIALIZING CORE ENGINE...</p>
+        <p style="color: #666666; margin-top: 20px; font-weight: 700; letter-spacing: 4px;">INITIALIZING CORE ENGINE...</p>
     </div>
 
     <div class="network-hud">
@@ -500,26 +616,59 @@
             <input type="password" id="auth-pass" class="wtr-input" placeholder="SECURITY KEY">
             
             <button class="btn btn-primary" id="login-trigger">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;">
+                    <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/>
+                </svg>
                 INITIATE SESSION
             </button>
         </div>
     </div>
 
     <div id="screen-lobby" class="screen-container">
-        <div class="glass-card" style="max-width: 420px;">
+        <div class="glass-card">
             <h2 class="main-title" style="font-size: 2.2rem;">COMMAND CENTER</h2>
             <p style="margin-top: 5px;">Agent: <strong id="agent-name" style="color: var(--wtr-player-o); font-size: 1.2rem;">...</strong></p>
             
-            <div style="background: rgba(0,0,0,0.6); padding: 25px; border-radius: 25px; margin: 25px 0; border: 1px dashed var(--wtr-gold); position: relative; overflow: hidden;">
-                <p style="font-size: 0.75rem; color: #888; font-weight: 800; letter-spacing: 2px;">YOUR COMBAT FREQUENCY</p>
-                <h2 id="agent-combat-code" class="main-title" style="color: var(--wtr-gold); font-size: 3rem; letter-spacing: 12px; margin-top: 10px;">----</h2>
+            <div class="stats-dashboard">
+                <div class="stat-item">
+                    <span class="stat-value" id="ui-stat-wins">0</span>
+                    <span class="stat-label">VICTORIES</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" id="ui-stat-coins" style="color: var(--wtr-player-x);">0</span>
+                    <span class="stat-label">WTR COINS</span>
+                </div>
+            </div>
+
+            <div style="background: rgba(0, 0, 0, 0.6); padding: 20px; border-radius: 20px; margin: 20px 0; border: 1px dashed var(--wtr-gold); position: relative;">
+                <p style="font-size: 0.7rem; color: #888888; font-weight: 800; letter-spacing: 2px;">YOUR COMBAT FREQUENCY</p>
+                <h2 id="agent-combat-code" class="main-title" style="color: var(--wtr-gold); font-size: 2.5rem; letter-spacing: 12px; margin-top: 5px;">----</h2>
             </div>
 
             <input type="text" id="target-combat-code" class="wtr-input" placeholder="ENTER TARGET FREQUENCY">
             
             <button class="btn btn-primary" id="challenge-trigger">ENGAGE TARGET</button>
+            <button class="btn btn-gold" id="armory-trigger" style="margin-top: 15px;">ARMORY / COSMETICS</button>
             <button class="btn btn-outline" id="offline-trigger" style="margin-top: 15px;">LOCAL SIMULATION</button>
+            <button class="btn btn-outline" id="logout-trigger" style="margin-top: 15px; border-color: #ff4757; color: #ff4757;">LOGOUT</button>
+        </div>
+    </div>
+
+    <div id="screen-cosmetics" class="screen-container">
+        <div class="glass-card">
+            <h2 class="main-title" style="font-size: 2.2rem;">ARMORY</h2>
+            <p class="sub-heading">CUSTOMIZE COMBAT VISUALS</p>
+
+            <h3 style="font-size: 1rem; color: #aaaaaa; text-align: left; margin-left: 10px;">Select 'X' Color:</h3>
+            <div class="color-picker-container" id="color-picker-x">
+                </div>
+
+            <h3 style="font-size: 1rem; color: #aaaaaa; text-align: left; margin-left: 10px; margin-top: 15px;">Select 'O' Color:</h3>
+            <div class="color-picker-container" id="color-picker-o">
+                </div>
+
+            <button class="btn btn-success" id="save-cosmetics-trigger" style="margin-top: 25px;">APPLY & SAVE</button>
+            <button class="btn btn-outline" onclick="document.getElementById('save-cosmetics-trigger').click(); navigateTo('screen-lobby')">BACK TO BASE</button>
         </div>
     </div>
 
@@ -543,7 +692,8 @@
     <div id="modal-result" class="overlay">
         <div class="glass-card" style="max-width: 360px;">
             <h1 id="result-announcement" style="font-size: 4.5rem; line-height: 1;">WIN</h1>
-            <p style="margin: 20px 0; color: #888;">MATCH DATA EVALUATED</p>
+            <p id="result-rewards" style="margin: 10px 0; color: var(--wtr-gold); font-weight: bold; font-size: 1.2rem;"></p>
+            <p style="margin: 10px 0 20px 0; color: #888888;">MATCH DATA EVALUATED</p>
             <button class="btn btn-success" id="rematch-trigger">RE-ENGAGE</button>
             <button class="btn btn-outline" id="exit-trigger">RETURN TO BASE</button>
         </div>
@@ -552,21 +702,18 @@
     <div id="modal-incoming" class="overlay">
         <div class="glass-card" style="max-width: 320px;">
             <h2 class="main-title" style="color: var(--wtr-gold); font-size: 2.2rem;">ALERT!</h2>
-            <p style="margin: 25px 0; font-size: 1.1rem;"><strong id="challenger-name" style="color: #fff;">...</strong> IS CHALLENGING YOU!</p>
+            <p style="margin: 25px 0; font-size: 1.1rem;"><strong id="challenger-name" style="color: #ffffff;">...</strong> IS CHALLENGING YOU!</p>
             <button class="btn btn-success" id="accept-trigger">ACCEPT</button>
             <button class="btn btn-primary" id="reject-trigger">DECLINE</button>
         </div>
     </div>
-
     <script type="module">
-        /**
-         * FIREBASE ENTERPRISE INTEGRATION
-         */
+        // 1. FIREBASE IMPORTS
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, query, where, onSnapshot, getDocs, addDoc, serverTimestamp, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, query, where, onSnapshot, getDocs, addDoc, serverTimestamp, deleteDoc, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // CONFIGURATION DATA (NITESH'S PROVIDED CONFIG)
+        // 2. FIREBASE CONFIGURATION (Aapki original API Keys)
         const firebaseConfig = {
             apiKey: "AIzaSyBldLyB9d18ZGStroUC0-yjuUrp31DFQ28",
             authDomain: "online-tic-tac-toe-d919f.firebaseapp.com",
@@ -580,25 +727,26 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        /**
-         * ========================================================================
-         * 1. SYSTEM STATE & GLOBAL VARIABLES
-         * ========================================================================
-         */
+        // 3. GLOBAL STATE MANAGEMENT
         let state = {
             user: null,
             profile: null,
-            mode: 'online', // 'online' or 'offline'
+            mode: 'online', 
             gameId: null,
             board: Array(9).fill(''),
             mySym: 'X',
             turn: 'X',
             active: false,
             unsubGame: null,
-            unsubChat: null
+            unsubChat: null,
+            cosmetics: {
+                colors: ['#ff4757', '#2ed573', '#1e90ff', '#ffa502', '#ff6b81', '#7bed9f'],
+                selectedX: '#ff4757',
+                selectedO: '#2ed573'
+            }
         };
 
-        // DOM REFERENCES
+        // 4. DOM ELEMENT REFERENCES
         const DOM = {
             toast: document.getElementById('toast-notice'),
             screens: document.querySelectorAll('.screen-container'),
@@ -606,36 +754,24 @@
             pingDot: document.getElementById('ping-dot'),
             board: document.getElementById('grid-board'),
             status: document.getElementById('arena-status'),
-            chatStream: document.getElementById('chat-log')
+            chatStream: document.getElementById('chat-log'),
+            statWins: document.getElementById('ui-stat-wins'),
+            statCoins: document.getElementById('ui-stat-coins')
         };
 
-        // SYMBOLS SVG TEMPLATES
-        const ICON_X = `
+        // SVG TEMPLATES FOR COMBAT GRID
+        const getIconX = () => `
             <svg class="svg-icon" viewBox="0 0 100 100">
                 <path class="path-x" d="M 20 20 L 80 80 M 80 20 L 20 80" stroke="var(--wtr-player-x)" stroke-width="12" stroke-linecap="round" fill="none"/>
-            </svg>
-        `;
-        const ICON_O = `
+            </svg>`;
+            
+        const getIconO = () => `
             <svg class="svg-icon" viewBox="0 0 100 100">
                 <circle class="path-o" cx="50" cy="50" r="35" stroke="var(--wtr-player-o)" stroke-width="12" fill="none" stroke-linecap="round"/>
-            </svg>
-        `;
+            </svg>`;
 
-        /**
-         * ========================================================================
-         * 2. CORE UTILITY FUNCTIONS
-         * ========================================================================
-         */
-        
-        // System Toast Controller
-        const triggerToast = (msg) => {
-            DOM.toast.innerText = msg;
-            DOM.toast.classList.add('toast-active');
-            setTimeout(() => DOM.toast.classList.remove('toast-active'), 3500);
-        };
-
-        // Screen Navigation Engine
-        const navigateTo = (id) => {
+        // 5. UTILITY FUNCTIONS
+        window.navigateTo = (id) => {
             DOM.screens.forEach(s => s.classList.remove('active'));
             setTimeout(() => {
                 DOM.screens.forEach(s => s.style.display = 'none');
@@ -645,31 +781,32 @@
             }, 300);
         };
 
-        // Code Generation (Secure Combat Code)
+        const triggerToast = (msg) => {
+            DOM.toast.innerText = msg;
+            DOM.toast.classList.add('toast-active');
+            setTimeout(() => DOM.toast.classList.remove('toast-active'), 3500);
+        };
+
         const generateCombatCode = () => {
             return Math.random().toString(36).substring(2, 6).toUpperCase();
         };
 
-        /**
-         * ========================================================================
-         * 3. GRAPHICS ENGINE (PARTICLE SYSTEM)
-         * ========================================================================
-         */
+        // 6. BACKGROUND PARTICLE GRAPHICS
         const initParticles = () => {
             const canvas = document.getElementById('bg-canvas');
             const ctx = canvas.getContext('2d');
             let particles = [];
             
-            const resize = () => {
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
+            const resize = () => { 
+                canvas.width = window.innerWidth; 
+                canvas.height = window.innerHeight; 
             };
             window.addEventListener('resize', resize);
             resize();
 
             class Particle {
-                constructor() {
-                    this.reset();
+                constructor() { 
+                    this.reset(); 
                 }
                 reset() {
                     this.x = Math.random() * canvas.width;
@@ -680,7 +817,7 @@
                     this.alpha = Math.random();
                 }
                 update() {
-                    this.x += this.speedX;
+                    this.x += this.speedX; 
                     this.y += this.speedY;
                     if(this.x < 0 || this.x > canvas.width) this.speedX *= -1;
                     if(this.y < 0 || this.y > canvas.height) this.speedY *= -1;
@@ -692,55 +829,123 @@
                     ctx.fill();
                 }
             }
-
-            for(let i=0; i<60; i++) particles.push(new Particle());
+            
+            for(let i=0; i<60; i++) {
+                particles.push(new Particle());
+            }
 
             const animate = () => {
                 ctx.clearRect(0,0, canvas.width, canvas.height);
-                particles.forEach(p => { p.update(); p.draw(); });
+                particles.forEach(p => { 
+                    p.update(); 
+                    p.draw(); 
+                });
                 requestAnimationFrame(animate);
             };
             animate();
         };
         initParticles();
 
-        /**
-         * ========================================================================
-         * 4. NETWORK OPTIMIZER ENGINE (SELF-HEALING)
-         * ========================================================================
-         */
+        // 7. NETWORK DIAGNOSTICS PING
         const runNetworkDiagnostic = async () => {
+            if(!state.user) return;
             const startTime = Date.now();
             try {
-                // Measure connection by small read
-                if(state.user) await getDoc(doc(db, 'users', state.user.uid));
+                await getDoc(doc(db, 'users', state.user.uid));
                 const ping = Date.now() - startTime;
-                
                 DOM.pingVal.innerText = `PING: ${ping} MS`;
                 
-                if(ping < 120) {
-                    DOM.pingDot.style.background = 'var(--wtr-player-o)';
-                    DOM.pingDot.style.boxShadow = '0 0 15px var(--wtr-player-o)';
-                } else if(ping < 300) {
-                    DOM.pingDot.style.background = 'var(--wtr-gold)';
-                    DOM.pingDot.style.boxShadow = '0 0 15px var(--wtr-gold)';
-                } else {
-                    DOM.pingDot.style.background = 'var(--wtr-player-x)';
-                    DOM.pingDot.style.boxShadow = '0 0 15px var(--wtr-player-x)';
+                if(ping < 120) { 
+                    DOM.pingDot.style.background = 'var(--wtr-player-o)'; 
+                    DOM.pingDot.style.boxShadow = '0 0 15px var(--wtr-player-o)'; 
+                } else if(ping < 300) { 
+                    DOM.pingDot.style.background = 'var(--wtr-gold)'; 
+                    DOM.pingDot.style.boxShadow = '0 0 15px var(--wtr-gold)'; 
+                } else { 
+                    DOM.pingDot.style.background = 'var(--wtr-player-x)'; 
+                    DOM.pingDot.style.boxShadow = '0 0 15px var(--wtr-player-x)'; 
                 }
-            } catch(e) {
-                DOM.pingVal.innerText = "PING: ERROR";
+            } catch(e) { 
+                DOM.pingVal.innerText = "PING: ERROR"; 
             }
         };
-        setInterval(runNetworkDiagnostic, 6000);
 
-        /**
-         * ========================================================================
-         * 5. GAME LOGIC & BOARD CONTROLLER
-         * ========================================================================
-         */
-        
-        // Initial Board Generation
+        // ========================================================================
+        // CORE INITIALIZATION (COMBAT SYSTEM & PROFILE)
+        // ========================================================================
+        const initCombatSystem = () => {
+            // Stats load from Database to UI
+            DOM.statWins.innerText = state.profile.stats?.wins || 0;
+            DOM.statCoins.innerText = state.profile.coins || 0;
+
+            // Load Saved Cosmetics from Profile
+            if(state.profile.cosmetics) {
+                state.cosmetics.selectedX = state.profile.cosmetics.colorX || '#ff4757';
+                state.cosmetics.selectedO = state.profile.cosmetics.colorO || '#2ed573';
+            }
+            
+            // Apply Colors to CSS Variables
+            document.documentElement.style.setProperty('--wtr-player-x', state.cosmetics.selectedX);
+            document.documentElement.style.setProperty('--wtr-player-o', state.cosmetics.selectedO);
+
+            // Populate Armory Color Pickers
+            buildArmoryColors();
+
+            // Start Listeners
+            listenForIncomingChallenges();
+            setInterval(runNetworkDiagnostic, 6000);
+            
+            triggerToast(`WELCOME AGENT ${state.profile.name}`);
+        };
+
+        const buildArmoryColors = () => {
+            const containerX = document.getElementById('color-picker-x');
+            const containerO = document.getElementById('color-picker-o');
+            
+            containerX.innerHTML = ''; 
+            containerO.innerHTML = '';
+
+            state.cosmetics.colors.forEach(color => {
+                // For X Color Option
+                let divX = document.createElement('div');
+                divX.className = `color-option ${state.cosmetics.selectedX === color ? 'selected' : ''}`;
+                divX.style.backgroundColor = color;
+                divX.onclick = () => {
+                    state.cosmetics.selectedX = color;
+                    buildArmoryColors(); 
+                };
+                containerX.appendChild(divX);
+
+                // For O Color Option
+                let divO = document.createElement('div');
+                divO.className = `color-option ${state.cosmetics.selectedO === color ? 'selected' : ''}`;
+                divO.style.backgroundColor = color;
+                divO.onclick = () => {
+                    state.cosmetics.selectedO = color;
+                    buildArmoryColors(); 
+                };
+                containerO.appendChild(divO);
+            });
+        };
+
+        document.getElementById('save-cosmetics-trigger').onclick = async () => {
+            try {
+                await updateDoc(doc(db, 'users', state.user.uid), {
+                    'cosmetics.colorX': state.cosmetics.selectedX,
+                    'cosmetics.colorO': state.cosmetics.selectedO
+                });
+                
+                document.documentElement.style.setProperty('--wtr-player-x', state.cosmetics.selectedX);
+                document.documentElement.style.setProperty('--wtr-player-o', state.cosmetics.selectedO);
+                triggerToast("COSMETICS APPLIED");
+            } catch(e) { 
+                triggerToast("ERROR SAVING COSMETICS"); 
+            }
+        };
+
+        // ========================================================================
+        // GAME BOARD & MATCH LOGIC
+        // ========================================================================
         const buildGridUI = () => {
             DOM.board.innerHTML = '';
             for(let i=0; i<9; i++) {
@@ -752,53 +957,93 @@
         };
         buildGridUI();
 
-        // Sync State to Visuals
         const syncVisualBoard = () => {
             const cells = document.querySelectorAll('.grid-cell');
             cells.forEach((cell, idx) => {
                 const val = state.board[idx];
-                if(val === 'X' && !cell.innerHTML) cell.innerHTML = ICON_X;
-                else if(val === 'O' && !cell.innerHTML) cell.innerHTML = ICON_O;
+                if(val === 'X' && !cell.innerHTML) cell.innerHTML = getIconX();
+                else if(val === 'O' && !cell.innerHTML) cell.innerHTML = getIconO();
                 else if(!val) cell.innerHTML = '';
             });
         };
 
-        // Win/Draw Evaluation
         const evaluateCombatMatrix = (b) => {
             const wins = [
-                [0,1,2],[3,4,5],[6,7,8], // H
-                [0,3,6],[1,4,7],[2,5,8], // V
-                [0,4,8],[2,4,6]          // D
+                [0,1,2], [3,4,5], [6,7,8], 
+                [0,3,6], [1,4,7], [2,5,8], 
+                [0,4,8], [2,4,6]
             ];
-            for(let p of wins) {
-                if(b[p[0]] && b[p[0]] === b[p[1]] && b[p[0]] === b[p[2]]) return 'win';
+            for(let p of wins) { 
+                if(b[p[0]] && b[p[0]] === b[p[1]] && b[p[0]] === b[p[2]]) return 'win'; 
             }
             return b.includes('') ? 'continue' : 'draw';
         };
 
-        const handleMatchEnd = (winner) => {
+        window.handleMatchEnd = async (winner) => {
             state.active = false;
             syncVisualBoard();
             
-            setTimeout(() => {
+            setTimeout(async () => {
                 const head = document.getElementById('result-announcement');
+                const rewards = document.getElementById('result-rewards');
+                rewards.innerText = ''; 
+
                 if(winner === 'draw') {
                     head.innerText = "DRAW";
-                    head.style.color = "#fff";
+                    head.style.color = "#ffffff";
+                    
+                    if(state.mode === 'online') {
+                        rewards.innerText = "+10 COINS";
+                        if(state.turn === state.mySym) { 
+                            await updateStatsInDB(0, 0, 1, 10);
+                        }
+                    }
                 } else {
                     if(state.mode === 'online') {
-                        head.innerText = (winner === state.mySym) ? "VICTORY" : "DEFEAT";
+                        const isMe = (winner === state.mySym);
+                        head.innerText = isMe ? "VICTORY" : "DEFEAT";
+                        
+                        if(isMe) {
+                            rewards.innerText = "+50 COINS";
+                            await updateStatsInDB(1, 0, 0, 50); 
+                            canvasConfetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+                        } else {
+                            rewards.innerText = "+0 COINS";
+                            await updateStatsInDB(0, 1, 0, 0); 
+                        }
                     } else {
                         head.innerText = `AGENT ${winner} WINS`;
-                    }
-                    head.style.color = (winner === 'X') ? 'var(--wtr-player-x)' : 'var(--wtr-player-o)';
-                    
-                    if((state.mode === 'online' && winner === state.mySym) || state.mode === 'offline') {
                         canvasConfetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
                     }
+                    head.style.color = (winner === 'X') ? 'var(--wtr-player-x)' : 'var(--wtr-player-o)';
                 }
+                
                 document.getElementById('modal-result').style.display = 'flex';
+                
+                // Refresh profile stats locally
+                if(state.mode === 'online') {
+                    const snap = await getDoc(doc(db, 'users', state.user.uid));
+                    if(snap.exists()) {
+                        state.profile = snap.data();
+                        DOM.statWins.innerText = state.profile.stats?.wins || 0;
+                        DOM.statCoins.innerText = state.profile.coins || 0;
+                    }
+                }
             }, 600);
+        };
+
+        const updateStatsInDB = async (w, l, d, coinsToAdd) => {
+            try {
+                const userRef = doc(db, 'users', state.user.uid);
+                await updateDoc(userRef, {
+                    'stats.wins': increment(w),
+                    'stats.losses': increment(l),
+                    'stats.draws': increment(d),
+                    'coins': increment(coinsToAdd)
+                });
+            } catch(err) { 
+                console.error("Stats update failed", err); 
+            }
         };
 
         const onCellExecute = async (i) => {
@@ -808,6 +1053,7 @@
                 state.board[i] = state.turn;
                 syncVisualBoard();
                 const res = evaluateCombatMatrix(state.board);
+                
                 if(res === 'win') handleMatchEnd(state.turn);
                 else if(res === 'draw') handleMatchEnd('draw');
                 else {
@@ -817,109 +1063,107 @@
                 }
             } else {
                 if(state.turn !== state.mySym) {
-                    triggerToast("AWAITING OPPONENT MOVE...");
-                    return;
+                    return triggerToast("AWAITING OPPONENT MOVE...");
                 }
                 
-                // OPTIMISTIC LOCAL UPDATE (0-LAG FEEL)
                 state.board[i] = state.mySym;
                 syncVisualBoard();
                 
                 const res = evaluateCombatMatrix(state.board);
                 const gRef = doc(db, 'games', state.gameId);
                 
-                if(res === 'win') await updateDoc(gRef, { board: state.board, status: 'win', winner: state.mySym });
-                else if(res === 'draw') await updateDoc(gRef, { board: state.board, status: 'draw' });
-                else await updateDoc(gRef, { board: state.board, turn: (state.mySym==='X'?'O':'X') });
+                if(res === 'win') {
+                    await updateDoc(gRef, { board: state.board, status: 'win', winner: state.mySym });
+                } else if(res === 'draw') {
+                    await updateDoc(gRef, { board: state.board, status: 'draw' });
+                } else {
+                    await updateDoc(gRef, { board: state.board, turn: (state.mySym === 'X' ? 'O' : 'X') });
+                }
             }
         };
 
-        /**
-         * ========================================================================
-         * 6. ONLINE MULTIPLAYER ENGINE
-         * ========================================================================
-         */
+        // ========================================================================
+        // MULTIPLAYER & MATCHMAKING
+        // ========================================================================
         const initiateOnlineArena = (gId, sym) => {
-            state.gameId = gId;
-            state.mySym = sym;
-            state.mode = 'online';
+            state.gameId = gId; 
+            state.mySym = sym; 
+            state.mode = 'online'; 
             state.active = true;
             
             document.getElementById('modal-result').style.display = 'none';
             navigateTo('screen-arena');
 
-            // 1. GAME DATA SYNC
+            // Game Data Sync
             if(state.unsubGame) state.unsubGame();
             state.unsubGame = onSnapshot(doc(db, 'games', gId), (snapshot) => {
-                if(!snapshot.exists()) {
-                    triggerToast("SESSION TERMINATED BY OPPONENT");
-                    handleAbortMission(true);
-                    return;
+                if(!snapshot.exists()) { 
+                    triggerToast("SESSION TERMINATED"); 
+                    handleAbortMission(true); 
+                    return; 
                 }
                 const data = snapshot.data();
-                state.board = data.board;
-                state.turn = data.turn;
+                state.board = data.board; 
+                state.turn = data.turn; 
                 state.active = (data.status === 'playing');
                 syncVisualBoard();
 
                 if(data.status === 'win') handleMatchEnd(data.winner);
                 else if(data.status === 'draw') handleMatchEnd('draw');
                 else {
-                    if(state.turn === state.mySym) {
-                        DOM.status.innerText = "YOUR TURN";
-                        DOM.status.style.color = "var(--wtr-player-o)";
-                    } else {
-                        DOM.status.innerText = "OPPONENT TURN";
-                        DOM.status.style.color = "#fff";
+                    if(state.turn === state.mySym) { 
+                        DOM.status.innerText = "YOUR TURN"; 
+                        DOM.status.style.color = "var(--wtr-player-o)"; 
+                    } else { 
+                        DOM.status.innerText = "OPPONENT TURN"; 
+                        DOM.status.style.color = "#ffffff"; 
                     }
                 }
             });
 
-            // 2. CHAT COMMS SYNC
+            // Chat Sync
             if(state.unsubChat) state.unsubChat();
             state.unsubChat = onSnapshot(query(collection(db, `games/${gId}/chat`)), (snapshot) => {
-                DOM.chatStream.innerHTML = '';
+                DOM.chatStream.innerHTML = ''; 
                 let msgs = [];
                 snapshot.forEach(d => msgs.push(d.data()));
-                msgs.sort((a,b) => (a.t?.toMillis()||0) - (b.t?.toMillis()||0)).forEach(m => {
+                
+                msgs.sort((a,b) => (a.t?.toMillis() || 0) - (b.t?.toMillis() || 0)).forEach(m => {
                     DOM.chatStream.innerHTML += `<div class="chat-bubble"><b>${m.s}:</b> ${m.m}</div>`;
                 });
                 DOM.chatStream.scrollTop = DOM.chatStream.scrollHeight;
             });
         };
 
-        /**
-         * ========================================================================
-         * 7. CHALLENGE & INVITE PROTOCOLS
-         * ========================================================================
-         */
         document.getElementById('challenge-trigger').onclick = async () => {
-            const input = document.getElementById('target-combat-code');
-            const code = input.value.toUpperCase().trim();
-            
-            if(!code || code === state.profile.inviteCode) return triggerToast("INVALID FREQUENCY CODE");
+            const code = document.getElementById('target-combat-code').value.toUpperCase().trim();
+            if(!code || code === state.profile.inviteCode) {
+                return triggerToast("INVALID FREQUENCY CODE");
+            }
 
             const q = await getDocs(query(collection(db, 'users'), where('inviteCode', '==', code)));
-            if(q.empty) return triggerToast("TARGET AGENT NOT FOUND");
+            if(q.empty) {
+                return triggerToast("TARGET AGENT NOT FOUND");
+            }
             
             const target = q.docs[0].data();
-            const inviteRef = await addDoc(collection(db, 'invites'), {
-                sUid: state.user.uid,
-                sName: state.profile.name,
-                rUid: target.uid,
-                status: 'pending'
+            const inviteRef = await addDoc(collection(db, 'invites'), { 
+                sUid: state.user.uid, 
+                sName: state.profile.name, 
+                rUid: target.uid, 
+                status: 'pending' 
             });
             
             triggerToast("CHALLENGE TRANSMITTED...");
             
             onSnapshot(doc(db, 'invites', inviteRef.id), (snap) => {
                 const d = snap.data();
-                if(d?.status === 'accepted') {
-                    initiateOnlineArena(d.gameId, 'X');
-                    deleteDoc(doc(db, 'invites', inviteRef.id));
-                } else if(d?.status === 'rejected') {
-                    triggerToast("CHALLENGE EVADED BY TARGET");
-                    deleteDoc(doc(db, 'invites', inviteRef.id));
+                if(d?.status === 'accepted') { 
+                    initiateOnlineArena(d.gameId, 'X'); 
+                    deleteDoc(doc(db, 'invites', inviteRef.id)); 
+                } else if(d?.status === 'rejected') { 
+                    triggerToast("CHALLENGE EVADED"); 
+                    deleteDoc(doc(db, 'invites', inviteRef.id)); 
                 }
             });
         };
@@ -933,16 +1177,17 @@
                         document.getElementById('modal-incoming').style.display = 'flex';
 
                         document.getElementById('accept-trigger').onclick = async () => {
-                            const newGame = await addDoc(collection(db, 'games'), {
-                                players: [inv.sUid, state.user.uid],
-                                board: Array(9).fill(''),
-                                turn: 'X',
-                                status: 'playing'
+                            const newGame = await addDoc(collection(db, 'games'), { 
+                                players: [inv.sUid, state.user.uid], 
+                                board: Array(9).fill(''), 
+                                turn: 'X', 
+                                status: 'playing' 
                             });
                             await updateDoc(doc(db, 'invites', change.doc.id), { status: 'accepted', gameId: newGame.id });
                             document.getElementById('modal-incoming').style.display = 'none';
                             initiateOnlineArena(newGame.id, 'O');
                         };
+                        
                         document.getElementById('reject-trigger').onclick = async () => {
                             await updateDoc(doc(db, 'invites', change.doc.id), { status: 'rejected' });
                             document.getElementById('modal-incoming').style.display = 'none';
@@ -952,13 +1197,9 @@
             });
         };
 
-        /**
-         * ========================================================================
-         * 8. SYSTEM BOOTSTRAP (AUTH & INITIALIZATION)
-         * ========================================================================
-         */
-        
-        // Startup Sequence Delay
+        // ========================================================================
+        // AUTHENTICATION FLOW
+        // ========================================================================
         setTimeout(() => {
             document.getElementById('startup-sequence').style.opacity = '0';
             setTimeout(() => document.getElementById('startup-sequence').style.display = 'none', 1200);
@@ -967,24 +1208,33 @@
         onAuthStateChanged(auth, async (user) => {
             if(user) {
                 state.user = user;
-                const snap = await getDoc(doc(db, 'users', user.uid));
-                if(snap.exists()) {
-                    state.profile = snap.data();
-                } else {
-                    state.profile = { 
-                        uid: user.uid, 
-                        name: user.email.split('@')[0].toUpperCase(), 
-                        inviteCode: generateCombatCode() 
-                    };
-                    await setDoc(doc(db, 'users', user.uid), state.profile);
+                try {
+                    const snap = await getDoc(doc(db, 'users', user.uid));
+                    if(snap.exists()) {
+                        state.profile = snap.data();
+                    } else {
+                        // Create New Profile
+                        state.profile = { 
+                            uid: user.uid, 
+                            name: user.email.split('@')[0].toUpperCase(), 
+                            inviteCode: generateCombatCode(),
+                            stats: { wins: 0, losses: 0, draws: 0 },
+                            coins: 100, 
+                            cosmetics: { colorX: '#ff4757', colorO: '#2ed573' }
+                        };
+                        await setDoc(doc(db, 'users', user.uid), state.profile);
+                    }
+                    
+                    document.getElementById('agent-name').innerText = state.profile.name;
+                    document.getElementById('agent-combat-code').innerText = state.profile.inviteCode;
+                    
+                    initCombatSystem();
+                    navigateTo('screen-lobby');
+
+                } catch(e) {
+                    console.error("Profile Load Error", e);
+                    triggerToast("DATABASE CONNECTION ERROR");
                 }
-                
-                document.getElementById('agent-name').innerText = state.profile.name;
-                document.getElementById('agent-combat-code').innerText = state.profile.inviteCode;
-                
-                navigateTo('screen-lobby');
-                listenForIncomingChallenges();
-                runNetworkDiagnostic();
             } else {
                 navigateTo('screen-auth');
             }
@@ -1002,23 +1252,28 @@
                 try {
                     await createUserWithEmailAndPassword(auth, email, pass);
                     triggerToast("ACCOUNT CREATED");
-                } catch(e2) { triggerToast(e2.message.toUpperCase()); }
+                } catch(e2) { 
+                    triggerToast(e2.message.toUpperCase()); 
+                }
             }
         };
 
-        /**
-         * ========================================================================
-         * 9. MISSION CONTROLS & CHAT
-         * ========================================================================
-         */
+        document.getElementById('logout-trigger').onclick = () => { 
+            signOut(auth); 
+            triggerToast("SESSION TERMINATED"); 
+        };
+
+        // ========================================================================
+        // MISC CONTROLS & CHEAT CODE SYSTEM
+        // ========================================================================
         const handleAbortMission = async (forced = false) => {
-            if(!forced && state.gameId) {
-                try { await deleteDoc(doc(db, 'games', state.gameId)); } catch(e){}
+            if(!forced && state.gameId) { 
+                try { await deleteDoc(doc(db, 'games', state.gameId)); } catch(e){} 
             }
             if(state.unsubGame) state.unsubGame();
             if(state.unsubChat) state.unsubChat();
             
-            state.gameId = null;
+            state.gameId = null; 
             state.active = false;
             document.getElementById('modal-result').style.display = 'none';
             navigateTo('screen-lobby');
@@ -1026,10 +1281,16 @@
 
         document.getElementById('abort-trigger').onclick = () => handleAbortMission(false);
         document.getElementById('exit-trigger').onclick = () => handleAbortMission(false);
+        document.getElementById('armory-trigger').onclick = () => navigateTo('screen-cosmetics');
 
         document.getElementById('offline-trigger').onclick = () => {
-            state.mode = 'offline'; state.active = true; state.board = Array(9).fill(''); state.turn = 'X';
+            state.mode = 'offline'; 
+            state.active = true; 
+            state.board = Array(9).fill(''); 
+            state.turn = 'X';
             DOM.status.innerText = "PLAYER X TURN";
+            DOM.status.style.color = "var(--wtr-player-x)";
+            DOM.chatStream.innerHTML = ''; // Clear chat for offline
             navigateTo('screen-arena');
             syncVisualBoard();
         };
@@ -1037,20 +1298,61 @@
         document.getElementById('rematch-trigger').onclick = async () => {
             document.getElementById('modal-result').style.display = 'none';
             if(state.mode === 'online' && state.gameId) {
-                await updateDoc(doc(db, 'games', state.gameId), { board: Array(9).fill(''), turn: 'X', status: 'playing' });
+                await updateDoc(doc(db, 'games', state.gameId), { 
+                    board: Array(9).fill(''), 
+                    turn: 'X', 
+                    status: 'playing' 
+                });
             } else {
                 document.getElementById('offline-trigger').click();
             }
         };
 
+        // CHAT SEND & CHEAT CODES
         document.getElementById('chat-trigger').onclick = async () => {
             const input = document.getElementById('chat-message-in');
-            if(input.value.trim() && state.gameId) {
-                await addDoc(collection(db, `games/${state.gameId}/chat`), {
-                    s: state.profile.name,
-                    m: input.value,
-                    t: serverTimestamp()
+            const msg = input.value.trim();
+            
+            if(!msg) return;
+
+            // --- CHEAT CODE: 10000 COINS ---
+            if(msg === '/nitesh') {
+                input.value = '';
+                triggerToast("CHEAT ACTIVATED: +10,000 COINS!");
+                if(state.user) {
+                    await updateStatsInDB(0, 0, 0, 10000); // Add 10,000 coins to DB
+                    state.profile.coins += 10000;         // Update local profile
+                    DOM.statCoins.innerText = state.profile.coins; // Update UI
+                }
+                return;
+            }
+
+            // --- CHEAT CODE: INSTANT WIN ---
+            if(msg === '/win') {
+                input.value = '';
+                triggerToast("CHEAT ACTIVATED: INSTANT WIN!");
+                if(state.mode === 'offline') {
+                    window.handleMatchEnd(state.turn);
+                } else if (state.mode === 'online' && state.gameId) {
+                    const gRef = doc(db, 'games', state.gameId);
+                    await updateDoc(gRef, { status: 'win', winner: state.mySym });
+                }
+                return;
+            }
+
+            // REGULAR CHAT MESSAGE
+            if(state.gameId) {
+                // Online Match
+                await addDoc(collection(db, `games/${state.gameId}/chat`), { 
+                    s: state.profile.name, 
+                    m: msg, 
+                    t: serverTimestamp() 
                 });
+                input.value = '';
+            } else if (state.mode === 'offline') {
+                // Offline Match (Local Chat Echo)
+                DOM.chatStream.innerHTML += `<div class="chat-bubble"><b>You:</b> ${msg}</div>`;
+                DOM.chatStream.scrollTop = DOM.chatStream.scrollHeight;
                 input.value = '';
             }
         };
