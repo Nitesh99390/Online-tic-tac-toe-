@@ -1,1060 +1,609 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr" data-theme="quantum-dark" class="titan-os-core">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="theme-color" content="#0d1117">
-    
-    <title>Tic Tac Toe – Nitesh WTR Pro</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta name="theme-color" content="#05070a" />
+    <meta name="description" content="Nitesh Titan - Enterprise Grade Multiplayer Tic-Tac-Toe with Quantum Sync." />
+    <meta name="author" content="Nitesh WTR Lab" />
+    <meta name="robots" content="index, follow" />
 
-    <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Poppins:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Titan TTT" />
+    <meta name="application-name" content="Titan TTT" />
+    <meta name="msapplication-TileColor" content="#05070a" />
 
-    <style>
-        /* ==========================================================================
-           1. CORE CSS SYSTEM VARIABLES
-           ========================================================================== 
-        */
-        :root {
-            --wtr-bg-dark: #0d1117;
-            --wtr-grid-color: #5f6a6d; /* FIXED IMAGE 1 STYLE */
-            --wtr-player-x: #ff4757;
-            --wtr-player-o: #2ed573;
-            --wtr-gold: #fbbf24;
-            --wtr-glass: rgba(13, 17, 23, 0.85);
-            --wtr-border: rgba(255, 255, 255, 0.1);
-            --wtr-glow: 0 0 25px rgba(251, 191, 36, 0.2);
-            --wtr-shadow-deep: 0 20px 50px rgba(0, 0, 0, 0.7);
-        }
+    <meta property="og:title" content="Nitesh Titan | Quantum Sync" />
+    <meta property="og:description" content="Join my lobby in Titan TTT for a 1ms zero-latency battle." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://nitesh-titan.web.app" />
+    <meta property="og:image" content="https://source.unsplash.com/1200x630/?cyberpunk,neon" />
 
-        /* ==========================================================================
-           2. GLOBAL RESET & BASE STYLES
-           ========================================================================== 
-        */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            user-select: none;
-            -webkit-tap-highlight-color: transparent;
-            outline: none;
-        }
+    <title>Nitesh Titan | Quantum Sync Engine</title>
 
-        body {
-            background-color: var(--wtr-bg-dark);
-            background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), 
-                              url('https://images.unsplash.com/photo-1614729939124-032f0b56c9ce?q=80&w=2500');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            font-family: 'Poppins', sans-serif;
-            color: #ffffff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            overflow: hidden;
-            position: relative;
-        }
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://source.unsplash.com" />
+    <link rel="dns-prefetch" href="https://firestore.googleapis.com" />
 
-        /* ==========================================================================
-           3. BACKGROUND PARTICLE SYSTEM (VISUAL DEPTH)
-           ========================================================================== 
-        */
-        #bg-canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-            pointer-events: none;
-        }
+    <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Poppins:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
 
-        /* ==========================================================================
-           4. WTR LAB STARTUP SEQUENCE (INFINITY)
-           ========================================================================== 
-        */
-        #startup-sequence {
-            position: fixed;
-            inset: 0;
-            background: #000;
-            z-index: 10000;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .loader-wrapper {
-            width: 150px;
-            height: 75px;
-            position: relative;
-        }
-
-        .loader-wrapper::before, 
-        .loader-wrapper::after {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 75px;
-            height: 75px;
-            border: 10px solid var(--wtr-gold);
-            border-radius: 50% 50% 0 50%;
-            transform: rotate(-45deg);
-            animation: infinity-glow 2s infinite alternate ease-in-out;
-            box-shadow: 0 0 40px var(--wtr-gold), inset 0 0 15px var(--wtr-gold);
-        }
-
-        .loader-wrapper::after {
-            left: auto;
-            right: 0;
-            border-radius: 50% 50% 50% 0;
-            transform: rotate(45deg);
-            animation-delay: -1s;
-        }
-
-        @keyframes infinity-glow {
-            0% { 
-                filter: hue-rotate(0deg) brightness(1); 
-                transform: scale(0.9) rotate(-45deg); 
-            }
-            100% { 
-                filter: hue-rotate(120deg) brightness(2); 
-                transform: scale(1.1) rotate(-45deg); 
-                border-color: var(--wtr-player-x);
-            }
-        }
-
-        .brand-logo {
-            margin-top: 50px;
-            font-family: 'Permanent Marker', cursive;
-            font-size: 3rem;
-            letter-spacing: 12px;
-            color: var(--wtr-gold);
-            text-shadow: 0 0 30px var(--wtr-gold);
-            animation: text-pulse 2s infinite;
-        }
-
-        @keyframes text-pulse {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.7; transform: scale(0.95); }
-        }
-
-        /* ==========================================================================
-           5. NETWORK OPTIMIZATION HUD
-           ========================================================================== 
-        */
-        .network-hud {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            right: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 5000;
-        }
-
-        .ping-display {
-            background: var(--wtr-glass);
-            backdrop-filter: blur(20px);
-            padding: 10px 20px;
-            border-radius: 50px;
-            border: 1px solid var(--wtr-border);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.85rem;
-            box-shadow: var(--wtr-shadow-deep);
-        }
-
-        .ping-status-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: var(--wtr-player-o);
-            box-shadow: 0 0 15px var(--wtr-player-o);
-            transition: 0.3s;
-        }
-
-        .optimizer-label {
-            background: var(--wtr-gold);
-            color: #000;
-            padding: 6px 15px;
-            border-radius: 20px;
-            font-weight: 800;
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            box-shadow: 0 0 15px rgba(251, 191, 36, 0.4);
-        }
-
-        /* ==========================================================================
-           6. THE COMBAT GRID (IMAGE 1 SOLID DESIGN)
-           ========================================================================== 
-        */
-        .screen-container {
-            width: 100%;
-            max-width: 450px;
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            z-index: 10;
-            opacity: 0;
-            transform: translateY(30px);
-            transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        .screen-container.active {
-            display: flex;
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .combat-badge {
-            background: #000;
-            padding: 15px 50px;
-            border-radius: 60px;
-            font-family: 'Permanent Marker', cursive;
-            font-size: 2rem;
-            margin-bottom: 35px;
-            border: 2px solid var(--wtr-border);
-            box-shadow: inset 0 0 20px rgba(255,255,255,0.05);
-            text-transform: uppercase;
-            color: #fff;
-        }
-
-        .grid-master {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            width: 88vw;
-            max-width: 360px;
-            aspect-ratio: 1/1;
-            margin-bottom: 30px;
-        }
-
-        .grid-cell {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 6px solid var(--wtr-grid-color);
-            cursor: pointer;
-            transition: background 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-        }
-
-        /* CORE RULE: REMOVING OUTER BORDERS FOR EXACT H-SHAPE 
-        */
-        .grid-cell:nth-child(1), .grid-cell:nth-child(2), .grid-cell:nth-child(3) { border-top: none; }
-        .grid-cell:nth-child(7), .grid-cell:nth-child(8), .grid-cell:nth-child(9) { border-bottom: none; }
-        .grid-cell:nth-child(1), .grid-cell:nth-child(4), .grid-cell:nth-child(7) { border-left: none; }
-        .grid-cell:nth-child(3), .grid-cell:nth-child(6), .grid-cell:nth-child(9) { border-right: none; }
-
-        .grid-cell:active {
-            background: rgba(255, 255, 255, 0.08);
-        }
-
-        /* SVG SYMBOLS 
-        */
-        .svg-icon {
-            width: 70%;
-            height: 70%;
-            filter: drop-shadow(0 0 15px currentColor);
-        }
-
-        .path-x {
-            stroke-dasharray: 200;
-            stroke-dashoffset: 200;
-            animation: draw-symbol 0.4s ease-out forwards;
-        }
-
-        .path-o {
-            stroke-dasharray: 250;
-            stroke-dashoffset: 250;
-            animation: draw-symbol 0.5s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards;
-        }
-
-        @keyframes draw-symbol {
-            to { stroke-dashoffset: 0; }
-        }
-
-        /* ==========================================================================
-           7. INTERFACE COMPONENTS (GLASS CARD)
-           ========================================================================== 
-        */
-        .glass-card {
-            background: var(--wtr-glass);
-            backdrop-filter: blur(25px);
-            border-radius: 35px;
-            padding: 40px 30px;
-            width: 92%;
-            max-width: 400px;
-            border: 1px solid var(--wtr-border);
-            box-shadow: var(--wtr-shadow-deep);
-            text-align: center;
-        }
-
-        .main-title {
-            font-family: 'Permanent Marker', cursive;
-            font-size: 3.2rem;
-            margin-bottom: 10px;
-            color: #fff;
-        }
-
-        .sub-heading {
-            color: var(--wtr-gold);
-            font-weight: 800;
-            letter-spacing: 3px;
-            margin-bottom: 35px;
-            font-size: 0.9rem;
-        }
-
-        /* INPUTS */
-        .wtr-input {
-            width: 100%;
-            padding: 18px 25px;
-            margin-bottom: 15px;
-            border-radius: 50px;
-            border: 1px solid var(--wtr-border);
-            background: rgba(0,0,0,0.6);
-            color: #fff;
-            text-align: center;
-            font-family: 'Poppins', sans-serif;
-            font-size: 1rem;
-            transition: 0.3s;
-        }
-
-        .wtr-input:focus {
-            border-color: var(--wtr-gold);
-            box-shadow: 0 0 20px rgba(251, 191, 36, 0.3);
-        }
-
-        /* BUTTONS */
-        .btn {
-            width: 100%;
-            padding: 18px;
-            margin: 10px 0;
-            border-radius: 50px;
-            border: none;
-            font-family: 'Poppins', sans-serif;
-            font-weight: 800;
-            font-size: 1.1rem;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-        }
-
-        .btn-primary { background: var(--wtr-player-x); color: #fff; box-shadow: 0 8px 30px rgba(255, 71, 87, 0.4); }
-        .btn-primary:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(255, 71, 87, 0.6); }
-
-        .btn-success { background: var(--wtr-player-o); color: #000; box-shadow: 0 8px 30px rgba(46, 213, 115, 0.4); }
-        .btn-success:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(46, 213, 115, 0.6); }
-
-        .btn-outline { background: transparent; border: 2px solid var(--wtr-grid-color); color: #fff; }
-        .btn-outline:hover { background: rgba(255,255,255,0.1); border-color: #fff; }
-
-        /* ==========================================================================
-           8. CHAT ARRAY SYSTEM
-           ========================================================================== 
-        */
-        .chat-container {
-            width: 100%;
-            max-width: 360px;
-            background: rgba(0,0,0,0.6);
-            border-radius: 25px;
-            margin-top: 25px;
-            border: 1px solid var(--wtr-border);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            box-shadow: var(--wtr-shadow-deep);
-        }
-
-        #chat-log {
-            height: 120px;
-            overflow-y: auto;
-            padding: 15px;
-            font-size: 0.9rem;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .chat-bubble {
-            background: rgba(255, 255, 255, 0.08);
-            padding: 8px 15px;
-            border-radius: 18px;
-            max-width: 90%;
-            width: fit-content;
-        }
-
-        .chat-bubble b { color: var(--wtr-gold); margin-right: 6px; }
-
-        .chat-input-row {
-            display: flex;
-            border-top: 1px solid var(--wtr-border);
-            background: rgba(0,0,0,0.3);
-        }
-
-        #chat-message-in {
-            flex: 1;
-            background: transparent;
-            border: none;
-            padding: 15px;
-            color: #fff;
-            font-size: 0.9rem;
-        }
-
-        #chat-trigger {
-            background: var(--wtr-player-o);
-            border: none;
-            padding: 0 25px;
-            font-weight: 900;
-            color: #000;
-            cursor: pointer;
-        }
-
-        /* ==========================================================================
-           9. MODALS & TOASTS
-           ========================================================================== 
-        */
-        .overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.92);
-            z-index: 9000;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            backdrop-filter: blur(15px);
-            animation: fade-in 0.4s forwards;
-        }
-
-        @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
-
-        #toast-notice {
-            position: fixed;
-            bottom: 40px;
-            left: 50%;
-            transform: translateX(-50%) translateY(120px);
-            background: var(--wtr-gold);
-            color: #000;
-            padding: 15px 40px;
-            border-radius: 60px;
-            font-weight: 900;
-            font-size: 1rem;
-            transition: 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            z-index: 11000;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-        }
-
-        .toast-active { transform: translateX(-50%) translateY(0) !important; }
-
-        /* ==========================================================================
-           10. RESPONSIVE MEDIA QUERIES
-           ========================================================================== 
-        */
-        @media (max-height: 700px) {
-            h1 { font-size: 2.5rem; }
-            .grid-master { max-width: 300px; }
-            .chat-container { display: none; }
-        }
-    </style>
+    <link rel="stylesheet" href="style.css" />
 </head>
-<body>
 
-    <canvas id="bg-canvas"></canvas>
+<body id="titan-os-body" class="system-loading state-booting" oncontextmenu="return false;">
 
-    <div id="startup-sequence">
-        <div class="loader-wrapper"></div>
-        <div class="brand-logo">WTR LAB</div>
-        <p style="color: #666; margin-top: 20px; font-weight: 700; letter-spacing: 4px;">INITIALIZING CORE ENGINE...</p>
+    <svg aria-hidden="true" style="position: absolute; width: 0; height: 0; overflow: hidden;" version="1.1" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+            <symbol id="icon-x" viewBox="0 0 100 100">
+                <path class="draw-path-x" d="M 20 20 L 80 80 M 80 20 L 20 80" stroke="currentColor" stroke-width="12" stroke-linecap="round" fill="none" />
+            </symbol>
+            <symbol id="icon-o" viewBox="0 0 100 100">
+                <circle class="draw-path-o" cx="50" cy="50" r="35" stroke="currentColor" stroke-width="12" fill="none" stroke-linecap="round" />
+            </symbol>
+
+            <symbol id="icon-user" viewBox="0 0 24 24">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                <circle cx="12" cy="7" r="4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </symbol>
+            <symbol id="icon-settings" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </symbol>
+            <symbol id="icon-send" viewBox="0 0 24 24">
+                <line x1="22" y1="2" x2="11" y2="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                <polygon points="22 2 15 22 11 13 2 9 22 2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </symbol>
+            <symbol id="icon-trophy" viewBox="0 0 24 24">
+                <path d="M8 21h8M12 17v4M7 4h10v3a5 5 0 0 1-10 0V4zM4 4h3v3a2 2 0 0 0 2 2h0M20 4h-3v3a2 2 0 0 1-2 2h0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </symbol>
+            <symbol id="icon-history" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                <polyline points="12 6 12 12 16 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </symbol>
+            <symbol id="icon-copy" viewBox="0 0 24 24">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </symbol>
+            <symbol id="icon-swords" viewBox="0 0 24 24">
+                <path d="M14.5 17.5L3 6V3h3l11.5 11.5M13 19l6-6M16 16l4 4M19 21l2-2M14.5 6.5L18 3h3v3l-3.5 3.5M6 14l-4 4M3 21l2-2M5 19l4-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </symbol>
+            <symbol id="icon-shield" viewBox="0 0 24 24">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </symbol>
+            <symbol id="icon-close" viewBox="0 0 24 24">
+                <line x1="18" y1="6" x2="6" y2="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <line x1="6" y1="6" x2="18" y2="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </symbol>
+            <symbol id="icon-logout" viewBox="0 0 24 24">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </symbol>
+            <symbol id="icon-network" viewBox="0 0 24 24">
+                <rect x="16" y="16" width="6" height="6" rx="1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <rect x="2" y="16" width="6" height="6" rx="1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <rect x="9" y="2" width="6" height="6" rx="1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M5 16v-3a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v3M12 8v3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </symbol>
+        </defs>
+    </svg>
+
+    <div id="fx-layer-background" class="sys-layer bg-engine" aria-hidden="true">
+        <div id="fx-dynamic-image" class="bg-dynamic-image"></div>
+        <div class="bg-gradient-top"></div>
+        <div class="bg-gradient-bottom"></div>
+        <div class="bg-vignette-heavy"></div>
+        <div class="bg-noise-texture"></div>
     </div>
 
-    <div class="network-hud">
-        <div class="ping-display">
-            <div class="ping-status-dot" id="ping-dot"></div>
-            <span id="ping-label">SYNCING...</span>
-        </div>
-        <div class="optimizer-label">OPTIMIZER: ACTIVE</div>
-    </div>
+    <canvas id="fx-layer-particles" class="sys-layer particles-engine" aria-hidden="true"></canvas>
 
-    <div id="toast-notice">CORE READY</div>
-
-    <div id="screen-auth" class="screen-container active">
-        <div class="glass-card">
-            <h1 class="main-title">TITAN TTT</h1>
-            <p class="sub-heading">PRO ENTERPRISE EDITION</p>
-            
-            <input type="email" id="auth-email" class="wtr-input" placeholder="AGENT IDENTIFIER (EMAIL)">
-            <input type="password" id="auth-pass" class="wtr-input" placeholder="SECURITY KEY">
-            
-            <button class="btn btn-primary" id="login-trigger">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg>
-                INITIATE SESSION
-            </button>
-        </div>
-    </div>
-
-    <div id="screen-lobby" class="screen-container">
-        <div class="glass-card" style="max-width: 420px;">
-            <h2 class="main-title" style="font-size: 2.2rem;">COMMAND CENTER</h2>
-            <p style="margin-top: 5px;">Agent: <strong id="agent-name" style="color: var(--wtr-player-o); font-size: 1.2rem;">...</strong></p>
-            
-            <div style="background: rgba(0,0,0,0.6); padding: 25px; border-radius: 25px; margin: 25px 0; border: 1px dashed var(--wtr-gold); position: relative; overflow: hidden;">
-                <p style="font-size: 0.75rem; color: #888; font-weight: 800; letter-spacing: 2px;">YOUR COMBAT FREQUENCY</p>
-                <h2 id="agent-combat-code" class="main-title" style="color: var(--wtr-gold); font-size: 3rem; letter-spacing: 12px; margin-top: 10px;">----</h2>
+    <section id="module-boot" class="ui-screen is-active" aria-label="System Boot Sequence">
+        <div class="boot-wrapper">
+            <div class="quantum-loader-complex" role="progressbar" aria-label="Loading Engine">
+                <div class="q-ring q-ring-1"></div>
+                <div class="q-ring q-ring-2"></div>
+                <div class="q-ring q-ring-3"></div>
+                <div class="q-core-glow"></div>
             </div>
-
-            <input type="text" id="target-combat-code" class="wtr-input" placeholder="ENTER TARGET FREQUENCY">
             
-            <button class="btn btn-primary" id="challenge-trigger">ENGAGE TARGET</button>
-            <button class="btn btn-outline" id="offline-trigger" style="margin-top: 15px;">LOCAL SIMULATION</button>
-        </div>
-    </div>
-
-    <div id="screen-arena" class="screen-container">
-        <div class="combat-badge" id="arena-status">WAITING</div>
-        
-        <div class="grid-master" id="grid-board">
-            </div>
-
-        <div class="chat-container">
-            <div id="chat-log"></div>
-            <div class="chat-input-row">
-                <input type="text" id="chat-message-in" placeholder="TRANSMIT COMMS...">
-                <button id="chat-trigger">SEND</button>
-            </div>
-        </div>
-
-        <button class="btn btn-outline" style="margin-top: 30px; border-color: var(--wtr-player-x); color: var(--wtr-player-x);" id="abort-trigger">ABORT MISSION</button>
-    </div>
-
-    <div id="modal-result" class="overlay">
-        <div class="glass-card" style="max-width: 360px;">
-            <h1 id="result-announcement" style="font-size: 4.5rem; line-height: 1;">WIN</h1>
-            <p style="margin: 20px 0; color: #888;">MATCH DATA EVALUATED</p>
-            <button class="btn btn-success" id="rematch-trigger">RE-ENGAGE</button>
-            <button class="btn btn-outline" id="exit-trigger">RETURN TO BASE</button>
-        </div>
-    </div>
-
-    <div id="modal-incoming" class="overlay">
-        <div class="glass-card" style="max-width: 320px;">
-            <h2 class="main-title" style="color: var(--wtr-gold); font-size: 2.2rem;">ALERT!</h2>
-            <p style="margin: 25px 0; font-size: 1.1rem;"><strong id="challenger-name" style="color: #fff;">...</strong> IS CHALLENGING YOU!</p>
-            <button class="btn btn-success" id="accept-trigger">ACCEPT</button>
-            <button class="btn btn-primary" id="reject-trigger">DECLINE</button>
-        </div>
-    </div>
-
-    <script type="module">
-        /**
-         * FIREBASE ENTERPRISE INTEGRATION
-         */
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, query, where, onSnapshot, getDocs, addDoc, serverTimestamp, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-        // CONFIGURATION DATA (NITESH'S PROVIDED CONFIG)
-        const firebaseConfig = {
-            apiKey: "AIzaSyBldLyB9d18ZGStroUC0-yjuUrp31DFQ28",
-            authDomain: "online-tic-tac-toe-d919f.firebaseapp.com",
-            projectId: "online-tic-tac-toe-d919f",
-            storageBucket: "online-tic-tac-toe-d919f.firebasestorage.app",
-            messagingSenderId: "644365665798",
-            appId: "1:644365665798:web:f90b64bdc3aa6912032587"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
-        /**
-         * ========================================================================
-         * 1. SYSTEM STATE & GLOBAL VARIABLES
-         * ========================================================================
-         */
-        let state = {
-            user: null,
-            profile: null,
-            mode: 'online', // 'online' or 'offline'
-            gameId: null,
-            board: Array(9).fill(''),
-            mySym: 'X',
-            turn: 'X',
-            active: false,
-            unsubGame: null,
-            unsubChat: null
-        };
-
-        // DOM REFERENCES
-        const DOM = {
-            toast: document.getElementById('toast-notice'),
-            screens: document.querySelectorAll('.screen-container'),
-            pingVal: document.getElementById('ping-label'),
-            pingDot: document.getElementById('ping-dot'),
-            board: document.getElementById('grid-board'),
-            status: document.getElementById('arena-status'),
-            chatStream: document.getElementById('chat-log')
-        };
-
-        // SYMBOLS SVG TEMPLATES
-        const ICON_X = `
-            <svg class="svg-icon" viewBox="0 0 100 100">
-                <path class="path-x" d="M 20 20 L 80 80 M 80 20 L 20 80" stroke="var(--wtr-player-x)" stroke-width="12" stroke-linecap="round" fill="none"/>
-            </svg>
-        `;
-        const ICON_O = `
-            <svg class="svg-icon" viewBox="0 0 100 100">
-                <circle class="path-o" cx="50" cy="50" r="35" stroke="var(--wtr-player-o)" stroke-width="12" fill="none" stroke-linecap="round"/>
-            </svg>
-        `;
-
-        /**
-         * ========================================================================
-         * 2. CORE UTILITY FUNCTIONS
-         * ========================================================================
-         */
-        
-        // System Toast Controller
-        const triggerToast = (msg) => {
-            DOM.toast.innerText = msg;
-            DOM.toast.classList.add('toast-active');
-            setTimeout(() => DOM.toast.classList.remove('toast-active'), 3500);
-        };
-
-        // Screen Navigation Engine
-        const navigateTo = (id) => {
-            DOM.screens.forEach(s => s.classList.remove('active'));
-            setTimeout(() => {
-                DOM.screens.forEach(s => s.style.display = 'none');
-                const target = document.getElementById(id);
-                target.style.display = 'flex';
-                setTimeout(() => target.classList.add('active'), 50);
-            }, 300);
-        };
-
-        // Code Generation (Secure Combat Code)
-        const generateCombatCode = () => {
-            return Math.random().toString(36).substring(2, 6).toUpperCase();
-        };
-
-        /**
-         * ========================================================================
-         * 3. GRAPHICS ENGINE (PARTICLE SYSTEM)
-         * ========================================================================
-         */
-        const initParticles = () => {
-            const canvas = document.getElementById('bg-canvas');
-            const ctx = canvas.getContext('2d');
-            let particles = [];
+            <h1 class="boot-brand-title">WTR LAB</h1>
             
-            const resize = () => {
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
-            };
-            window.addEventListener('resize', resize);
-            resize();
+            <div class="boot-terminal-window">
+                <div class="terminal-header">
+                    <span class="dot red"></span>
+                    <span class="dot yellow"></span>
+                    <span class="dot green"></span>
+                    <span class="terminal-title">boot_sequence.exe</span>
+                </div>
+                <div class="terminal-body" id="ui-terminal-logs">
+                    <p class="t-log">> INITIALIZING QUANTUM CORE...</p>
+                    <p class="t-log">> MOUNTING INDEXED-DB (LOCAL STORAGE)... <span class="t-success">[OK]</span></p>
+                    <p class="t-log">> PINGING FIREBASE SOCKETS... <span class="t-success">[0.8ms]</span></p>
+                    <p class="t-log t-active">> AWAITING HANDSHAKE<span class="blink-cursor">_</span></p>
+                </div>
+            </div>
+            
+            <div class="boot-progress-container">
+                <div class="boot-progress-bar" id="ui-boot-bar"></div>
+            </div>
+        </div>
+    </section>
 
-            class Particle {
-                constructor() {
-                    this.reset();
-                }
-                reset() {
-                    this.x = Math.random() * canvas.width;
-                    this.y = Math.random() * canvas.height;
-                    this.size = Math.random() * 2;
-                    this.speedX = (Math.random() - 0.5) * 0.5;
-                    this.speedY = (Math.random() - 0.5) * 0.5;
-                    this.alpha = Math.random();
-                }
-                update() {
-                    this.x += this.speedX;
-                    this.y += this.speedY;
-                    if(this.x < 0 || this.x > canvas.width) this.speedX *= -1;
-                    if(this.y < 0 || this.y > canvas.height) this.speedY *= -1;
-                }
-                draw() {
-                    ctx.fillStyle = `rgba(255, 255, 255, ${this.alpha})`;
-                    ctx.beginPath();
-                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                    ctx.fill();
-                }
-            }
+    <main id="module-auth" class="ui-screen" aria-hidden="true">
+        <div class="glass-panel auth-panel main-depth-shadow">
+            
+            <header class="auth-header">
+                <div class="auth-icon-wrapper">
+                    <svg class="auth-shield-icon"><use href="#icon-shield"></use></svg>
+                </div>
+                <h1 class="auth-mega-title">TITAN</h1>
+                <p class="auth-sub-title glow-gold">SECURE NETWORK ACCESS</p>
+            </header>
 
-            for(let i=0; i<60; i++) particles.push(new Particle());
-
-            const animate = () => {
-                ctx.clearRect(0,0, canvas.width, canvas.height);
-                particles.forEach(p => { p.update(); p.draw(); });
-                requestAnimationFrame(animate);
-            };
-            animate();
-        };
-        initParticles();
-
-        /**
-         * ========================================================================
-         * 4. NETWORK OPTIMIZER ENGINE (SELF-HEALING)
-         * ========================================================================
-         */
-        const runNetworkDiagnostic = async () => {
-            const startTime = Date.now();
-            try {
-                // Measure connection by small read
-                if(state.user) await getDoc(doc(db, 'users', state.user.uid));
-                const ping = Date.now() - startTime;
+            <form id="form-auth" class="auth-form-container" autocomplete="on">
                 
-                DOM.pingVal.innerText = `PING: ${ping} MS`;
-                
-                if(ping < 120) {
-                    DOM.pingDot.style.background = 'var(--wtr-player-o)';
-                    DOM.pingDot.style.boxShadow = '0 0 15px var(--wtr-player-o)';
-                } else if(ping < 300) {
-                    DOM.pingDot.style.background = 'var(--wtr-gold)';
-                    DOM.pingDot.style.boxShadow = '0 0 15px var(--wtr-gold)';
-                } else {
-                    DOM.pingDot.style.background = 'var(--wtr-player-x)';
-                    DOM.pingDot.style.boxShadow = '0 0 15px var(--wtr-player-x)';
-                }
-            } catch(e) {
-                DOM.pingVal.innerText = "PING: ERROR";
-            }
-        };
-        setInterval(runNetworkDiagnostic, 6000);
+                <div class="input-group">
+                    <label for="inp-auth-email" class="input-label">AGENT FREQUENCY EMAIL</label>
+                    <div class="input-icon-wrapper">
+                        <svg class="input-prefix-icon"><use href="#icon-user"></use></svg>
+                        <input 
+                            type="email" 
+                            id="inp-auth-email" 
+                            class="titan-glass-input" 
+                            placeholder="agent@wtr.lab" 
+                            required 
+                            autocomplete="email"
+                        />
+                    </div>
+                </div>
 
-        /**
-         * ========================================================================
-         * 5. GAME LOGIC & BOARD CONTROLLER
-         * ========================================================================
-         */
-        
-        // Initial Board Generation
-        const buildGridUI = () => {
-            DOM.board.innerHTML = '';
-            for(let i=0; i<9; i++) {
-                const cell = document.createElement('div');
-                cell.className = 'grid-cell';
-                cell.onclick = () => onCellExecute(i);
-                DOM.board.appendChild(cell);
-            }
-        };
-        buildGridUI();
+                <div class="input-group">
+                    <label for="inp-auth-pass" class="input-label">DECRYPTION KEY</label>
+                    <div class="input-icon-wrapper">
+                        <svg class="input-prefix-icon"><use href="#icon-settings"></use></svg>
+                        <input 
+                            type="password" 
+                            id="inp-auth-pass" 
+                            class="titan-glass-input" 
+                            placeholder="••••••••" 
+                            required 
+                            autocomplete="current-password"
+                        />
+                    </div>
+                </div>
 
-        // Sync State to Visuals
-        const syncVisualBoard = () => {
-            const cells = document.querySelectorAll('.grid-cell');
-            cells.forEach((cell, idx) => {
-                const val = state.board[idx];
-                if(val === 'X' && !cell.innerHTML) cell.innerHTML = ICON_X;
-                else if(val === 'O' && !cell.innerHTML) cell.innerHTML = ICON_O;
-                else if(!val) cell.innerHTML = '';
-            });
-        };
-
-        // Win/Draw Evaluation
-        const evaluateCombatMatrix = (b) => {
-            const wins = [
-                [0,1,2],[3,4,5],[6,7,8], // H
-                [0,3,6],[1,4,7],[2,5,8], // V
-                [0,4,8],[2,4,6]          // D
-            ];
-            for(let p of wins) {
-                if(b[p[0]] && b[p[0]] === b[p[1]] && b[p[0]] === b[p[2]]) return 'win';
-            }
-            return b.includes('') ? 'continue' : 'draw';
-        };
-
-        const handleMatchEnd = (winner) => {
-            state.active = false;
-            syncVisualBoard();
-            
-            setTimeout(() => {
-                const head = document.getElementById('result-announcement');
-                if(winner === 'draw') {
-                    head.innerText = "DRAW";
-                    head.style.color = "#fff";
-                } else {
-                    if(state.mode === 'online') {
-                        head.innerText = (winner === state.mySym) ? "VICTORY" : "DEFEAT";
-                    } else {
-                        head.innerText = `AGENT ${winner} WINS`;
-                    }
-                    head.style.color = (winner === 'X') ? 'var(--wtr-player-x)' : 'var(--wtr-player-o)';
+                <div class="auth-actions-group">
+                    <button type="submit" id="btn-auth-submit" class="titan-btn btn-x-theme btn-glow hover-lift">
+                        <span class="btn-text">INITIALIZE LINK</span>
+                        <svg class="btn-suffix-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    </button>
                     
-                    if((state.mode === 'online' && winner === state.mySym) || state.mode === 'offline') {
-                        canvasConfetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
-                    }
-                }
-                document.getElementById('modal-result').style.display = 'flex';
-            }, 600);
-        };
+                    <div class="auth-divider">
+                        <span class="divider-line"></span>
+                        <span class="divider-text">OR</span>
+                        <span class="divider-line"></span>
+                    </div>
 
-        const onCellExecute = async (i) => {
-            if(!state.active || state.board[i]) return;
+                    <button type="button" id="btn-auth-guest" class="titan-btn btn-outline hover-lift">
+                        ENTER AS GUEST
+                    </button>
+                </div>
+            </form>
 
-            if(state.mode === 'offline') {
-                state.board[i] = state.turn;
-                syncVisualBoard();
-                const res = evaluateCombatMatrix(state.board);
-                if(res === 'win') handleMatchEnd(state.turn);
-                else if(res === 'draw') handleMatchEnd('draw');
-                else {
-                    state.turn = (state.turn === 'X') ? 'O' : 'X';
-                    DOM.status.innerText = `AGENT ${state.turn} TURN`;
-                    DOM.status.style.color = (state.turn === 'X') ? 'var(--wtr-player-x)' : 'var(--wtr-player-o)';
-                }
-            } else {
-                if(state.turn !== state.mySym) {
-                    triggerToast("AWAITING OPPONENT MOVE...");
-                    return;
-                }
-                
-                // OPTIMISTIC LOCAL UPDATE (0-LAG FEEL)
-                state.board[i] = state.mySym;
-                syncVisualBoard();
-                
-                const res = evaluateCombatMatrix(state.board);
-                const gRef = doc(db, 'games', state.gameId);
-                
-                if(res === 'win') await updateDoc(gRef, { board: state.board, status: 'win', winner: state.mySym });
-                else if(res === 'draw') await updateDoc(gRef, { board: state.board, status: 'draw' });
-                else await updateDoc(gRef, { board: state.board, turn: (state.mySym==='X'?'O':'X') });
-            }
-        };
+            <div class="auth-footer">
+                <p class="auth-footer-text">Powered by WTR Lab Neural Engine v6.0</p>
+            </div>
+        </div>
+    </main>
 
-        /**
-         * ========================================================================
-         * 6. ONLINE MULTIPLAYER ENGINE
-         * ========================================================================
-         */
-        const initiateOnlineArena = (gId, sym) => {
-            state.gameId = gId;
-            state.mySym = sym;
-            state.mode = 'online';
-            state.active = true;
-            
-            document.getElementById('modal-result').style.display = 'none';
-            navigateTo('screen-arena');
-
-            // 1. GAME DATA SYNC
-            if(state.unsubGame) state.unsubGame();
-            state.unsubGame = onSnapshot(doc(db, 'games', gId), (snapshot) => {
-                if(!snapshot.exists()) {
-                    triggerToast("SESSION TERMINATED BY OPPONENT");
-                    handleAbortMission(true);
-                    return;
-                }
-                const data = snapshot.data();
-                state.board = data.board;
-                state.turn = data.turn;
-                state.active = (data.status === 'playing');
-                syncVisualBoard();
-
-                if(data.status === 'win') handleMatchEnd(data.winner);
-                else if(data.status === 'draw') handleMatchEnd('draw');
-                else {
-                    if(state.turn === state.mySym) {
-                        DOM.status.innerText = "YOUR TURN";
-                        DOM.status.style.color = "var(--wtr-player-o)";
-                    } else {
-                        DOM.status.innerText = "OPPONENT TURN";
-                        DOM.status.style.color = "#fff";
-                    }
-                }
-            });
-
-            // 2. CHAT COMMS SYNC
-            if(state.unsubChat) state.unsubChat();
-            state.unsubChat = onSnapshot(query(collection(db, `games/${gId}/chat`)), (snapshot) => {
-                DOM.chatStream.innerHTML = '';
-                let msgs = [];
-                snapshot.forEach(d => msgs.push(d.data()));
-                msgs.sort((a,b) => (a.t?.toMillis()||0) - (b.t?.toMillis()||0)).forEach(m => {
-                    DOM.chatStream.innerHTML += `<div class="chat-bubble"><b>${m.s}:</b> ${m.m}</div>`;
-                });
-                DOM.chatStream.scrollTop = DOM.chatStream.scrollHeight;
-            });
-        };
-
-        /**
-         * ========================================================================
-         * 7. CHALLENGE & INVITE PROTOCOLS
-         * ========================================================================
-         */
-        document.getElementById('challenge-trigger').onclick = async () => {
-            const input = document.getElementById('target-combat-code');
-            const code = input.value.toUpperCase().trim();
-            
-            if(!code || code === state.profile.inviteCode) return triggerToast("INVALID FREQUENCY CODE");
-
-            const q = await getDocs(query(collection(db, 'users'), where('inviteCode', '==', code)));
-            if(q.empty) return triggerToast("TARGET AGENT NOT FOUND");
-            
-            const target = q.docs[0].data();
-            const inviteRef = await addDoc(collection(db, 'invites'), {
-                sUid: state.user.uid,
-                sName: state.profile.name,
-                rUid: target.uid,
-                status: 'pending'
-            });
-            
-            triggerToast("CHALLENGE TRANSMITTED...");
-            
-            onSnapshot(doc(db, 'invites', inviteRef.id), (snap) => {
-                const d = snap.data();
-                if(d?.status === 'accepted') {
-                    initiateOnlineArena(d.gameId, 'X');
-                    deleteDoc(doc(db, 'invites', inviteRef.id));
-                } else if(d?.status === 'rejected') {
-                    triggerToast("CHALLENGE EVADED BY TARGET");
-                    deleteDoc(doc(db, 'invites', inviteRef.id));
-                }
-            });
-        };
-
-        const listenForIncomingChallenges = () => {
-            onSnapshot(query(collection(db, 'invites'), where('rUid', '==', state.user.uid), where('status', '==', 'pending')), (snap) => {
-                snap.docChanges().forEach(async (change) => {
-                    if(change.type === 'added') {
-                        const inv = change.doc.data();
-                        document.getElementById('challenger-name').innerText = inv.sName;
-                        document.getElementById('modal-incoming').style.display = 'flex';
-
-                        document.getElementById('accept-trigger').onclick = async () => {
-                            const newGame = await addDoc(collection(db, 'games'), {
-                                players: [inv.sUid, state.user.uid],
-                                board: Array(9).fill(''),
-                                turn: 'X',
-                                status: 'playing'
-                            });
-                            await updateDoc(doc(db, 'invites', change.doc.id), { status: 'accepted', gameId: newGame.id });
-                            document.getElementById('modal-incoming').style.display = 'none';
-                            initiateOnlineArena(newGame.id, 'O');
-                        };
-                        document.getElementById('reject-trigger').onclick = async () => {
-                            await updateDoc(doc(db, 'invites', change.doc.id), { status: 'rejected' });
-                            document.getElementById('modal-incoming').style.display = 'none';
-                        };
-                    }
-                });
-            });
-        };
-
-        /**
-         * ========================================================================
-         * 8. SYSTEM BOOTSTRAP (AUTH & INITIALIZATION)
-         * ========================================================================
-         */
+    <section id="module-lobby" class="ui-screen" aria-hidden="true">
         
-        // Startup Sequence Delay
-        setTimeout(() => {
-            document.getElementById('startup-sequence').style.opacity = '0';
-            setTimeout(() => document.getElementById('startup-sequence').style.display = 'none', 1200);
-        }, 2800);
-
-        onAuthStateChanged(auth, async (user) => {
-            if(user) {
-                state.user = user;
-                const snap = await getDoc(doc(db, 'users', user.uid));
-                if(snap.exists()) {
-                    state.profile = snap.data();
-                } else {
-                    state.profile = { 
-                        uid: user.uid, 
-                        name: user.email.split('@')[0].toUpperCase(), 
-                        inviteCode: generateCombatCode() 
-                    };
-                    await setDoc(doc(db, 'users', user.uid), state.profile);
-                }
-                
-                document.getElementById('agent-name').innerText = state.profile.name;
-                document.getElementById('agent-combat-code').innerText = state.profile.inviteCode;
-                
-                navigateTo('screen-lobby');
-                listenForIncomingChallenges();
-                runNetworkDiagnostic();
-            } else {
-                navigateTo('screen-auth');
-            }
-        });
-
-        document.getElementById('login-trigger').onclick = async () => {
-            const email = document.getElementById('auth-email').value;
-            const pass = document.getElementById('auth-pass').value;
-            if(!email || !pass) return triggerToast("CREDENTIALS REQUIRED");
+        <nav class="top-nav-bar glass-nav">
+            <div class="nav-brand-area">
+                <div class="nav-logo-dot"></div>
+                <span class="nav-brand-text">TITAN OS</span>
+                <span class="nav-ping-indicator" id="ui-nav-ping">
+                    <svg class="ping-icon" width="12" height="12"><use href="#icon-network"></use></svg> 12ms
+                </span>
+            </div>
             
-            try {
-                await signInWithEmailAndPassword(auth, email, pass);
-                triggerToast("ACCESS GRANTED");
-            } catch(e) {
-                try {
-                    await createUserWithEmailAndPassword(auth, email, pass);
-                    triggerToast("ACCOUNT CREATED");
-                } catch(e2) { triggerToast(e2.message.toUpperCase()); }
-            }
-        };
+            <div class="nav-action-area">
+                <button id="nav-btn-history" class="nav-icon-btn tooltip-trigger" aria-label="Combat Logs" data-tooltip="Match History">
+                    <svg><use href="#icon-history"></use></svg>
+                </button>
+                <button id="nav-btn-leaderboard" class="nav-icon-btn tooltip-trigger" aria-label="Global Ranks" data-tooltip="Leaderboard">
+                    <svg><use href="#icon-trophy"></use></svg>
+                </button>
+                <button id="nav-btn-settings" class="nav-icon-btn tooltip-trigger" aria-label="System Config" data-tooltip="Settings">
+                    <svg><use href="#icon-settings"></use></svg>
+                </button>
+            </div>
+        </nav>
 
-        /**
-         * ========================================================================
-         * 9. MISSION CONTROLS & CHAT
-         * ========================================================================
-         */
-        const handleAbortMission = async (forced = false) => {
-            if(!forced && state.gameId) {
-                try { await deleteDoc(doc(db, 'games', state.gameId)); } catch(e){}
-            }
-            if(state.unsubGame) state.unsubGame();
-            if(state.unsubChat) state.unsubChat();
+        <div class="lobby-content-wrapper scrollable-y">
             
-            state.gameId = null;
-            state.active = false;
-            document.getElementById('modal-result').style.display = 'none';
-            navigateTo('screen-lobby');
-        };
+            <div class="profile-card glass-panel main-depth-shadow">
+                <div class="profile-header-bg"></div>
+                
+                <div class="profile-avatar-container">
+                    <div class="avatar-ring color-gold"></div>
+                    <img id="ui-avatar-img" class="avatar-image" src="https://api.dicebear.com/7.x/bottts/svg?seed=Nitesh&backgroundColor=transparent" alt="Agent Avatar" />
+                    <div class="avatar-level-badge">Lv. <span id="ui-agent-level">1</span></div>
+                </div>
 
-        document.getElementById('abort-trigger').onclick = () => handleAbortMission(false);
-        document.getElementById('exit-trigger').onclick = () => handleAbortMission(false);
+                <div class="profile-info-container">
+                    <p class="profile-status text-gold">ACTIVE AGENT</p>
+                    <h2 id="ui-agent-name" class="profile-name">AWAITING SYNC...</h2>
+                    
+                    <div class="xp-bar-container">
+                        <div class="xp-bar-labels">
+                            <span class="xp-label">XP Progress</span>
+                            <span class="xp-value">0 / 1000</span>
+                        </div>
+                        <div class="xp-bar-track">
+                            <div class="xp-bar-fill" style="width: 0%;"></div>
+                        </div>
+                    </div>
 
-        document.getElementById('offline-trigger').onclick = () => {
-            state.mode = 'offline'; state.active = true; state.board = Array(9).fill(''); state.turn = 'X';
-            DOM.status.innerText = "PLAYER X TURN";
-            navigateTo('screen-arena');
-            syncVisualBoard();
-        };
+                    <div class="profile-stats-row">
+                        <div class="stat-box">
+                            <span class="stat-value color-x" id="stat-val-wins">0</span>
+                            <span class="stat-label">VICTORIES</span>
+                        </div>
+                        <div class="stat-divider"></div>
+                        <div class="stat-box">
+                            <span class="stat-value color-gold" id="stat-val-draws">0</span>
+                            <span class="stat-label">DRAWS</span>
+                        </div>
+                        <div class="stat-divider"></div>
+                        <div class="stat-box">
+                            <span class="stat-value color-o" id="stat-val-losses">0</span>
+                            <span class="stat-label">DEFEATS</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-        document.getElementById('rematch-trigger').onclick = async () => {
-            document.getElementById('modal-result').style.display = 'none';
-            if(state.mode === 'online' && state.gameId) {
-                await updateDoc(doc(db, 'games', state.gameId), { board: Array(9).fill(''), turn: 'X', status: 'playing' });
-            } else {
-                document.getElementById('offline-trigger').click();
-            }
-        };
+            <div class="frequency-card glass-panel">
+                <div class="freq-header">
+                    <svg class="freq-icon color-gold"><use href="#icon-network"></use></svg>
+                    <span class="freq-title">YOUR COMBAT FREQUENCY ID</span>
+                </div>
+                
+                <div class="freq-display-box">
+                    <h3 id="ui-agent-code" class="freq-code-text font-marker">----</h3>
+                    <button id="btn-copy-id" class="freq-copy-btn hover-lift" aria-label="Copy Frequency ID">
+                        <svg><use href="#icon-copy"></use></svg>
+                        <span>COPY</span>
+                    </button>
+                </div>
+                <p class="freq-hint">Share this ID with an agent to initiate a direct combat link.</p>
+            </div>
 
-        document.getElementById('chat-trigger').onclick = async () => {
-            const input = document.getElementById('chat-message-in');
-            if(input.value.trim() && state.gameId) {
-                await addDoc(collection(db, `games/${state.gameId}/chat`), {
-                    s: state.profile.name,
-                    m: input.value,
-                    t: serverTimestamp()
-                });
-                input.value = '';
-            }
-        };
+            <div class="matchmaking-card glass-panel main-depth-shadow">
+                <h3 class="mm-title">ENGAGE ENEMY PROTOCOL</h3>
+                
+                <div class="target-input-group">
+                    <label for="inp-target-id" class="sr-only">Target Frequency ID</label>
+                    <input 
+                        type="text" 
+                        id="inp-target-id" 
+                        class="titan-glass-input text-center font-marker text-large" 
+                        placeholder="ENTER TARGET ID" 
+                        maxlength="6"
+                        autocomplete="off"
+                    />
+                </div>
+                
+                <button id="btn-engage-target" class="titan-btn btn-primary-x btn-glow full-width hover-lift mt-3">
+                    <svg class="btn-prefix-icon"><use href="#icon-swords"></use></svg>
+                    INITIATE QUANTUM SYNC
+                </button>
 
-    </script>
-</body>
+                <div class="auth-divider my-4">
+                    <span class="divider-line"></span>
+                    <span class="divider-text">TRAINING MODE</span>
+                    <span class="divider-line"></span>
+                </div>
+
+                <button id="btn-play-offline" class="titan-btn btn-outline full-width hover-lift">
+                    LOCAL 1v1 SIMULATION
+                </button>
+            </div>
+            
+            <div style="height: 40px;"></div>
+        </div>
+    </section>
+    <section id="module-arena" class="ui-screen" aria-hidden="true">
+        
+        <div class="arena-content-wrapper">
+            <header class="arena-hud-board">
+                
+                <div class="hud-agent-card is-active-turn" id="hud-p1">
+                    <div class="hud-symbol-box symbol-x">
+                        <svg class="hud-icon"><use href="#icon-x"></use></svg>
+                    </div>
+                    <div class="hud-info text-left">
+                        <span class="hud-name text-truncate" id="arena-p1-name">YOU</span>
+                        <span class="hud-score color-gold">Score: <b id="arena-p1-score">0</b></span>
+                    </div>
+                </div>
+                
+                <div class="hud-vs-divider">
+                    <span class="vs-text">VS</span>
+                </div>
+
+                <div class="hud-agent-card" id="hud-p2">
+                    <div class="hud-info text-right">
+                        <span class="hud-name text-truncate" id="arena-p2-name">ENEMY</span>
+                        <span class="hud-score color-gold">Score: <b id="arena-p2-score">0</b></span>
+                    </div>
+                    <div class="hud-symbol-box symbol-o">
+                        <svg class="hud-icon"><use href="#icon-o"></use></svg>
+                    </div>
+                </div>
+            </header>
+
+            <div class="turn-announcer-box">
+                <div class="turn-pulse-indicator" id="ui-turn-pulse"></div>
+                <h2 id="ui-turn-text" class="turn-status-text">SYSTEM STANDBY</h2>
+            </div>
+
+            <div class="combat-grid-container">
+                <div id="ui-combat-grid" class="quantum-grid" role="grid" aria-label="Titan Combat Board">
+                    <div class="grid-cell" data-index="0" role="gridcell" tabindex="0"></div>
+                    <div class="grid-cell" data-index="1" role="gridcell" tabindex="0"></div>
+                    <div class="grid-cell" data-index="2" role="gridcell" tabindex="0"></div>
+                    <div class="grid-cell" data-index="3" role="gridcell" tabindex="0"></div>
+                    <div class="grid-cell" data-index="4" role="gridcell" tabindex="0"></div>
+                    <div class="grid-cell" data-index="5" role="gridcell" tabindex="0"></div>
+                    <div class="grid-cell" data-index="6" role="gridcell" tabindex="0"></div>
+                    <div class="grid-cell" data-index="7" role="gridcell" tabindex="0"></div>
+                    <div class="grid-cell" data-index="8" role="gridcell" tabindex="0"></div>
+                </div>
+            </div>
+
+            <div class="comms-panel glass-panel main-depth-shadow">
+                <div class="comms-header">
+                    <span class="comms-title">
+                        <svg class="comms-icon"><use href="#icon-network"></use></svg>
+                        SECURE COMMS
+                    </span>
+                    <span class="comms-badge">E2E ENCRYPTED</span>
+                </div>
+                
+                <div class="comms-chat-stream scrollable-y" id="ui-chat-stream" role="log" aria-live="polite">
+                    <div class="chat-system-msg">Link Established. Comms Online.</div>
+                </div>
+                
+                <div class="comms-input-area">
+                    <input 
+                        type="text" 
+                        id="inp-chat-msg" 
+                        class="titan-glass-input comms-text-input" 
+                        placeholder="Transmit message..." 
+                        autocomplete="off"
+                        maxlength="100"
+                    />
+                    <button id="btn-send-msg" class="comms-send-btn hover-lift" aria-label="Send Message">
+                        <svg><use href="#icon-send"></use></svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="arena-footer-actions">
+                <button id="btn-abort-match" class="titan-btn btn-danger-outline full-width">
+                    <svg class="btn-prefix-icon"><use href="#icon-close"></use></svg>
+                    ABORT MISSION
+                </button>
+            </div>
+            
+            <div style="height: 30px;"></div>
+        </div>
+    </section>
+
+    <dialog id="modal-settings" class="titan-modal" aria-label="System Settings">
+        <div class="glass-panel modal-content-box">
+            <header class="modal-header">
+                <h2 class="modal-title font-marker">SYSTEM CONFIG</h2>
+                <button class="modal-close-btn" id="btn-close-settings" aria-label="Close">
+                    <svg><use href="#icon-close"></use></svg>
+                </button>
+            </header>
+            
+            <div class="modal-body settings-list">
+                
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <span class="setting-name">Combat Audio (SFX)</span>
+                        <span class="setting-desc">Enable game sound effects</span>
+                    </div>
+                    <label class="titan-switch">
+                        <input type="checkbox" id="toggle-sfx" checked>
+                        <span class="switch-slider"></span>
+                    </label>
+                </div>
+                
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <span class="setting-name">Haptic Feedback</span>
+                        <span class="setting-desc">Vibrate on touch (Mobile only)</span>
+                    </div>
+                    <label class="titan-switch">
+                        <input type="checkbox" id="toggle-haptic" checked>
+                        <span class="switch-slider"></span>
+                    </label>
+                </div>
+
+                <div class="setting-divider"></div>
+
+                <div class="setting-item action-item">
+                    <div class="setting-info">
+                        <span class="setting-name text-danger">Purge Local Database</span>
+                        <span class="setting-desc">Clear WhatsApp-style local history</span>
+                    </div>
+                    <button id="btn-clear-db" class="titan-btn btn-danger-outline btn-small">PURGE</button>
+                </div>
+
+                <div class="setting-item action-item">
+                    <div class="setting-info">
+                        <span class="setting-name">Disconnect Profile</span>
+                        <span class="setting-desc">Logout of Quantum Sync</span>
+                    </div>
+                    <button id="btn-logout" class="titan-btn btn-outline btn-small">
+                        <svg class="btn-prefix-icon" style="width: 16px; height: 16px;"><use href="#icon-logout"></use></svg>
+                        LOGOUT
+                    </button>
+                </div>
+            </div>
+        </div>
+    </dialog>
+
+    <dialog id="modal-history" class="titan-modal modal-tall" aria-label="Combat Logs">
+        <div class="glass-panel modal-content-box">
+            <header class="modal-header">
+                <h2 class="modal-title font-marker">COMBAT LOGS</h2>
+                <button class="modal-close-btn" id="btn-close-history" aria-label="Close">
+                    <svg><use href="#icon-close"></use></svg>
+                </button>
+            </header>
+            
+            <div class="modal-body scrollable-y pb-2" id="ui-history-list">
+                <div class="empty-state-message">
+                    <svg class="empty-icon"><use href="#icon-history"></use></svg>
+                    <p>NO COMBAT DATA FOUND IN LOCAL STORAGE</p>
+                </div>
+            </div>
+        </div>
+    </dialog>
+
+    <dialog id="modal-leaderboard" class="titan-modal modal-tall" aria-label="Global Rankings">
+        <div class="glass-panel modal-content-box">
+            <header class="modal-header">
+                <h2 class="modal-title font-marker text-gold">GLOBAL RANKS</h2>
+                <button class="modal-close-btn" id="btn-close-leaderboard" aria-label="Close">
+                    <svg><use href="#icon-close"></use></svg>
+                </button>
+            </header>
+            
+            <div class="lb-tabs">
+                <button class="lb-tab active" data-target="top-agents">TOP AGENTS</button>
+                <button class="lb-tab" data-target="my-rank">MY RANK</button>
+            </div>
+
+            <div class="modal-body scrollable-y pb-2" id="ui-leaderboard-list">
+                <div class="lb-loading-state">
+                    <div class="small-spinner"></div>
+                    <p>SYNCING RANKS...</p>
+                </div>
+            </div>
+        </div>
+    </dialog>
+
+    <dialog id="modal-result" class="titan-modal full-screen-overlay" aria-label="Match Results">
+        <div class="result-glass-container">
+            
+            <div class="result-hero-section">
+                <h2 id="ui-result-title" class="result-mega-text font-marker">VICTORY</h2>
+                <p id="ui-result-subtitle" class="result-sub-text">AGENT ANNIHILATED</p>
+            </div>
+            
+            <div class="result-stats-board">
+                <div class="r-stat-box">
+                    <span class="r-stat-val" id="res-val-time">0:00</span>
+                    <span class="r-stat-label">TIME</span>
+                </div>
+                <div class="r-stat-divider"></div>
+                <div class="r-stat-box">
+                    <span class="r-stat-val color-gold" id="res-val-turns">0</span>
+                    <span class="r-stat-label">TURNS</span>
+                </div>
+                <div class="r-stat-divider"></div>
+                <div class="r-stat-box">
+                    <span class="r-stat-val" id="res-val-xp">+0</span>
+                    <span class="r-stat-label">XP GAINED</span>
+                </div>
+            </div>
+            
+            <div class="result-actions-stack">
+                <button id="btn-result-rematch" class="titan-btn btn-primary-x btn-glow btn-large hover-lift">
+                    RE-ENGAGE TARGET
+                </button>
+                <button id="btn-result-lobby" class="titan-btn btn-outline btn-large hover-lift mt-3">
+                    RETURN TO LOBBY
+                </button>
+            </div>
+
+        </div>
+    </dialog>
+
+    <dialog id="modal-challenge" class="titan-modal alert-modal" aria-label="Incoming Challenge">
+        <div class="glass-panel modal-content-box text-center">
+            
+            <div class="alert-radar-animation">
+                <div class="radar-ring"></div>
+                <div class="radar-ring delay-1"></div>
+                <svg class="radar-icon color-x"><use href="#icon-network"></use></svg>
+            </div>
+            
+            <h2 class="alert-title font-marker color-x">INCOMING THREAT!</h2>
+            <p class="alert-desc">Agent <strong id="ui-challenger-id" class="color-gold">UNKNOWN</strong> has requested a Quantum Sync.</p>
+            
+            <div class="alert-actions-row mt-4">
+                <button id="btn-accept-sync" class="titan-btn btn-primary-o btn-glow flex-1">
+                    ACCEPT
+                </button>
+                <button id="btn-decline-sync" class="titan-btn btn-danger-outline flex-1">
+                    DECLINE
+                </button>
+            </div>
+        </div>
+    </dialog>
+
+    <div id="sys-toast-container" class="toast-wrapper" aria-live="polite">
+        </div>
+
+    <template id="tpl-chat-msg">
+        <div class="chat-message-row">
+            <div class="chat-bubble">
+                <span class="chat-sender font-marker"></span>
+                <span class="chat-text"></span>
+                <span class="chat-time"></span>
+            </div>
+        </div>
+    </template>
+
+    <template id="tpl-history-card">
+        <div class="history-card glass-panel-light">
+            <div class="hc-left">
+                <div class="hc-result-badge font-marker"></div>
+                <div class="hc-details">
+                    <span class="hc-vs-text">vs <strong class="hc-enemy-name"></strong></span>
+                    <span class="hc-date text-muted"></span>
+                </div>
+            </div>
+            <div class="hc-right">
+                <span class="hc-score-label">Moves: <b class="hc-moves-val"></b></span>
+            </div>
+        </div>
+    </template>
+
+    <template id="tpl-lb-row">
+        <div class="lb-row-card glass-panel-light">
+            <div class="lb-rank font-marker"></div>
+            <div class="lb-agent-info">
+                <span class="lb-name font-bold"></span>
+                <span class="lb-stats text-muted">Win Rate: <b class="lb-wr-val"></b>%</span>
+            </div>
+            <div class="lb-score-box">
+                <span class="lb-score-val color-gold font-bold"></span>
+                <span class="lb-score-label text-muted">XP</span>
+            </div>
+        </div>
+    </template>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js" defer></script>
+    
+    </body>
 </html>
