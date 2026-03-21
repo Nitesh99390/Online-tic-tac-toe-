@@ -1,23 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#1e1e2f">
-    <link rel="icon" type="image/svg+xml" href="icon.svg">
-    <link rel="apple-touch-icon" href="icon-192.png">
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#1a2a2f">
+    <link rel="icon" type="image/svg+xml" href="./icon.svg">
+    <link rel="apple-touch-icon" href="./icon-192.png">
     
-    <link rel="stylesheet" href="style.css">
     <meta name="google-site-verification" content="Za1pEupQLM-LlPnODka_5pMgrC6DyOzmuDaZBepfg7Q" />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Tic Tac Toe – AlignIt Style</title>
+    
     <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            user-select: none; /* prevents accidental text selection on taps */
+            user-select: none;
         }
 
         :root {
@@ -30,7 +30,6 @@
 
         body {
             background-color: var(--chalkboard-dark);
-            /* authentic chalkboard texture (subtle grain) */
             background-image: radial-gradient(circle, rgba(255,255,240,0.07) 1px, transparent 1px);
             background-size: 22px 22px;
             background-position: 0 0;
@@ -191,7 +190,6 @@
             border: 4px solid var(--chalk-line);
             transition: background 0.2s linear;
         }
-        /* clean chalkboard grid – outer borders removed */
         .cell[data-index="0"], .cell[data-index="1"], .cell[data-index="2"] { border-top: none; }
         .cell[data-index="6"], .cell[data-index="7"], .cell[data-index="8"] { border-bottom: none; }
         .cell[data-index="0"], .cell[data-index="3"], .cell[data-index="6"] { border-left: none; }
@@ -203,8 +201,6 @@
             width: 70%;
             height: 70%;
         }
-
-        /* X – two strokes, second stroke delayed */
         .path-x {
             stroke-dasharray: 140;
             stroke-dashoffset: 140;
@@ -215,8 +211,6 @@
             stroke-dashoffset: 140;
             animation: drawChalk 0.4s ease-out 0.18s forwards;
         }
-
-        /* O – perfect circle draw */
         .path-o {
             stroke-dasharray: 220;   
             stroke-dashoffset: 220;
@@ -415,10 +409,9 @@
 </div>
 
 <script>
-    // Register Service Worker
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
+        navigator.serviceWorker.register('./sw.js')
           .then(registration => {
             console.log('ServiceWorker registered successfully');
           })
@@ -428,18 +421,14 @@
       });
     }
 
-    // PWA Install Prompt Logic
     let deferredPrompt;
     const installPopup = document.getElementById('install-popup');
     const installBtn = document.getElementById('install-btn');
     const closeInstallBtn = document.getElementById('close-install-btn');
 
     window.addEventListener('beforeinstallprompt', (e) => {
-        // Prevent the mini-infobar from appearing on mobile
         e.preventDefault();
-        // Stash the event so it can be triggered later.
         deferredPrompt = e;
-        // Show the install UI
         installPopup.style.display = 'flex';
     });
 
@@ -466,7 +455,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 <script type="module">
-    // ----------------------------- FIREBASE INIT -----------------------------
+    // FIREBASE INIT
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
     import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, query, where, onSnapshot, getDocs, addDoc, serverTimestamp, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -483,11 +472,11 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // ----------------------------- SVG DRAWING ICONS -----------------------------
+    // SVG ICONS
     const svgX = `<svg class="svg-icon" viewBox="0 0 100 100"><path class="path-x" d="M 20 20 L 80 80" stroke="#ff4757" stroke-width="12" stroke-linecap="round" fill="none"/><path class="path-x-delay" d="M 80 20 L 20 80" stroke="#ff4757" stroke-width="12" stroke-linecap="round" fill="none"/></svg>`;
     const svgO = `<svg class="svg-icon" viewBox="0 0 100 100"><circle class="path-o" cx="50" cy="50" r="35" stroke="#2ed573" stroke-width="12" fill="none" stroke-linecap="round"/></svg>`;
 
-    // ----------------------------- GLOBAL STATE -----------------------------
+    // STATE
     let currentUser = null;
     let myProfile = null;
     let mode = 'online';          
@@ -499,17 +488,12 @@
     let unsubscribeGame = null;
     let unsubscribeChat = null;
 
-    // helper functions (Polished Toast)
+    // TOAST
     const showToast = (msg) => {
         const toast = document.getElementById('toast');
         toast.innerText = msg;
         toast.style.display = 'block';
-        
-        // Slight delay for animation to kick in
-        requestAnimationFrame(() => {
-            toast.classList.add('toast-visible');
-        });
-
+        requestAnimationFrame(() => toast.classList.add('toast-visible'));
         setTimeout(() => {
             toast.classList.remove('toast-visible');
             setTimeout(() => toast.style.display = 'none', 300);
@@ -523,7 +507,7 @@
     
     const generateInviteCode = () => Math.random().toString(36).substring(2, 6).toUpperCase();
 
-    // ----------------------------- WIN / DRAW LOGIC -----------------------------
+    // GAME LOGIC
     function checkWinOrDraw(board) {
         const winPatterns = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
         for (let p of winPatterns) {
@@ -532,7 +516,6 @@
         return board.includes('') ? 'continue' : 'draw';
     }
 
-    // ----------------------------- RENDER BOARD WITH SVG + ANIMATION -----------------------------
     function renderBoardUI() {
         const cells = document.querySelectorAll('.cell');
         cells.forEach((cell, i) => {
@@ -543,7 +526,7 @@
         });
     }
 
-    // ----------------------------- OFFLINE MODE -----------------------------
+    // OFFLINE
     function initOfflineBoard() {
         boardState = ['', '', '', '', '', '', '', '', ''];
         currentPlayer = 'X';
@@ -561,7 +544,6 @@
         initOfflineBoard();
     };
 
-    // win/draw UI
     function handleWinUI(winner, winnerSymbol = null) {
         gameActive = false;
         renderBoardUI();
@@ -587,7 +569,6 @@
         }, 600);
     }
 
-    // cell click handler (both modes)
     async function onCellClick(index) {
         if (!gameActive) return;
         if (boardState[index] !== '') return;
@@ -622,7 +603,7 @@
         }
     }
 
-    // ----------------------------- ONLINE GAME SYNC -----------------------------
+    // ONLINE
     function startOnlineGame(gameId, symbol) {
         currentGameId = gameId;
         mySymbol = symbol;
@@ -660,7 +641,6 @@
             }
         });
 
-        // Chat listener
         if (unsubscribeChat) unsubscribeChat();
         unsubscribeChat = onSnapshot(query(collection(db, `games/${gameId}/chat`)), (snap) => {
             const container = document.getElementById('chat-messages');
@@ -674,7 +654,6 @@
         });
     }
 
-    // leave game & cleanup
     window.leaveGame = async (isForced = false) => {
         if (!isForced && mode === 'online' && currentGameId) {
             try {
@@ -705,7 +684,6 @@
         }
     };
 
-    // ----------------------------- INVITE SYSTEM -----------------------------
     window.handleInvite = async () => {
         mode = 'online';
         const fCode = document.getElementById('friend-code').value.toUpperCase().trim();
@@ -762,7 +740,7 @@
         });
     }
 
-    // ----------------------------- AUTH & INIT -----------------------------
+    // AUTH
     document.getElementById('login-btn').addEventListener('click', async () => {
         const email = document.getElementById('email').value;
         const pass = document.getElementById('password').value;
@@ -801,7 +779,7 @@
         }
     });
 
-    // create board cells
+    // BUILD BOARD
     const boardDiv = document.getElementById('board');
     for (let i = 0; i < 9; i++) {
         const cell = document.createElement('div');
@@ -811,7 +789,7 @@
         boardDiv.appendChild(cell);
     }
 
-    // chat functionality
+    // CHAT
     document.getElementById('send-chat').addEventListener('click', async () => {
         const input = document.getElementById('chat-input');
         if (input.value.trim() && mode === 'online' && currentGameId) {
