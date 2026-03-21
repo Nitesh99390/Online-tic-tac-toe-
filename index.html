@@ -1,62 +1,37 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr" data-theme="quantum-dark">
+<html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta 
-        name="viewport" 
-        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" 
-    />
-    <meta 
-        name="theme-color" 
-        content="#05070a" 
-    />
-    <title>Nitesh Titan | Quantum Engine Pro</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#0d1117">
+    
+    <title>Tic Tac Toe – Nitesh WTR Pro</title>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link 
-        href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Poppins:wght@300;400;600;800;900&family=JetBrains+Mono:wght@400;700&display=swap" 
-        rel="stylesheet" 
-    />
-
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Poppins:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
     <style>
         /* ==========================================================================
-           [01] ADVANCED CSS DESIGN TOKENS (EXPANDED)
-           ========================================================================== */
+           1. CORE CSS SYSTEM VARIABLES
+           ========================================================================== 
+        */
         :root {
-            /* Core Backgrounds */
-            --bg-base: #05070a;
-            --glass-bg: rgba(10, 15, 20, 0.85);
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --glass-blur: blur(25px);
-            
-            /* Typography */
-            --font-brand: 'Permanent Marker', cursive;
-            --font-main: 'Poppins', sans-serif;
-            --font-code: 'JetBrains Mono', monospace;
-
-            /* Branding Colors */
-            --color-gold: #fbbf24;
-            --color-danger: #ff4757;
-            --glow-gold: 0 0 30px rgba(251, 191, 36, 0.3);
-            --shadow-heavy: 0 30px 60px rgba(0, 0, 0, 0.9);
-            
-            /* DYNAMIC SKIN SYSTEM (Equipped via Store) */
-            --active-grid: #5f6a6d; 
-            --active-x: #ff4757;    
-            --active-o: #2ed573;    
-            --active-glow-x: 0 0 20px rgba(255, 71, 87, 0.4);
-            --active-glow-o: 0 0 20px rgba(46, 213, 115, 0.4);
+            --wtr-bg-dark: #0d1117;
+            --wtr-grid-color: #5f6a6d; /* FIXED IMAGE 1 STYLE */
+            --wtr-player-x: #ff4757;
+            --wtr-player-o: #2ed573;
+            --wtr-gold: #fbbf24;
+            --wtr-glass: rgba(13, 17, 23, 0.85);
+            --wtr-border: rgba(255, 255, 255, 0.1);
+            --wtr-glow: 0 0 25px rgba(251, 191, 36, 0.2);
+            --wtr-shadow-deep: 0 20px 50px rgba(0, 0, 0, 0.7);
         }
 
         /* ==========================================================================
-           [02] GLOBAL ARCHITECTURE
-           ========================================================================== */
+           2. GLOBAL RESET & BASE STYLES
+           ========================================================================== 
+        */
         * {
             margin: 0;
             padding: 0;
@@ -67,330 +42,531 @@
         }
 
         body {
-            background-color: var(--bg-base);
+            background-color: var(--wtr-bg-dark);
+            background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), 
+                              url('https://images.unsplash.com/photo-1614729939124-032f0b56c9ce?q=80&w=2500');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
-            font-family: var(--font-main);
+            font-family: 'Poppins', sans-serif;
             color: #ffffff;
-            width: 100vw;
-            height: 100vh;
-            overflow: hidden;
-            position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
-        }
-
-        #dynamic-bg-layer {
-            position: absolute;
-            inset: 0;
-            z-index: -10;
-            background-size: cover;
-            background-position: center;
-            filter: brightness(0.4);
-            transition: background-image 1s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .bg-overlay {
-            position: absolute;
-            inset: 0;
-            z-index: -9;
-            background: radial-gradient(circle at center, transparent 10%, rgba(0,0,0,0.95) 100%);
+            min-height: 100vh;
+            overflow: hidden;
+            position: relative;
         }
 
         /* ==========================================================================
-           [03] SCREEN NAVIGATION SYSTEM
-           ========================================================================== */
-        .app-screen {
+           3. BACKGROUND PARTICLE SYSTEM (VISUAL DEPTH)
+           ========================================================================== 
+        */
+        #bg-canvas {
             position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* ==========================================================================
+           4. WTR LAB STARTUP SEQUENCE (INFINITY)
+           ========================================================================== 
+        */
+        #startup-sequence {
+            position: fixed;
             inset: 0;
+            background: #000;
+            z-index: 10000;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            opacity: 0;
-            visibility: hidden;
-            transform: scale(0.95);
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 10;
+            transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .app-screen.active {
-            opacity: 1;
-            visibility: visible;
-            transform: scale(1);
-            z-index: 20;
-        }
-
-        /* ==========================================================================
-           [04] PREMIUM GLASS COMPONENTS
-           ========================================================================== */
-        .glass-panel {
-            background: var(--glass-bg);
-            backdrop-filter: var(--glass-blur);
-            -webkit-backdrop-filter: var(--glass-blur);
-            border: 1px solid var(--glass-border);
-            border-radius: 40px;
-            padding: 40px 30px;
-            width: 90%;
-            max-width: 420px;
-            box-shadow: var(--shadow-heavy);
-            text-align: center;
+        .loader-wrapper {
+            width: 150px;
+            height: 75px;
             position: relative;
-            overflow: hidden;
         }
 
-        .glass-panel::before {
-            content: '';
+        .loader-wrapper::before, 
+        .loader-wrapper::after {
+            content: "";
             position: absolute;
             top: 0;
             left: 0;
+            width: 75px;
+            height: 75px;
+            border: 10px solid var(--wtr-gold);
+            border-radius: 50% 50% 0 50%;
+            transform: rotate(-45deg);
+            animation: infinity-glow 2s infinite alternate ease-in-out;
+            box-shadow: 0 0 40px var(--wtr-gold), inset 0 0 15px var(--wtr-gold);
+        }
+
+        .loader-wrapper::after {
+            left: auto;
             right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            border-radius: 50% 50% 50% 0;
+            transform: rotate(45deg);
+            animation-delay: -1s;
+        }
+
+        @keyframes infinity-glow {
+            0% { 
+                filter: hue-rotate(0deg) brightness(1); 
+                transform: scale(0.9) rotate(-45deg); 
+            }
+            100% { 
+                filter: hue-rotate(120deg) brightness(2); 
+                transform: scale(1.1) rotate(-45deg); 
+                border-color: var(--wtr-player-x);
+            }
+        }
+
+        .brand-logo {
+            margin-top: 50px;
+            font-family: 'Permanent Marker', cursive;
+            font-size: 3rem;
+            letter-spacing: 12px;
+            color: var(--wtr-gold);
+            text-shadow: 0 0 30px var(--wtr-gold);
+            animation: text-pulse 2s infinite;
+        }
+
+        @keyframes text-pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(0.95); }
         }
 
         /* ==========================================================================
-           [05] TITAN UI CONTROLS (BUTTONS & INPUTS)
-           ========================================================================== */
-        .premium-input {
-            width: 100%;
-            padding: 20px 25px;
-            margin-bottom: 20px;
+           5. NETWORK OPTIMIZATION HUD
+           ========================================================================== 
+        */
+        .network-hud {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 5000;
+        }
+
+        .ping-display {
+            background: var(--wtr-glass);
+            backdrop-filter: blur(20px);
+            padding: 10px 20px;
             border-radius: 50px;
-            border: 1px solid rgba(255,255,255,0.1);
+            border: 1px solid var(--wtr-border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            box-shadow: var(--wtr-shadow-deep);
+        }
+
+        .ping-status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--wtr-player-o);
+            box-shadow: 0 0 15px var(--wtr-player-o);
+            transition: 0.3s;
+        }
+
+        .optimizer-label {
+            background: var(--wtr-gold);
+            color: #000;
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-weight: 800;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 0 15px rgba(251, 191, 36, 0.4);
+        }
+
+        /* ==========================================================================
+           6. THE COMBAT GRID (IMAGE 1 SOLID DESIGN)
+           ========================================================================== 
+        */
+        .screen-container {
+            width: 100%;
+            max-width: 450px;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            z-index: 10;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .screen-container.active {
+            display: flex;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .combat-badge {
+            background: #000;
+            padding: 15px 50px;
+            border-radius: 60px;
+            font-family: 'Permanent Marker', cursive;
+            font-size: 2rem;
+            margin-bottom: 35px;
+            border: 2px solid var(--wtr-border);
+            box-shadow: inset 0 0 20px rgba(255,255,255,0.05);
+            text-transform: uppercase;
+            color: #fff;
+        }
+
+        .grid-master {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            width: 88vw;
+            max-width: 360px;
+            aspect-ratio: 1/1;
+            margin-bottom: 30px;
+        }
+
+        .grid-cell {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 6px solid var(--wtr-grid-color);
+            cursor: pointer;
+            transition: background 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        /* CORE RULE: REMOVING OUTER BORDERS FOR EXACT H-SHAPE 
+        */
+        .grid-cell:nth-child(1), .grid-cell:nth-child(2), .grid-cell:nth-child(3) { border-top: none; }
+        .grid-cell:nth-child(7), .grid-cell:nth-child(8), .grid-cell:nth-child(9) { border-bottom: none; }
+        .grid-cell:nth-child(1), .grid-cell:nth-child(4), .grid-cell:nth-child(7) { border-left: none; }
+        .grid-cell:nth-child(3), .grid-cell:nth-child(6), .grid-cell:nth-child(9) { border-right: none; }
+
+        .grid-cell:active {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        /* SVG SYMBOLS 
+        */
+        .svg-icon {
+            width: 70%;
+            height: 70%;
+            filter: drop-shadow(0 0 15px currentColor);
+        }
+
+        .path-x {
+            stroke-dasharray: 200;
+            stroke-dashoffset: 200;
+            animation: draw-symbol 0.4s ease-out forwards;
+        }
+
+        .path-o {
+            stroke-dasharray: 250;
+            stroke-dashoffset: 250;
+            animation: draw-symbol 0.5s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards;
+        }
+
+        @keyframes draw-symbol {
+            to { stroke-dashoffset: 0; }
+        }
+
+        /* ==========================================================================
+           7. INTERFACE COMPONENTS (GLASS CARD)
+           ========================================================================== 
+        */
+        .glass-card {
+            background: var(--wtr-glass);
+            backdrop-filter: blur(25px);
+            border-radius: 35px;
+            padding: 40px 30px;
+            width: 92%;
+            max-width: 400px;
+            border: 1px solid var(--wtr-border);
+            box-shadow: var(--wtr-shadow-deep);
+            text-align: center;
+        }
+
+        .main-title {
+            font-family: 'Permanent Marker', cursive;
+            font-size: 3.2rem;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        .sub-heading {
+            color: var(--wtr-gold);
+            font-weight: 800;
+            letter-spacing: 3px;
+            margin-bottom: 35px;
+            font-size: 0.9rem;
+        }
+
+        /* INPUTS */
+        .wtr-input {
+            width: 100%;
+            padding: 18px 25px;
+            margin-bottom: 15px;
+            border-radius: 50px;
+            border: 1px solid var(--wtr-border);
             background: rgba(0,0,0,0.6);
             color: #fff;
-            font-family: var(--font-main);
-            font-size: 1rem;
             text-align: center;
-            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            transition: 0.3s;
         }
 
-        .premium-input:focus {
-            border-color: var(--color-gold);
-            box-shadow: var(--glow-gold);
-            background: rgba(0,0,0,0.8);
+        .wtr-input:focus {
+            border-color: var(--wtr-gold);
+            box-shadow: 0 0 20px rgba(251, 191, 36, 0.3);
         }
 
+        /* BUTTONS */
         .btn {
             width: 100%;
-            padding: 20px;
-            margin-top: 15px;
+            padding: 18px;
+            margin: 10px 0;
             border-radius: 50px;
             border: none;
-            font-family: var(--font-main);
-            font-weight: 900;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 800;
             font-size: 1.1rem;
-            text-transform: uppercase;
             cursor: pointer;
-            letter-spacing: 2px;
-            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-transform: uppercase;
+            letter-spacing: 1px;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 12px;
         }
 
-        .btn:active { transform: scale(0.95); }
-        .btn-gold { background: var(--color-gold); color: #000; box-shadow: 0 10px 30px rgba(251, 191, 36, 0.3); }
-        .btn-x { background: var(--active-x); color: #fff; box-shadow: var(--active-glow-x); }
-        .btn-outline { background: transparent; border: 2px solid var(--glass-border); color: #fff; }
+        .btn-primary { background: var(--wtr-player-x); color: #fff; box-shadow: 0 8px 30px rgba(255, 71, 87, 0.4); }
+        .btn-primary:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(255, 71, 87, 0.6); }
 
-        .point-badge {
-            background: rgba(251, 191, 36, 0.1);
-            border: 1px solid rgba(251, 191, 36, 0.3);
-            color: var(--color-gold);
-            padding: 10px 20px;
-            border-radius: 50px;
-            font-weight: 800;
-            font-size: 1rem;
+        .btn-success { background: var(--wtr-player-o); color: #000; box-shadow: 0 8px 30px rgba(46, 213, 115, 0.4); }
+        .btn-success:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(46, 213, 115, 0.6); }
+
+        .btn-outline { background: transparent; border: 2px solid var(--wtr-grid-color); color: #fff; }
+        .btn-outline:hover { background: rgba(255,255,255,0.1); border-color: #fff; }
+
+        /* ==========================================================================
+           8. CHAT ARRAY SYSTEM
+           ========================================================================== 
+        */
+        .chat-container {
+            width: 100%;
+            max-width: 360px;
+            background: rgba(0,0,0,0.6);
+            border-radius: 25px;
+            margin-top: 25px;
+            border: 1px solid var(--wtr-border);
+            overflow: hidden;
             display: flex;
-            align-items: center;
+            flex-direction: column;
+            box-shadow: var(--wtr-shadow-deep);
+        }
+
+        #chat-log {
+            height: 120px;
+            overflow-y: auto;
+            padding: 15px;
+            font-size: 0.9rem;
+            display: flex;
+            flex-direction: column;
             gap: 8px;
-            box-shadow: var(--glow-gold);
+        }
+
+        .chat-bubble {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 8px 15px;
+            border-radius: 18px;
+            max-width: 90%;
+            width: fit-content;
+        }
+
+        .chat-bubble b { color: var(--wtr-gold); margin-right: 6px; }
+
+        .chat-input-row {
+            display: flex;
+            border-top: 1px solid var(--wtr-border);
+            background: rgba(0,0,0,0.3);
+        }
+
+        #chat-message-in {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 15px;
+            color: #fff;
+            font-size: 0.9rem;
+        }
+
+        #chat-trigger {
+            background: var(--wtr-player-o);
+            border: none;
+            padding: 0 25px;
+            font-weight: 900;
+            color: #000;
+            cursor: pointer;
         }
 
         /* ==========================================================================
-           [06] COMBAT GRID (STRICT 110px ARCHITECTURE)
-           ========================================================================== */
-        .quantum-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 110px);
-            grid-template-rows: repeat(3, 110px);
-            gap: 0;
-            margin-bottom: 30px;
-        }
-
-        .cell {
-            width: 110px;
-            height: 110px;
-            display: flex;
+           9. MODALS & TOASTS
+           ========================================================================== 
+        */
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.92);
+            z-index: 9000;
+            display: none;
             align-items: center;
             justify-content: center;
-            border: 6px solid var(--active-grid);
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-            transition: border-color 0.3s ease;
+            backdrop-filter: blur(15px);
+            animation: fade-in 0.4s forwards;
         }
 
-        /* H-SHAPE LOGIC (Solid Lines) */
-        .cell[data-index="0"], .cell[data-index="1"], .cell[data-index="2"] { border-top: none; }
-        .cell[data-index="6"], .cell[data-index="7"], .cell[data-index="8"] { border-bottom: none; }
-        .cell[data-index="0"], .cell[data-index="3"], .cell[data-index="6"] { border-left: none; }
-        .cell[data-index="2"], .cell[data-index="5"], .cell[data-index="8"] { border-right: none; }
+        @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
 
-        .cell svg {
-            width: 75px;
-            height: 75px;
-            position: absolute;
-            filter: drop-shadow(0 0 15px currentColor);
+        #toast-notice {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%) translateY(120px);
+            background: var(--wtr-gold);
+            color: #000;
+            padding: 15px 40px;
+            border-radius: 60px;
+            font-weight: 900;
+            font-size: 1rem;
+            transition: 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 11000;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
         }
 
-        .draw-x { stroke-dasharray: 140; stroke-dashoffset: 140; animation: draw 0.25s ease-out forwards; stroke: var(--active-x); }
-        .draw-o { stroke-dasharray: 220; stroke-dashoffset: 220; animation: draw 0.3s ease-out forwards; stroke: var(--active-o); }
-        @keyframes draw { to { stroke-dashoffset: 0; } }
+        .toast-active { transform: translateX(-50%) translateY(0) !important; }
 
         /* ==========================================================================
-           [07] MODALS & STORE UI
-           ========================================================================== */
-        dialog { margin: auto; background: transparent; border: none; padding: 0; max-width: 90vw; width: 420px; }
-        dialog::backdrop { background: rgba(0,0,0,0.85); backdrop-filter: blur(12px); }
-        
-        .store-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; max-height: 60vh; overflow-y: auto; padding-right: 10px; }
-        .store-item { background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 25px; padding: 20px; text-align: center; }
-        .store-item.equipped { border-color: var(--active-o); background: rgba(46, 213, 115, 0.1); }
-        .item-preview { height: 70px; margin-bottom: 15px; border-radius: 15px; background: #000; display: flex; align-items: center; justify-content: center; }
-        
-        .toast-box {
-            position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%);
-            background: var(--color-gold); color: #000; padding: 15px 30px; border-radius: 50px;
-            font-weight: 900; font-size: 0.9rem; z-index: 9999; box-shadow: var(--shadow-heavy);
-            animation: slideUp 0.3s forwards;
+           10. RESPONSIVE MEDIA QUERIES
+           ========================================================================== 
+        */
+        @media (max-height: 700px) {
+            h1 { font-size: 2.5rem; }
+            .grid-master { max-width: 300px; }
+            .chat-container { display: none; }
         }
-        @keyframes slideUp { from { transform: translate(-50%, 50px); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
     </style>
 </head>
 <body>
-    <div id="dynamic-bg-layer"></div>
-    <div class="bg-overlay"></div>
 
-    <div id="screen-splash" class="app-screen active">
-        <h1 class="font-brand text-gold" style="font-size: 4.5rem; line-height: 1;">WTR LAB 🚀</h1>
-        <p style="margin-top: 20px; font-weight: 900; letter-spacing: 5px; color: var(--text-muted);">QUANTUM ENGINE BOOTING...</p>
+    <canvas id="bg-canvas"></canvas>
+
+    <div id="startup-sequence">
+        <div class="loader-wrapper"></div>
+        <div class="brand-logo">WTR LAB</div>
+        <p style="color: #666; margin-top: 20px; font-weight: 700; letter-spacing: 4px;">INITIALIZING CORE ENGINE...</p>
     </div>
 
-    <div id="screen-auth" class="app-screen">
-        <div class="glass-panel">
-            <h1 class="font-brand" style="font-size: 3.5rem; margin-bottom: 10px;">TITAN 🔐</h1>
-            <p class="text-gold" style="font-weight: 900; letter-spacing: 3px; margin-bottom: 35px;">PREMIUM ACCESS</p>
-            <input type="email" id="inp-email" class="premium-input" placeholder="AGENT EMAIL">
-            <input type="password" id="inp-pass" class="premium-input" placeholder="SECURITY KEY">
-            <button class="btn btn-x" id="btn-login">ESTABLISH LINK</button>
+    <div class="network-hud">
+        <div class="ping-display">
+            <div class="ping-status-dot" id="ping-dot"></div>
+            <span id="ping-label">SYNCING...</span>
         </div>
-    </div>
-    <div id="screen-lobby" class="app-screen">
-        <nav style="position: absolute; top: 0; width: 100%; padding: 30px; display: flex; justify-content: space-between; align-items: center;">
-            <div class="point-badge">
-                🪙 <span id="ui-nav-points">0</span>
-            </div>
-            <div style="display: flex; gap: 20px;">
-                <button class="btn-outline" style="width: 50px; height: 50px; border-radius: 50%; padding: 0;" onclick="openStore()">
-                    🛒
-                </button>
-                <button class="btn-outline" style="width: 50px; height: 50px; border-radius: 50%; padding: 0;" onclick="document.getElementById('modal-settings').showModal()">
-                    ⚙️
-                </button>
-            </div>
-        </nav>
-
-        <div class="glass-panel">
-            <div style="width: 100px; height: 100px; background: rgba(0,0,0,0.8); border: 2px solid var(--color-gold); border-radius: 50%; margin: 0 auto 20px auto; display: flex; align-items: center; justify-content: center; box-shadow: var(--glow-gold);">
-                👤
-            </div>
-            <p style="font-size: 0.8rem; font-weight: 800; color: var(--text-muted); letter-spacing: 2px;">ACTIVE AGENT</p>
-            <h2 id="ui-agent-name" style="font-size: 2.2rem; font-weight: 900; margin-bottom: 30px;">AWAITING...</h2>
-
-            <div style="background: rgba(0,0,0,0.5); border: 1px dashed var(--color-gold); border-radius: 20px; padding: 20px; margin-bottom: 30px;">
-                <p style="font-size: 0.7rem; color: var(--text-muted); font-weight: 800;">COMBAT FREQUENCY ID 📡</p>
-                <h3 id="ui-agent-code" class="font-marker" style="font-size: 3rem; color: var(--color-gold); letter-spacing: 8px; margin-top: 10px;">----</h3>
-            </div>
-
-            <input type="text" id="inp-target" class="premium-input" placeholder="ENTER TARGET ID" maxlength="6">
-            <button class="btn btn-x" id="btn-challenge">ENGAGE TARGET ⚔️</button>
-            <button class="btn btn-outline" id="btn-offline" style="margin-top: 15px;">LOCAL SIMULATION</button>
-        </div>
+        <div class="optimizer-label">OPTIMIZER: ACTIVE</div>
     </div>
 
-    <div id="screen-store" class="app-screen" style="background: rgba(0,0,0,0.95); backdrop-filter: blur(30px);">
-        <header style="display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 30px; border-bottom: 1px solid var(--glass-border); position: absolute; top: 0;">
-            <h2 class="font-marker" style="font-size: 2rem; color: var(--color-gold);">ARMORY 🛒</h2>
-            <div class="point-badge">🪙 <span id="ui-store-points">0</span></div>
-            <button class="btn-outline" style="width: 50px; height: 50px; border-radius: 50%;" onclick="switchScreen('screen-lobby')">✖</button>
-        </header>
-        
-        <div style="width: 100%; max-width: 500px; padding: 0 20px; margin-top: 100px;">
-            <div style="display: flex; gap: 15px; margin-bottom: 30px;">
-                <button class="store-tab active" id="tab-skins" onclick="renderStore('skins')" style="flex:1; padding: 15px; border-radius: 15px; border: 1px solid var(--glass-border); background: rgba(255,255,255,0.05); color: #fff; font-weight: 800; cursor: pointer;">SKINS 🎨</button>
-                <button class="store-tab" id="tab-bgs" onclick="renderStore('bgs')" style="flex:1; padding: 15px; border-radius: 15px; border: 1px solid var(--glass-border); background: rgba(255,255,255,0.05); color: #fff; font-weight: 800; cursor: pointer;">MAPS 🌌</button>
-            </div>
-            <div class="store-grid" id="ui-store-grid"></div>
-        </div>
-    </div>
+    <div id="toast-notice">CORE READY</div>
 
-    <div id="screen-arena" class="app-screen">
-        <div class="glass-panel" style="padding: 15px; width: 90%; max-width: 450px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; border-radius: 20px;">
-            <div style="text-align: left;">
-                <span style="font-size: 0.7rem; color: var(--text-muted); font-weight: 800;">YOU</span><br>
-                <b id="ui-p1-name" style="color: var(--active-x); font-size: 1.2rem;">AGENT</b>
-            </div>
-            <div class="font-marker text-gold" style="font-size: 2rem;">VS</div>
-            <div style="text-align: right;">
-                <span style="font-size: 0.7rem; color: var(--text-muted); font-weight: 800;">ENEMY</span><br>
-                <b id="ui-p2-name" style="color: var(--active-o); font-size: 1.2rem;">TARGET</b>
-            </div>
-        </div>
-
-        <h2 id="ui-turn-text" class="font-marker" style="font-size: 1.8rem; margin-bottom: 40px; letter-spacing: 2px;">STANDBY...</h2>
-
-        <div class="quantum-grid" id="ui-combat-grid">
-            <div class="cell" data-index="0"></div><div class="cell" data-index="1"></div><div class="cell" data-index="2"></div>
-            <div class="cell" data-index="3"></div><div class="cell" data-index="4"></div><div class="cell" data-index="5"></div>
-            <div class="cell" data-index="6"></div><div class="cell" data-index="7"></div><div class="cell" data-index="8"></div>
-        </div>
-
-        <button class="btn btn-outline" style="width: 80%; max-width: 350px; border-color: var(--color-danger); color: var(--color-danger);" onclick="abortMission()">ABORT MISSION</button>
-    </div>
-
-    <dialog id="modal-result">
-        <div class="glass-panel" style="width: 100%;">
-            <h1 id="ui-result-title" class="font-marker" style="font-size: 4rem; line-height: 1; margin-bottom: 10px;">WIN</h1>
-            <p id="ui-result-reward" style="color: var(--color-gold); font-weight: 900; letter-spacing: 2px; margin-bottom: 30px;">+50 CREDITS 🪙</p>
-            <button class="btn btn-gold" id="btn-rematch">RE-ENGAGE</button>
-            <button class="btn btn-outline" style="margin-top: 15px;" onclick="abortMission()">RETURN TO BASE</button>
-        </div>
-    </dialog>
-
-    <dialog id="modal-settings">
-        <div class="glass-panel" style="width: 100%;">
-            <h2 class="font-marker" style="font-size: 2rem; margin-bottom: 30px; border-bottom: 1px solid var(--glass-border); padding-bottom: 10px;">SETTINGS ⚙️</h2>
+    <div id="screen-auth" class="screen-container active">
+        <div class="glass-card">
+            <h1 class="main-title">TITAN TTT</h1>
+            <p class="sub-heading">PRO ENTERPRISE EDITION</p>
             
-            <div style="background: rgba(255, 71, 87, 0.1); border: 1px dashed var(--color-danger); border-radius: 20px; padding: 20px; margin-bottom: 30px;">
-                <p style="font-size: 0.8rem; color: var(--color-danger); font-weight: 900; margin-bottom: 15px;">SYSTEM OVERRIDE</p>
-                <input type="text" id="inp-cheat" class="premium-input" placeholder="ACCESS CODE" style="margin-bottom: 15px; font-family: var(--font-code);">
-                <button class="btn btn-x" onclick="executeCheat()">EXECUTE COMMAND</button>
+            <input type="email" id="auth-email" class="wtr-input" placeholder="AGENT IDENTIFIER (EMAIL)">
+            <input type="password" id="auth-pass" class="wtr-input" placeholder="SECURITY KEY">
+            
+            <button class="btn btn-primary" id="login-trigger">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg>
+                INITIATE SESSION
+            </button>
+        </div>
+    </div>
+
+    <div id="screen-lobby" class="screen-container">
+        <div class="glass-card" style="max-width: 420px;">
+            <h2 class="main-title" style="font-size: 2.2rem;">COMMAND CENTER</h2>
+            <p style="margin-top: 5px;">Agent: <strong id="agent-name" style="color: var(--wtr-player-o); font-size: 1.2rem;">...</strong></p>
+            
+            <div style="background: rgba(0,0,0,0.6); padding: 25px; border-radius: 25px; margin: 25px 0; border: 1px dashed var(--wtr-gold); position: relative; overflow: hidden;">
+                <p style="font-size: 0.75rem; color: #888; font-weight: 800; letter-spacing: 2px;">YOUR COMBAT FREQUENCY</p>
+                <h2 id="agent-combat-code" class="main-title" style="color: var(--wtr-gold); font-size: 3rem; letter-spacing: 12px; margin-top: 10px;">----</h2>
             </div>
 
-            <button class="btn btn-outline" onclick="firebase.auth().signOut().then(()=>location.reload())">DISCONNECT AGENT</button>
-            <button class="btn btn-outline" style="margin-top: 15px; border-color: #555;" onclick="document.getElementById('modal-settings').close()">CLOSE</button>
+            <input type="text" id="target-combat-code" class="wtr-input" placeholder="ENTER TARGET FREQUENCY">
+            
+            <button class="btn btn-primary" id="challenge-trigger">ENGAGE TARGET</button>
+            <button class="btn btn-outline" id="offline-trigger" style="margin-top: 15px;">LOCAL SIMULATION</button>
         </div>
-    </dialog>
+    </div>
 
-    <div id="toast-container"></div>
+    <div id="screen-arena" class="screen-container">
+        <div class="combat-badge" id="arena-status">WAITING</div>
+        
+        <div class="grid-master" id="grid-board">
+            </div>
 
-    <script>
+        <div class="chat-container">
+            <div id="chat-log"></div>
+            <div class="chat-input-row">
+                <input type="text" id="chat-message-in" placeholder="TRANSMIT COMMS...">
+                <button id="chat-trigger">SEND</button>
+            </div>
+        </div>
+
+        <button class="btn btn-outline" style="margin-top: 30px; border-color: var(--wtr-player-x); color: var(--wtr-player-x);" id="abort-trigger">ABORT MISSION</button>
+    </div>
+
+    <div id="modal-result" class="overlay">
+        <div class="glass-card" style="max-width: 360px;">
+            <h1 id="result-announcement" style="font-size: 4.5rem; line-height: 1;">WIN</h1>
+            <p style="margin: 20px 0; color: #888;">MATCH DATA EVALUATED</p>
+            <button class="btn btn-success" id="rematch-trigger">RE-ENGAGE</button>
+            <button class="btn btn-outline" id="exit-trigger">RETURN TO BASE</button>
+        </div>
+    </div>
+
+    <div id="modal-incoming" class="overlay">
+        <div class="glass-card" style="max-width: 320px;">
+            <h2 class="main-title" style="color: var(--wtr-gold); font-size: 2.2rem;">ALERT!</h2>
+            <p style="margin: 25px 0; font-size: 1.1rem;"><strong id="challenger-name" style="color: #fff;">...</strong> IS CHALLENGING YOU!</p>
+            <button class="btn btn-success" id="accept-trigger">ACCEPT</button>
+            <button class="btn btn-primary" id="reject-trigger">DECLINE</button>
+        </div>
+    </div>
+
+    <script type="module">
+        /**
+         * FIREBASE ENTERPRISE INTEGRATION
+         */
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, query, where, onSnapshot, getDocs, addDoc, serverTimestamp, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // CONFIGURATION DATA (NITESH'S PROVIDED CONFIG)
         const firebaseConfig = {
             apiKey: "AIzaSyBldLyB9d18ZGStroUC0-yjuUrp31DFQ28",
             authDomain: "online-tic-tac-toe-d919f.firebaseapp.com",
@@ -400,521 +576,483 @@
             appId: "1:644365665798:web:f90b64bdc3aa6912032587"
         };
 
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.firestore();
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
 
-        window.State = {
-            user: null, profile: null, mode: 'online', gameId: null,
-            board: Array(9).fill(''), mySym: 'X', turn: 'X', active: false,
-            points: 0, 
-            inventory: { skins: ['default'], bgs: ['default'] },
-            equipped: { skin: 'default', bg: 'default' }
+        /**
+         * ========================================================================
+         * 1. SYSTEM STATE & GLOBAL VARIABLES
+         * ========================================================================
+         */
+        let state = {
+            user: null,
+            profile: null,
+            mode: 'online', // 'online' or 'offline'
+            gameId: null,
+            board: Array(9).fill(''),
+            mySym: 'X',
+            turn: 'X',
+            active: false,
+            unsubGame: null,
+            unsubChat: null
         };
 
-        const StoreDB = {
-            skins: [
-                { id: 'default', name: 'NEON CLASSIC', price: 0, colorX: '#ff4757', colorO: '#2ed573' },
-                { id: 'gold', name: 'TITAN GOLD', price: 500, colorX: '#fbbf24', colorO: '#f59e0b' },
-                { id: 'matrix', name: 'MATRIX CODE', price: 1200, colorX: '#00ff00', colorO: '#008f11' },
-                { id: 'ice', name: 'QUANTUM ICE', price: 3000, colorX: '#00d2d3', colorO: '#54a0ff' }
-            ],
-            bgs: [
-                { id: 'default', name: 'DARK CITY', price: 0, url: 'https://source.unsplash.com/featured/?cyberpunk,dark' },
-                { id: 'space', name: 'DEEP SPACE', price: 1000, url: 'https://source.unsplash.com/featured/?galaxy,stars' },
-                { id: 'grid', name: 'NEON GRID', price: 2500, url: 'https://source.unsplash.com/featured/?synthwave,neon' }
-            ]
+        // DOM REFERENCES
+        const DOM = {
+            toast: document.getElementById('toast-notice'),
+            screens: document.querySelectorAll('.screen-container'),
+            pingVal: document.getElementById('ping-label'),
+            pingDot: document.getElementById('ping-dot'),
+            board: document.getElementById('grid-board'),
+            status: document.getElementById('arena-status'),
+            chatStream: document.getElementById('chat-log')
         };
 
-        // UI Core Helpers
-        const switchScreen = (id) => {
-            document.querySelectorAll('.app-screen').forEach(s => s.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-        };
+        // SYMBOLS SVG TEMPLATES
+        const ICON_X = `
+            <svg class="svg-icon" viewBox="0 0 100 100">
+                <path class="path-x" d="M 20 20 L 80 80 M 80 20 L 20 80" stroke="var(--wtr-player-x)" stroke-width="12" stroke-linecap="round" fill="none"/>
+            </svg>
+        `;
+        const ICON_O = `
+            <svg class="svg-icon" viewBox="0 0 100 100">
+                <circle class="path-o" cx="50" cy="50" r="35" stroke="var(--wtr-player-o)" stroke-width="12" fill="none" stroke-linecap="round"/>
+            </svg>
+        `;
 
-        const showToast = (msg) => {
-            const t = document.createElement('div');
-            t.className = 'toast-box'; t.innerText = msg;
-            document.getElementById('toast-container').appendChild(t);
-            setTimeout(() => { t.style.animation = 'slideUp 0.3s reverse forwards'; setTimeout(() => t.remove(), 300); }, 3000);
-        };
-        /* ==========================================================================
-           [08] TITAN ARMORY & COSMETICS LOGIC (EXPANDED)
-           ========================================================================== */
+        /**
+         * ========================================================================
+         * 2. CORE UTILITY FUNCTIONS
+         * ========================================================================
+         */
         
-        // Items ko Store Screen par render karne ka engine
-        window.renderStore = (category) => {
-            const grid = document.getElementById('ui-store-grid');
-            grid.innerHTML = ''; // Pehle grid ko empty karein
+        // System Toast Controller
+        const triggerToast = (msg) => {
+            DOM.toast.innerText = msg;
+            DOM.toast.classList.add('toast-active');
+            setTimeout(() => DOM.toast.classList.remove('toast-active'), 3500);
+        };
+
+        // Screen Navigation Engine
+        const navigateTo = (id) => {
+            DOM.screens.forEach(s => s.classList.remove('active'));
+            setTimeout(() => {
+                DOM.screens.forEach(s => s.style.display = 'none');
+                const target = document.getElementById(id);
+                target.style.display = 'flex';
+                setTimeout(() => target.classList.add('active'), 50);
+            }, 300);
+        };
+
+        // Code Generation (Secure Combat Code)
+        const generateCombatCode = () => {
+            return Math.random().toString(36).substring(2, 6).toUpperCase();
+        };
+
+        /**
+         * ========================================================================
+         * 3. GRAPHICS ENGINE (PARTICLE SYSTEM)
+         * ========================================================================
+         */
+        const initParticles = () => {
+            const canvas = document.getElementById('bg-canvas');
+            const ctx = canvas.getContext('2d');
+            let particles = [];
             
-            // UI Tabs highlight update
-            document.querySelectorAll('.store-tab').forEach(t => t.style.background = 'rgba(255,255,255,0.05)');
-            document.getElementById(`tab-${category}`).style.background = 'var(--color-gold)';
-            document.getElementById(`tab-${category}`).style.color = '#000';
+            const resize = () => {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            };
+            window.addEventListener('resize', resize);
+            resize();
 
-            const items = StoreDB[category];
-            const inventory = State.profile.inventory?.[category] || ['default'];
-            const equippedId = State.equipped[category === 'skins' ? 'skin' : 'bg'];
-
-            items.forEach(item => {
-                const isOwned = inventory.includes(item.id);
-                const isEquipped = equippedId === item.id;
-                
-                let btnHTML = '';
-                if (isEquipped) {
-                    btnHTML = `<button class="btn" style="background:rgba(46, 213, 115, 0.2); color:var(--active-o); border:1px solid var(--active-o); font-size:0.8rem; height:45px;" disabled>EQUIPPED</button>`;
-                } else if (isOwned) {
-                    btnHTML = `<button class="btn btn-outline" style="font-size:0.8rem; height:45px;" onclick="equipItem('${category}', '${item.id}')">EQUIP GEAR</button>`;
-                } else {
-                    btnHTML = `<button class="btn btn-gold" style="font-size:0.8rem; height:45px;" onclick="buyItem('${category}', '${item.id}', ${item.price})">BUY 🪙 ${item.price}</button>`;
+            class Particle {
+                constructor() {
+                    this.reset();
                 }
-
-                const previewStyle = category === 'skins' 
-                    ? `box-shadow: 0 0 15px ${item.colorX}44; border:1px solid ${item.colorX}22;` 
-                    : `background-image: url('${item.url}'); background-size: cover;`;
-
-                grid.innerHTML += `
-                    <div class="store-item ${isEquipped ? 'equipped' : ''}">
-                        <div class="item-preview" style="${previewStyle}">
-                            ${category === 'skins' ? `
-                                <span style="color: ${item.colorX}; font-weight: 900; font-size:1.5rem; font-family:var(--font-brand);">X</span> 
-                                <span style="color: ${item.colorO}; font-weight: 900; font-size:1.5rem; font-family:var(--font-brand); margin-left:10px;">O</span>
-                            ` : ''}
-                        </div>
-                        <div class="item-name">${item.name}</div>
-                        ${btnHTML}
-                    </div>
-                `;
-            });
-        };
-
-        window.openStore = () => {
-            updatePointsUI();
-            switchScreen('screen-store');
-            renderStore('skins');
-        };
-
-        window.buyItem = async (category, itemId, price) => {
-            if (State.points < price) {
-                showToast("INSUFFICIENT QUANTUM CREDITS!");
-                return;
+                reset() {
+                    this.x = Math.random() * canvas.width;
+                    this.y = Math.random() * canvas.height;
+                    this.size = Math.random() * 2;
+                    this.speedX = (Math.random() - 0.5) * 0.5;
+                    this.speedY = (Math.random() - 0.5) * 0.5;
+                    this.alpha = Math.random();
+                }
+                update() {
+                    this.x += this.speedX;
+                    this.y += this.speedY;
+                    if(this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+                    if(this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+                }
+                draw() {
+                    ctx.fillStyle = `rgba(255, 255, 255, ${this.alpha})`;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fill();
+                }
             }
-            
-            State.points -= price;
-            State.profile.inventory[category].push(itemId);
-            
-            await syncProfileToCloud();
-            showToast("GEAR SECURED IN ARMORY!");
-            renderStore(category);
-            updatePointsUI();
-        };
 
-        window.equipItem = async (category, itemId) => {
-            const key = category === 'skins' ? 'skin' : 'bg';
-            State.equipped[key] = itemId;
-            
-            await syncProfileToCloud();
-            showToast("SYSTEM HARDWARE UPDATED!");
-            applyVisualSkins();
-            renderStore(category);
-        };
+            for(let i=0; i<60; i++) particles.push(new Particle());
 
-        const applyVisualSkins = () => {
-            const skin = StoreDB.skins.find(s => s.id === State.equipped.skin) || StoreDB.skins[0];
-            const bg = StoreDB.bgs.find(b => b.id === State.equipped.bg) || StoreDB.bgs[0];
-            
-            // Dynamic CSS Variable Injection
-            document.documentElement.style.setProperty('--active-x', skin.colorX);
-            document.documentElement.style.setProperty('--active-o', skin.colorO);
-            document.documentElement.style.setProperty('--active-glow-x', `0 0 20px ${skin.colorX}66`);
-            document.documentElement.style.setProperty('--active-glow-o', `0 0 20px ${skin.colorO}66`);
-            
-            document.getElementById('dynamic-bg-layer').style.backgroundImage = `url('${bg.url}')`;
+            const animate = () => {
+                ctx.clearRect(0,0, canvas.width, canvas.height);
+                particles.forEach(p => { p.update(); p.draw(); });
+                requestAnimationFrame(animate);
+            };
+            animate();
         };
+        initParticles();
 
-        /* ==========================================================================
-           [09] CHEAT CODE & DATA SYNC (nk@99390)
-           ========================================================================== */
-        window.executeCheat = async () => {
-            const inp = document.getElementById('inp-cheat');
-            const code = inp.value.trim();
-            
-            if (code === 'nk@99390') {
-                State.points += 1000000;
-                await syncProfileToCloud();
-                
-                showToast("🔥 TITAN OVERRIDE: 1,000,000 CREDITS ADDED 🔥");
-                
-                // Massive Gold/Red Confetti Blast
-                canvasConfetti({ 
-                    particleCount: 500, spread: 160, origin: { y: 0.5 }, 
-                    colors: ['#fbbf24', '#ff4757', '#ffffff'] 
-                });
-                
-                inp.value = '';
-                document.getElementById('modal-settings').close();
-                updatePointsUI();
-            } else {
-                showToast("ACCESS DENIED: INVALID KEY");
-            }
-        };
-
-        const updatePointsUI = () => {
-            const pStr = State.points.toLocaleString();
-            document.getElementById('ui-nav-points').innerText = pStr;
-            document.getElementById('ui-store-points').innerText = pStr;
-        };
-
-        const syncProfileToCloud = async () => {
-            if (!State.user) return;
+        /**
+         * ========================================================================
+         * 4. NETWORK OPTIMIZER ENGINE (SELF-HEALING)
+         * ========================================================================
+         */
+        const runNetworkDiagnostic = async () => {
+            const startTime = Date.now();
             try {
-                await db.collection('users').doc(State.user.uid).update({
-                    points: State.points,
-                    inventory: State.profile.inventory,
-                    equipped: State.equipped
-                });
-            } catch (e) { console.error("Sync Failure", e); }
+                // Measure connection by small read
+                if(state.user) await getDoc(doc(db, 'users', state.user.uid));
+                const ping = Date.now() - startTime;
+                
+                DOM.pingVal.innerText = `PING: ${ping} MS`;
+                
+                if(ping < 120) {
+                    DOM.pingDot.style.background = 'var(--wtr-player-o)';
+                    DOM.pingDot.style.boxShadow = '0 0 15px var(--wtr-player-o)';
+                } else if(ping < 300) {
+                    DOM.pingDot.style.background = 'var(--wtr-gold)';
+                    DOM.pingDot.style.boxShadow = '0 0 15px var(--wtr-gold)';
+                } else {
+                    DOM.pingDot.style.background = 'var(--wtr-player-x)';
+                    DOM.pingDot.style.boxShadow = '0 0 15px var(--wtr-player-x)';
+                }
+            } catch(e) {
+                DOM.pingVal.innerText = "PING: ERROR";
+            }
         };
+        setInterval(runNetworkDiagnostic, 6000);
 
-        /* ==========================================================================
-           [10] ZERO-LATENCY COMBAT ENGINE (pointerdown)
-           ========================================================================== */
-        const SYMBOL_X_SVG = `<svg viewBox="0 0 100 100"><path class="draw-x" d="M 20 20 L 80 80 M 80 20 L 20 80" stroke-width="12" stroke-linecap="round" fill="none"/></svg>`;
-        const SYMBOL_O_SVG = `<svg viewBox="0 0 100 100"><circle class="draw-o" cx="50" cy="50" r="35" stroke-width="12" fill="none" stroke-linecap="round"/></svg>`;
+        /**
+         * ========================================================================
+         * 5. GAME LOGIC & BOARD CONTROLLER
+         * ========================================================================
+         */
+        
+        // Initial Board Generation
+        const buildGridUI = () => {
+            DOM.board.innerHTML = '';
+            for(let i=0; i<9; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'grid-cell';
+                cell.onclick = () => onCellExecute(i);
+                DOM.board.appendChild(cell);
+            }
+        };
+        buildGridUI();
 
-        const initCombatSystem = () => {
-            const cells = document.querySelectorAll('.cell');
+        // Sync State to Visuals
+        const syncVisualBoard = () => {
+            const cells = document.querySelectorAll('.grid-cell');
             cells.forEach((cell, idx) => {
-                // pointerdown bypasses the 300ms touch delay for instant 0ms feedback
-                cell.addEventListener('pointerdown', (e) => {
-                    e.preventDefault();
-                    if (State.active) handleCellTrigger(idx);
-                });
+                const val = state.board[idx];
+                if(val === 'X' && !cell.innerHTML) cell.innerHTML = ICON_X;
+                else if(val === 'O' && !cell.innerHTML) cell.innerHTML = ICON_O;
+                else if(!val) cell.innerHTML = '';
             });
         };
 
-        const handleCellTrigger = async (idx) => {
-            if (State.board[idx] !== '' || !State.active) return;
-            if (State.mode === 'online' && State.turn !== State.mySym) {
-                showToast("WAIT FOR TARGET");
-                return;
+        // Win/Draw Evaluation
+        const evaluateCombatMatrix = (b) => {
+            const wins = [
+                [0,1,2],[3,4,5],[6,7,8], // H
+                [0,3,6],[1,4,7],[2,5,8], // V
+                [0,4,8],[2,4,6]          // D
+            ];
+            for(let p of wins) {
+                if(b[p[0]] && b[p[0]] === b[p[1]] && b[p[0]] === b[p[2]]) return 'win';
             }
-
-            // OPTIMISTIC UI: Update screen instantly (0ms)
-            State.board[idx] = State.mySym;
-            renderBoard();
-            if (navigator.vibrate) navigator.vibrate(35);
-
-            const result = calculateWin(State.board);
-            const nextT = State.mySym === 'X' ? 'O' : 'X';
-
-            if (State.mode === 'offline') {
-                if (result === 'win') endCombat(State.mySym);
-                else if (result === 'draw') endCombat('draw');
-                else { State.turn = nextT; updateHUD(); }
-            } else {
-                // Firebase Sync
-                const gRef = db.collection('games').doc(State.gameId);
-                try {
-                    if (result === 'win') await gRef.update({ b: State.board.join(''), s: 'win', w: State.mySym });
-                    else if (result === 'draw') await gRef.update({ b: State.board.join(''), s: 'draw' });
-                    else await gRef.update({ b: State.board.join(''), t: nextT });
-                } catch (e) { console.error(e); }
-            }
-        };
-
-        const renderBoard = () => {
-            document.querySelectorAll('.cell').forEach((c, i) => {
-                const val = State.board[i];
-                if (val === 'X' && !c.innerHTML.includes('draw-x')) c.innerHTML = SYMBOL_X_SVG;
-                else if (val === 'O' && !c.innerHTML.includes('draw-o')) c.innerHTML = SYMBOL_O_SVG;
-                else if (!val) c.innerHTML = '';
-            });
-        };
-
-        const calculateWin = (b) => {
-            const lines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-            for (let p of lines) if (b[p[0]] && b[p[0]] === b[p[1]] && b[p[0]] === b[p[2]]) return 'win';
             return b.includes('') ? 'continue' : 'draw';
         };
 
-        const endCombat = async (winner) => {
-            State.active = false;
-            let earned = 0;
-            const title = document.getElementById('ui-result-title');
-            const reward = document.getElementById('ui-result-reward');
-
-            if (winner === 'draw') {
-                title.innerText = "DRAW"; title.style.color = "#fff";
-                reward.innerText = "+10 QUANTUM CREDITS"; earned = 10;
-            } else {
-                const isMe = (State.mode === 'online' && winner === State.mySym) || State.mode === 'offline';
-                if (isMe) {
-                    title.innerText = "VICTORY"; title.style.color = "var(--active-o)";
-                    reward.innerText = "+50 QUANTUM CREDITS"; earned = 50;
-                    canvasConfetti({ particleCount: 200, spread: 120, origin: { y: 0.6 } });
+        const handleMatchEnd = (winner) => {
+            state.active = false;
+            syncVisualBoard();
+            
+            setTimeout(() => {
+                const head = document.getElementById('result-announcement');
+                if(winner === 'draw') {
+                    head.innerText = "DRAW";
+                    head.style.color = "#fff";
                 } else {
-                    title.innerText = "DEFEAT"; title.style.color = "var(--active-x)";
-                    reward.innerText = "+5 CREDITS"; earned = 5;
+                    if(state.mode === 'online') {
+                        head.innerText = (winner === state.mySym) ? "VICTORY" : "DEFEAT";
+                    } else {
+                        head.innerText = `AGENT ${winner} WINS`;
+                    }
+                    head.style.color = (winner === 'X') ? 'var(--wtr-player-x)' : 'var(--wtr-player-o)';
+                    
+                    if((state.mode === 'online' && winner === state.mySym) || state.mode === 'offline') {
+                        canvasConfetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+                    }
                 }
-            }
-
-            if (State.mode === 'online') {
-                State.points += earned;
-                await syncProfileToCloud();
-                updatePointsUI();
-            }
-
-            setTimeout(() => document.getElementById('modal-result').style.display = 'flex', 800);
+                document.getElementById('modal-result').style.display = 'flex';
+            }, 600);
         };
 
-        const updateHUD = () => {
-            const isMyTurn = State.turn === State.mySym;
-            const hud = document.getElementById('ui-turn-text');
-            hud.innerText = isMyTurn ? "YOUR TURN" : "TARGET MOVING...";
-            hud.style.color = isMyTurn ? "var(--active-o)" : "var(--text-muted)";
+        const onCellExecute = async (i) => {
+            if(!state.active || state.board[i]) return;
+
+            if(state.mode === 'offline') {
+                state.board[i] = state.turn;
+                syncVisualBoard();
+                const res = evaluateCombatMatrix(state.board);
+                if(res === 'win') handleMatchEnd(state.turn);
+                else if(res === 'draw') handleMatchEnd('draw');
+                else {
+                    state.turn = (state.turn === 'X') ? 'O' : 'X';
+                    DOM.status.innerText = `AGENT ${state.turn} TURN`;
+                    DOM.status.style.color = (state.turn === 'X') ? 'var(--wtr-player-x)' : 'var(--wtr-player-o)';
+                }
+            } else {
+                if(state.turn !== state.mySym) {
+                    triggerToast("AWAITING OPPONENT MOVE...");
+                    return;
+                }
+                
+                // OPTIMISTIC LOCAL UPDATE (0-LAG FEEL)
+                state.board[i] = state.mySym;
+                syncVisualBoard();
+                
+                const res = evaluateCombatMatrix(state.board);
+                const gRef = doc(db, 'games', state.gameId);
+                
+                if(res === 'win') await updateDoc(gRef, { board: state.board, status: 'win', winner: state.mySym });
+                else if(res === 'draw') await updateDoc(gRef, { board: state.board, status: 'draw' });
+                else await updateDoc(gRef, { board: state.board, turn: (state.mySym==='X'?'O':'X') });
+            }
         };
 
-        /* ==========================================================================
-           [11] MULTIPLAYER HANDSHAKE & AUTH (BUG-FREE COMPAT)
-           ========================================================================== */
-        let unsubGame = null;
+        /**
+         * ========================================================================
+         * 6. ONLINE MULTIPLAYER ENGINE
+         * ========================================================================
+         */
+        const initiateOnlineArena = (gId, sym) => {
+            state.gameId = gId;
+            state.mySym = sym;
+            state.mode = 'online';
+            state.active = true;
+            
+            document.getElementById('modal-result').style.display = 'none';
+            navigateTo('screen-arena');
 
-        const establishSync = (gameId, mySym, enemy) => {
-            State.gameId = gameId; State.mySym = mySym; State.mode = 'online'; State.active = true;
-            document.getElementById('ui-p1-name').innerText = State.profile.name;
-            document.getElementById('ui-p2-name').innerText = enemy;
-            switchScreen('screen-arena');
+            // 1. GAME DATA SYNC
+            if(state.unsubGame) state.unsubGame();
+            state.unsubGame = onSnapshot(doc(db, 'games', gId), (snapshot) => {
+                if(!snapshot.exists()) {
+                    triggerToast("SESSION TERMINATED BY OPPONENT");
+                    handleAbortMission(true);
+                    return;
+                }
+                const data = snapshot.data();
+                state.board = data.board;
+                state.turn = data.turn;
+                state.active = (data.status === 'playing');
+                syncVisualBoard();
 
-            if (unsubGame) unsubGame();
-            unsubGame = db.collection('games').doc(gameId).onSnapshot((snap) => {
-                if (!snap.exists) { showToast("LINK SEVERED"); return abortMission(); }
-                const data = snap.data();
-                State.board = data.b ? data.b.split('') : Array(9).fill('');
-                State.turn = data.t || 'X';
-                State.active = (data.s === 'playing');
-                renderBoard();
-                if (data.s === 'win') endCombat(data.w);
-                else if (data.s === 'draw') endCombat('draw');
-                else updateHUD();
+                if(data.status === 'win') handleMatchEnd(data.winner);
+                else if(data.status === 'draw') handleMatchEnd('draw');
+                else {
+                    if(state.turn === state.mySym) {
+                        DOM.status.innerText = "YOUR TURN";
+                        DOM.status.style.color = "var(--wtr-player-o)";
+                    } else {
+                        DOM.status.innerText = "OPPONENT TURN";
+                        DOM.status.style.color = "#fff";
+                    }
+                }
+            });
+
+            // 2. CHAT COMMS SYNC
+            if(state.unsubChat) state.unsubChat();
+            state.unsubChat = onSnapshot(query(collection(db, `games/${gId}/chat`)), (snapshot) => {
+                DOM.chatStream.innerHTML = '';
+                let msgs = [];
+                snapshot.forEach(d => msgs.push(d.data()));
+                msgs.sort((a,b) => (a.t?.toMillis()||0) - (b.t?.toMillis()||0)).forEach(m => {
+                    DOM.chatStream.innerHTML += `<div class="chat-bubble"><b>${m.s}:</b> ${m.m}</div>`;
+                });
+                DOM.chatStream.scrollTop = DOM.chatStream.scrollHeight;
             });
         };
 
-        document.getElementById('btn-challenge').onclick = async () => {
-            const targetCode = document.getElementById('inp-target').value.toUpperCase().trim();
-            if (!targetCode || targetCode === State.profile.code) return showToast("INVALID TARGET");
+        /**
+         * ========================================================================
+         * 7. CHALLENGE & INVITE PROTOCOLS
+         * ========================================================================
+         */
+        document.getElementById('challenge-trigger').onclick = async () => {
+            const input = document.getElementById('target-combat-code');
+            const code = input.value.toUpperCase().trim();
             
-            document.getElementById('btn-challenge').innerText = 'SCANNING...';
-            const snap = await db.collection('users').where('code', '==', targetCode).get();
-            if (snap.empty) { document.getElementById('btn-challenge').innerText = 'ENGAGE TARGET ⚔️'; return showToast("TARGET OFFLINE"); }
+            if(!code || code === state.profile.inviteCode) return triggerToast("INVALID FREQUENCY CODE");
+
+            const q = await getDocs(query(collection(db, 'users'), where('inviteCode', '==', code)));
+            if(q.empty) return triggerToast("TARGET AGENT NOT FOUND");
             
-            const targetData = snap.docs[0].data();
-            const invRef = await db.collection('invites').add({ sUid: State.user.uid, sName: State.profile.name, rUid: targetData.uid, status: 'pending' });
+            const target = q.docs[0].data();
+            const inviteRef = await addDoc(collection(db, 'invites'), {
+                sUid: state.user.uid,
+                sName: state.profile.name,
+                rUid: target.uid,
+                status: 'pending'
+            });
             
-            document.getElementById('btn-challenge').innerText = 'TRANSMITTING...';
-            const uInv = db.collection('invites').doc(invRef.id).onSnapshot((dSnap) => {
-                const d = dSnap.data();
-                if (d?.status === 'accepted') { establishSync(d.gId, 'X', targetData.name); db.collection('invites').doc(invRef.id).delete(); uInv(); }
-                else if (d?.status === 'rejected') { showToast("TARGET EVADED"); db.collection('invites').doc(invRef.id).delete(); uInv(); document.getElementById('btn-challenge').innerText = 'ENGAGE TARGET ⚔️'; }
+            triggerToast("CHALLENGE TRANSMITTED...");
+            
+            onSnapshot(doc(db, 'invites', inviteRef.id), (snap) => {
+                const d = snap.data();
+                if(d?.status === 'accepted') {
+                    initiateOnlineArena(d.gameId, 'X');
+                    deleteDoc(doc(db, 'invites', inviteRef.id));
+                } else if(d?.status === 'rejected') {
+                    triggerToast("CHALLENGE EVADED BY TARGET");
+                    deleteDoc(doc(db, 'invites', inviteRef.id));
+                }
             });
         };
 
-        const listenInvites = () => {
-            db.collection('invites').where('rUid', '==', State.user.uid).where('status', '==', 'pending').onSnapshot((snap) => {
-                snap.docChanges().forEach(c => {
-                    if (change.type === 'added') {
-                        const inv = c.doc.data();
-                        document.getElementById('ui-challenger-id').innerText = inv.sName;
-                        document.getElementById('modal-challenge').showModal();
-                        document.getElementById('btn-accept-sync').onclick = async () => {
-                            const gRef = await db.collection('games').add({ b: '         ', t: 'X', s: 'playing' });
-                            await db.collection('invites').doc(c.doc.id).update({ status: 'accepted', gId: gRef.id });
-                            document.getElementById('modal-challenge').close(); establishSync(gRef.id, 'O', inv.sName);
+        const listenForIncomingChallenges = () => {
+            onSnapshot(query(collection(db, 'invites'), where('rUid', '==', state.user.uid), where('status', '==', 'pending')), (snap) => {
+                snap.docChanges().forEach(async (change) => {
+                    if(change.type === 'added') {
+                        const inv = change.doc.data();
+                        document.getElementById('challenger-name').innerText = inv.sName;
+                        document.getElementById('modal-incoming').style.display = 'flex';
+
+                        document.getElementById('accept-trigger').onclick = async () => {
+                            const newGame = await addDoc(collection(db, 'games'), {
+                                players: [inv.sUid, state.user.uid],
+                                board: Array(9).fill(''),
+                                turn: 'X',
+                                status: 'playing'
+                            });
+                            await updateDoc(doc(db, 'invites', change.doc.id), { status: 'accepted', gameId: newGame.id });
+                            document.getElementById('modal-incoming').style.display = 'none';
+                            initiateOnlineArena(newGame.id, 'O');
+                        };
+                        document.getElementById('reject-trigger').onclick = async () => {
+                            await updateDoc(doc(db, 'invites', change.doc.id), { status: 'rejected' });
+                            document.getElementById('modal-incoming').style.display = 'none';
                         };
                     }
                 });
             });
         };
 
-        window.abortMission = () => { location.reload(); };
-
-        document.getElementById('btn-offline').onclick = () => {
-            State.mode = 'offline'; State.active = true; State.board = Array(9).fill(''); State.turn = 'X'; State.mySym = 'X';
-            document.getElementById('ui-p1-name').innerText = "PLAYER X"; document.getElementById('ui-p2-name').innerText = "PLAYER O";
-            switchScreen('screen-arena'); renderBoard(); updateHUD();
-        };
-
-        document.getElementById('btn-rematch').onclick = async () => {
-            document.getElementById('modal-result').style.display = 'none';
-            if (State.mode === 'online') await db.collection('games').doc(State.gameId).update({ b: '         ', t: 'X', s: 'playing' });
-            else document.getElementById('btn-offline').click();
-        };
-                /**
-         * ========================================================================
-         * [ENGINE 6] TITAN ARMORY MASTER DATABASE (EXPANDED)
-         * Isme hum saari premium skins aur environments define kar rahe hain.
-         * ========================================================================
-         */
-        const StoreDB = {
-            // Quantum Skins: X aur O ka color aur unka glow effect define karta hai
-            skins: [
-                { 
-                    id: 'default', 
-                    name: 'NEON CLASSIC', 
-                    price: 0, 
-                    colorX: '#ff4757', 
-                    colorO: '#2ed573' 
-                },
-                { 
-                    id: 'gold_titan', 
-                    name: 'CYBER GOLD', 
-                    price: 5000, 
-                    colorX: '#fbbf24', 
-                    colorO: '#f59e0b' 
-                },
-                { 
-                    id: 'matrix_hacker', 
-                    name: 'MATRIX CODE', 
-                    price: 12000, 
-                    colorX: '#00ff00', 
-                    colorO: '#008f11' 
-                },
-                { 
-                    id: 'blood_moon', 
-                    name: 'BLOOD MOON', 
-                    price: 25000, 
-                    colorX: '#ff0000', 
-                    colorO: '#7f0000' 
-                },
-                { 
-                    id: 'quantum_ice', 
-                    name: 'FROZEN NITRO', 
-                    price: 50000, 
-                    colorX: '#00d2d3', 
-                    colorO: '#54a0ff' 
-                }
-            ],
-            // Environments: Background images jo Unsplash API se fetch hoti hain
-            bgs: [
-                { 
-                    id: 'default', 
-                    name: 'NIGHT CITY', 
-                    price: 0, 
-                    url: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=2070' 
-                },
-                { 
-                    id: 'deep_space', 
-                    name: 'ORION GALAXY', 
-                    price: 2500, 
-                    url: 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?q=80&w=2111' 
-                },
-                { 
-                    id: 'synth_grid', 
-                    name: 'RETRO WAVE', 
-                    price: 8000, 
-                    url: 'https://images.unsplash.com/photo-1614850523296-e8c041de4398?q=80&w=2070' 
-                },
-                { 
-                    id: 'binary_void', 
-                    name: 'THE MATRIX', 
-                    price: 15000, 
-                    url: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2070' 
-                }
-            ]
-        };
-
         /**
          * ========================================================================
-         * [ENGINE 7] DYNAMIC STYLE INJECTOR
-         * Yeh function bina page reload kiye skin aur background apply karta hai.
+         * 8. SYSTEM BOOTSTRAP (AUTH & INITIALIZATION)
          * ========================================================================
          */
-        window.applyCosmetics = () => {
-            // Current equipped IDs uthao state se
-            const currentSkinId = State.profile?.equipped?.skin || 'default';
-            const currentBgId = State.profile?.equipped?.bg || 'default';
+        
+        // Startup Sequence Delay
+        setTimeout(() => {
+            document.getElementById('startup-sequence').style.opacity = '0';
+            setTimeout(() => document.getElementById('startup-sequence').style.display = 'none', 1200);
+        }, 2800);
 
-            // Database se match find karo
-            const skinData = StoreDB.skins.find(s => s.id === currentSkinId) || StoreDB.skins[0];
-            const bgData = StoreDB.bgs.find(b => b.id === currentBgId) || StoreDB.bgs[0];
+        onAuthStateChanged(auth, async (user) => {
+            if(user) {
+                state.user = user;
+                const snap = await getDoc(doc(db, 'users', user.uid));
+                if(snap.exists()) {
+                    state.profile = snap.data();
+                } else {
+                    state.profile = { 
+                        uid: user.uid, 
+                        name: user.email.split('@')[0].toUpperCase(), 
+                        inviteCode: generateCombatCode() 
+                    };
+                    await setDoc(doc(db, 'users', user.uid), state.profile);
+                }
+                
+                document.getElementById('agent-name').innerText = state.profile.name;
+                document.getElementById('agent-combat-code').innerText = state.profile.inviteCode;
+                
+                navigateTo('screen-lobby');
+                listenForIncomingChallenges();
+                runNetworkDiagnostic();
+            } else {
+                navigateTo('screen-auth');
+            }
+        });
 
-            // 1. CSS Root Variables Inject karo (The Magic)
-            const root = document.documentElement;
-            root.style.setProperty('--wtr-color-x', skinData.colorX);
-            root.style.setProperty('--wtr-color-o', skinData.colorO);
-            
-            // 2. Dynamic Background image change karo fading effect ke sath
-            document.body.style.backgroundImage = `url('${bgData.url}')`;
-            
-            console.log(`>> COSMETICS APPLIED: Skin[${skinData.name}] BG[${bgData.name}]`);
-        };
-
-        /**
-         * ========================================================================
-         * [ENGINE 8] DATA PERSISTENCE LAYER (SYNC)
-         * Points aur Inventory ko Firebase par save karne ke liye.
-         * ========================================================================
-         */
-        window.syncProfileData = async () => {
-            if (!State.user) return;
+        document.getElementById('login-trigger').onclick = async () => {
+            const email = document.getElementById('auth-email').value;
+            const pass = document.getElementById('auth-pass').value;
+            if(!email || !pass) return triggerToast("CREDENTIALS REQUIRED");
             
             try {
-                const userRef = db.collection('users').doc(State.user.uid);
-                await userRef.update({
-                    points: State.points,
-                    inventory: State.profile.inventory,
-                    equipped: State.profile.equipped,
-                    lastActive: firebase.firestore.FieldValue.serverTimestamp()
-                });
-            } catch (error) {
-                console.error(">> SYNC FAILED:", error);
-                // Fallback: LocalStorage mein save karo agar net slow hai
-                localStorage.setItem('titan_backup_points', State.points);
+                await signInWithEmailAndPassword(auth, email, pass);
+                triggerToast("ACCESS GRANTED");
+            } catch(e) {
+                try {
+                    await createUserWithEmailAndPassword(auth, email, pass);
+                    triggerToast("ACCOUNT CREATED");
+                } catch(e2) { triggerToast(e2.message.toUpperCase()); }
             }
         };
 
         /**
          * ========================================================================
-         * PROJECT STATUS: FULLY ASSEMBLED [100%]
-         * Sabhi systems active hain. Game loop shuru hai.
+         * 9. MISSION CONTROLS & CHAT
          * ========================================================================
          */
-        console.log(">> NITESH TITAN QUANTUM ENGINE: ALL SYSTEMS NOMINAL.");
+        const handleAbortMission = async (forced = false) => {
+            if(!forced && state.gameId) {
+                try { await deleteDoc(doc(db, 'games', state.gameId)); } catch(e){}
+            }
+            if(state.unsubGame) state.unsubGame();
+            if(state.unsubChat) state.unsubChat();
+            
+            state.gameId = null;
+            state.active = false;
+            document.getElementById('modal-result').style.display = 'none';
+            navigateTo('screen-lobby');
+        };
 
+        document.getElementById('abort-trigger').onclick = () => handleAbortMission(false);
+        document.getElementById('exit-trigger').onclick = () => handleAbortMission(false);
 
-        /* ==========================================================================
-           [12] FINAL SYSTEM BOOT
-           ========================================================================== */
-        initCombatSystem();
+        document.getElementById('offline-trigger').onclick = () => {
+            state.mode = 'offline'; state.active = true; state.board = Array(9).fill(''); state.turn = 'X';
+            DOM.status.innerText = "PLAYER X TURN";
+            navigateTo('screen-arena');
+            syncVisualBoard();
+        };
 
-        auth.onAuthStateChanged(async (user) => {
-            setTimeout(async () => {
-                if (user) {
-                    State.user = user;
-                    const pSnap = await db.collection('users').doc(user.uid).get();
-                    if (pSnap.exists) {
-                        const d = pSnap.data();
-                        State.profile = d;
-                        State.points = d.points || 0;
-                        State.inventory = d.inventory || { skins: ['default'], bgs: ['default'] };
-                        State.equipped = d.equipped || { skin: 'default', bg: 'default' };
-                    } else {
-                        State.profile = { uid: user.uid, name: user.email.split('@')[0].toUpperCase(), code: Math.random().toString(36).substring(2,6).toUpperCase(), inventory: { skins: ['default'], bgs: ['default'] } };
-                        await db.collection('users').doc(user.uid).set({ ...State.profile, points: 0, equipped: State.equipped });
-                    }
-                    document.getElementById('ui-agent-name').innerText = State.profile.name;
-                    document.getElementById('ui-agent-code').innerText = State.profile.code;
-                    updatePointsUI(); applyVisualSkins(); switchScreen('screen-lobby'); listenInvites();
-                } else { switchScreen('screen-auth'); }
-                document.getElementById('splash-sequence').style.opacity = '0';
-                setTimeout(() => document.getElementById('splash-sequence').style.display = 'none', 1000);
-            }, 2500);
-        });
+        document.getElementById('rematch-trigger').onclick = async () => {
+            document.getElementById('modal-result').style.display = 'none';
+            if(state.mode === 'online' && state.gameId) {
+                await updateDoc(doc(db, 'games', state.gameId), { board: Array(9).fill(''), turn: 'X', status: 'playing' });
+            } else {
+                document.getElementById('offline-trigger').click();
+            }
+        };
 
-        document.getElementById('btn-login').onclick = async () => {
-            const e = document.getElementById('inp-email').value, p = document.getElementById('inp-pass').value;
-            try { await auth.signInWithEmailAndPassword(e, p); } 
-            catch { try { await auth.createUserWithEmailAndPassword(e, p); } catch(err) { showToast(err.message.toUpperCase()); } }
+        document.getElementById('chat-trigger').onclick = async () => {
+            const input = document.getElementById('chat-message-in');
+            if(input.value.trim() && state.gameId) {
+                await addDoc(collection(db, `games/${state.gameId}/chat`), {
+                    s: state.profile.name,
+                    m: input.value,
+                    t: serverTimestamp()
+                });
+                input.value = '';
+            }
         };
 
     </script>
