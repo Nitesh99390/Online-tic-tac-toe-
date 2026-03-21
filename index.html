@@ -3,52 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#0d1117">
-    <title>Tic Tac Toe – Nitesh Pro Enterprise</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
-    
+    <title>Tic Tac Toe – Nitesh WTR Pro</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Poppins:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
     <style>
         /* ==========================================================================
-           1. RESET & VARIABLES
-           ========================================================================== */
+           1. CORE CSS SYSTEM VARIABLES
+           ========================================================================== 
+        */
+        :root {
+            --wtr-bg-dark: #0d1117;
+            --wtr-grid-color: #5f6a6d; /* FIXED IMAGE 1 STYLE */
+            --wtr-player-x: #ff4757;
+            --wtr-player-o: #2ed573;
+            --wtr-gold: #fbbf24;
+            --wtr-glass: rgba(13, 17, 23, 0.85);
+            --wtr-border: rgba(255, 255, 255, 0.1);
+            --wtr-glow: 0 0 25px rgba(251, 191, 36, 0.2);
+            --wtr-shadow-deep: 0 20px 50px rgba(0, 0, 0, 0.7);
+        }
+
+        /* ==========================================================================
+           2. GLOBAL RESET & BASE STYLES
+           ========================================================================== 
+        */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             user-select: none;
             -webkit-tap-highlight-color: transparent;
+            outline: none;
         }
 
-        :root {
-            --color-bg-dark: #0d1117;
-            --color-grid-line: #6b7280;
-            --color-player-x: #ff4757;
-            --color-player-o: #2ed573;
-            --color-accent: #fbbf24;
-            --color-text-main: #f0f0f0;
-            --color-text-muted: #9ca3af;
-            
-            --glass-bg: rgba(13, 17, 23, 0.75);
-            --glass-border: rgba(255, 255, 255, 0.1);
-            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-            
-            --transition-speed: 0.3s;
-        }
-
-        /* ==========================================================================
-           2. GLOBAL STYLES & TYPOGRAPHY
-           ========================================================================== */
         body {
-            background-color: var(--color-bg-dark);
-            /* High-res Sci-Fi Background */
-            background-image: url('https://images.unsplash.com/photo-1614729939124-032f0b56c9ce?q=80&w=2000&auto=format&fit=crop');
-            background-position: center;
+            background-color: var(--wtr-bg-dark);
+            background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), 
+                              url('https://images.unsplash.com/photo-1614729939124-032f0b56c9ce?q=80&w=2500');
             background-size: cover;
-            background-repeat: no-repeat;
+            background-position: center;
             background-attachment: fixed;
             font-family: 'Poppins', sans-serif;
-            color: var(--color-text-main);
+            color: #ffffff;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -57,775 +58,515 @@
             position: relative;
         }
 
-        h1, h2, h3, .chalk-text {
-            font-family: 'Permanent Marker', cursive;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            text-align: center;
-        }
-
-        h1 {
-            font-size: clamp(2.5rem, 5vw, 3.5rem);
-            color: #ffffff;
-            text-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
-            margin-bottom: 20px;
-        }
-
-        /* Ambient Particle Canvas */
-        #particle-canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-            pointer-events: none;
-        }
-
         /* ==========================================================================
-           3. UI COMPONENTS & GLASSMORPHISM
-           ========================================================================== */
-        .glass-panel {
-            background: var(--glass-bg);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid var(--glass-border);
-            border-radius: 24px;
-            padding: 30px 25px;
-            width: 100%;
-            max-width: 400px;
-            text-align: center;
-            box-shadow: var(--glass-shadow);
-            position: relative;
-            z-index: 10;
-        }
-
-        /* Network & Speed Optimizer UI */
-        .top-navigation {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        .network-monitor {
-            background: var(--glass-bg);
-            backdrop-filter: blur(10px);
-            padding: 8px 18px;
-            border-radius: 30px;
-            font-size: 0.8rem;
-            border: 1px solid var(--glass-border);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-weight: 600;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-            transition: all var(--transition-speed) ease;
-        }
-
-        .ping-indicator {
-            width: 12px;
-            height: 12px;
-            background-color: var(--color-player-o);
-            border-radius: 50%;
-            box-shadow: 0 0 10px var(--color-player-o);
-            animation: pulse-ping 2s infinite ease-in-out;
-        }
-
-        .btn-speed-boost {
-            background: linear-gradient(135deg, var(--color-accent), #f59e0b);
-            color: #000000;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 800;
-            cursor: pointer;
-            box-shadow: 0 0 15px rgba(251, 191, 36, 0.5);
-            transition: transform 0.2s, box-shadow 0.2s;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .btn-speed-boost:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 25px rgba(251, 191, 36, 0.8);
-        }
-
-        /* ==========================================================================
-           4. FORMS, INPUTS & BUTTONS
-           ========================================================================== */
-        .input-group {
-            margin-bottom: 15px;
-            width: 100%;
-        }
-
-        input[type="text"],
-        input[type="email"],
-        input[type="password"] {
-            width: 100%;
-            padding: 16px 20px;
-            background: rgba(0, 0, 0, 0.6);
-            border: 1px solid var(--glass-border);
-            border-radius: 50px;
-            color: #ffffff;
-            font-size: 1rem;
-            text-align: center;
-            outline: none;
-            transition: all var(--transition-speed) ease;
-            font-family: 'Poppins', sans-serif;
-        }
-
-        input:focus {
-            border-color: var(--color-accent);
-            box-shadow: 0 0 20px rgba(251, 191, 36, 0.3);
-            background: rgba(0, 0, 0, 0.8);
-        }
-
-        .btn {
-            width: 100%;
-            padding: 16px;
-            margin-bottom: 15px;
-            border-radius: 50px;
-            border: 2px solid transparent;
-            background: transparent;
-            color: #ffffff;
-            font-weight: 600;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all var(--transition-speed) ease;
-            font-family: 'Poppins', sans-serif;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .btn-primary {
-            background-color: var(--color-player-x);
-            box-shadow: 0 8px 25px rgba(255, 71, 87, 0.4);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 30px rgba(255, 71, 87, 0.6);
-        }
-
-        .btn-primary:active {
-            transform: translateY(1px);
-        }
-
-        .btn-secondary {
-            background-color: var(--color-player-o);
-            color: #000000;
-            box-shadow: 0 8px 25px rgba(46, 213, 115, 0.4);
-        }
-
-        .btn-secondary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 30px rgba(46, 213, 115, 0.6);
-        }
-
-        .btn-outline {
-            border-color: var(--color-grid-line);
-            background: rgba(0, 0, 0, 0.4);
-            backdrop-filter: blur(5px);
-        }
-
-        .btn-outline:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: #ffffff;
-        }
-
-        .btn-danger-outline {
-            border-color: var(--color-player-x);
-            color: var(--color-player-x);
-        }
-
-        .btn-danger-outline:hover {
-            background: rgba(255, 71, 87, 0.1);
-        }
-
-        /* ==========================================================================
-           5. SCREENS & LAYOUT
-           ========================================================================== */
-        .app-screen {
-            display: none;
-            width: 100%;
-            height: 100vh;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            position: absolute;
-            top: 0;
-            left: 0;
-            opacity: 0;
-            transition: opacity 0.5s ease-in-out, transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            transform: scale(0.95);
-            z-index: 10;
-        }
-
-        .app-screen.is-active {
-            display: flex;
-            opacity: 1;
-            transform: scale(1);
-            z-index: 20;
-        }
-
-        /* Profile Stats Section */
-        .stats-container {
-            display: flex;
-            justify-content: space-around;
-            background: rgba(0, 0, 0, 0.6);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            padding: 15px;
-            margin: 20px 0;
-            width: 100%;
-        }
-
-        .stat-box {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .stat-value {
-            font-size: 1.5rem;
-            font-weight: 800;
-            color: var(--color-accent);
-        }
-
-        .stat-label {
-            font-size: 0.65rem;
-            color: var(--color-text-muted);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-top: 5px;
-        }
-
-        /* Invite Code Display */
-        .invite-display {
-            background: rgba(0, 0, 0, 0.5);
-            border: 1px dashed var(--color-grid-line);
-            border-radius: 15px;
-            padding: 20px;
-            margin: 20px 0;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .invite-display::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 50%;
-            height: 100%;
-            background: linear-gradient(to right, transparent, rgba(255,255,255,0.1), transparent);
-            transform: skewX(-20deg);
-            animation: shine 3s infinite;
-        }
-
-        .invite-code-text {
-            color: var(--color-accent);
-            font-size: 2.8rem;
-            letter-spacing: 10px;
-            margin-top: 5px;
-            text-shadow: 0 0 15px rgba(251, 191, 36, 0.4);
-        }
-
-        /* ==========================================================================
-           6. THE EXACT IMAGE 1 H-SHAPE GRID
-           ========================================================================== */
-        .game-status-badge {
-            background-color: #000000;
-            padding: 12px 40px;
-            border-radius: 50px;
-            font-family: 'Permanent Marker', cursive;
-            font-size: 1.5rem;
-            letter-spacing: 2px;
-            border: 1px solid var(--glass-border);
-            box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.05), 0 10px 30px rgba(0, 0, 0, 0.5);
-            margin-bottom: 30px;
-            transition: all 0.3s ease;
-        }
-
-        .tic-tac-toe-board {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            grid-template-rows: repeat(3, 1fr);
-            width: 85vw;
-            max-width: 360px;
-            aspect-ratio: 1 / 1;
-            margin: 0 auto 30px auto;
-            background: transparent;
-        }
-
-        .board-cell {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            border: 5px solid var(--color-grid-line);
-            position: relative;
-            transition: background-color 0.2s ease;
-        }
-
-        /* CRITICAL: Removing specific borders to create the EXACT H-Shape
-           seen in Image 1. No outer bounding box. 
+           3. BACKGROUND PARTICLE SYSTEM (VISUAL DEPTH)
+           ========================================================================== 
         */
-        .board-cell:nth-child(1), 
-        .board-cell:nth-child(2), 
-        .board-cell:nth-child(3) {
-            border-top: none;
-        }
-
-        .board-cell:nth-child(7), 
-        .board-cell:nth-child(8), 
-        .board-cell:nth-child(9) {
-            border-bottom: none;
-        }
-
-        .board-cell:nth-child(1), 
-        .board-cell:nth-child(4), 
-        .board-cell:nth-child(7) {
-            border-left: none;
-        }
-
-        .board-cell:nth-child(3), 
-        .board-cell:nth-child(6), 
-        .board-cell:nth-child(9) {
-            border-right: none;
-        }
-
-        .board-cell:hover {
-            background-color: rgba(255, 255, 255, 0.03);
-        }
-
-        /* ==========================================================================
-           7. SVG DRAWING ANIMATIONS
-           ========================================================================== */
-        .symbol-icon {
-            width: 65%;
-            height: 65%;
-            filter: drop-shadow(0 0 12px currentColor);
-        }
-
-        .symbol-x {
-            color: var(--color-player-x);
-        }
-
-        .symbol-o {
-            color: var(--color-player-o);
-        }
-
-        .draw-path-x {
-            stroke-dasharray: 140;
-            stroke-dashoffset: 140;
-            animation: draw-line 0.3s ease-out forwards;
-        }
-
-        .draw-path-x-delay {
-            stroke-dasharray: 140;
-            stroke-dashoffset: 140;
-            animation: draw-line 0.3s ease-out 0.15s forwards;
-        }
-
-        .draw-path-o {
-            stroke-dasharray: 220;
-            stroke-dashoffset: 220;
-            animation: draw-line 0.5s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards;
-        }
-
-        /* ==========================================================================
-           8. CHAT SYSTEM
-           ========================================================================== */
-        .multiplayer-chat-wrapper {
-            width: 100%;
-            max-width: 360px;
-            background: rgba(0, 0, 0, 0.6);
-            border-radius: 20px;
-            overflow: hidden;
-            border: 1px solid var(--glass-border);
-            margin-top: 10px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            display: flex;
-            flex-direction: column;
-        }
-
-        .chat-messages-container {
-            height: 120px;
-            overflow-y: auto;
-            padding: 12px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            font-size: 0.85rem;
-            scroll-behavior: smooth;
-        }
-
-        /* Custom Scrollbar for Chat */
-        .chat-messages-container::-webkit-scrollbar {
-            width: 6px;
-        }
-        .chat-messages-container::-webkit-scrollbar-track {
-            background: rgba(0, 0, 0, 0.2);
-        }
-        .chat-messages-container::-webkit-scrollbar-thumb {
-            background: var(--color-grid-line);
-            border-radius: 10px;
-        }
-
-        .chat-bubble {
-            background: rgba(255, 255, 255, 0.08);
-            padding: 8px 14px;
-            border-radius: 16px;
-            border-bottom-left-radius: 4px;
-            width: fit-content;
-            max-width: 85%;
-            word-wrap: break-word;
-            line-height: 1.4;
-            animation: pop-in 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-        }
-
-        .chat-bubble.self {
-            align-self: flex-end;
-            background: rgba(46, 213, 115, 0.15);
-            border-bottom-left-radius: 16px;
-            border-bottom-right-radius: 4px;
-        }
-
-        .chat-sender-name {
-            color: var(--color-accent);
-            font-weight: 700;
-            margin-right: 6px;
-            font-size: 0.75rem;
-        }
-
-        .chat-input-bar {
-            display: flex;
-            border-top: 1px solid var(--glass-border);
-            background: rgba(0, 0, 0, 0.4);
-        }
-
-        .chat-input-field {
-            margin: 0 !important;
-            border: none !important;
-            border-radius: 0 !important;
-            background: transparent !important;
-            flex-grow: 1;
-            padding: 15px !important;
-            text-align: left !important;
-            box-shadow: none !important;
-        }
-
-        .chat-send-btn {
-            background-color: var(--color-player-o);
-            border: none;
-            padding: 0 25px;
-            font-weight: 800;
-            color: #000000;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-
-        .chat-send-btn:hover {
-            background-color: #26b05f;
-        }
-
-        /* ==========================================================================
-           9. MODALS, TOASTS & OVERLAYS
-           ========================================================================== */
-        .overlay-backdrop {
-            position: fixed;
+        #bg-canvas {
+            position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 2000;
-            opacity: 0;
-            transition: opacity 0.4s ease;
-        }
-
-        .overlay-backdrop.is-visible {
-            display: flex;
-            opacity: 1;
-        }
-
-        .modal-content-box {
-            background: var(--glass-bg);
-            padding: 40px 30px;
-            border-radius: 30px;
-            border: 1px solid var(--glass-border);
-            text-align: center;
-            width: 90%;
-            max-width: 350px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
-            transform: translateY(30px) scale(0.95);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        .overlay-backdrop.is-visible .modal-content-box {
-            transform: translateY(0) scale(1);
-        }
-
-        .winner-announcement-text {
-            font-family: 'Permanent Marker', cursive;
-            font-size: 3.5rem;
-            margin-bottom: 30px;
-            line-height: 1.1;
-            text-shadow: 0 0 30px currentColor;
-            animation: pulse-winner 2s infinite;
-        }
-
-        /* Toast Notification */
-        .system-toast {
-            position: fixed;
-            bottom: 40px;
-            left: 50%;
-            transform: translateX(-50%) translateY(50px);
-            background-color: var(--color-accent);
-            color: #000000;
-            padding: 14px 30px;
-            border-radius: 50px;
-            font-weight: 700;
-            font-size: 0.9rem;
-            opacity: 0;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            z-index: 3000;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+            z-index: 1;
             pointer-events: none;
-            text-align: center;
-            white-space: nowrap;
-        }
-
-        .system-toast.show-toast {
-            transform: translateX(-50%) translateY(0);
-            opacity: 1;
         }
 
         /* ==========================================================================
-           10. SPLASH SCREEN (WTR LAB INFINITY)
-           ========================================================================== */
-        #splash-loader-screen {
+           4. WTR LAB STARTUP SEQUENCE (INFINITY)
+           ========================================================================== 
+        */
+        #startup-sequence {
             position: fixed;
             inset: 0;
-            background-color: #000000;
-            z-index: 9999;
+            background: #000;
+            z-index: 10000;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            transition: opacity 1s ease-out, visibility 1s;
+            transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .wtr-infinity-loader {
-            width: 120px;
-            height: 60px;
+        .loader-wrapper {
+            width: 150px;
+            height: 75px;
             position: relative;
         }
 
-        .wtr-infinity-loader::before,
-        .wtr-infinity-loader::after {
+        .loader-wrapper::before, 
+        .loader-wrapper::after {
             content: "";
             position: absolute;
             top: 0;
             left: 0;
-            width: 60px;
-            height: 60px;
-            border: 8px solid var(--color-accent);
-            border-radius: 50px 50px 0 50px;
+            width: 75px;
+            height: 75px;
+            border: 10px solid var(--wtr-gold);
+            border-radius: 50% 50% 0 50%;
             transform: rotate(-45deg);
-            animation: wtr-glow-pulse 2s infinite alternate ease-in-out;
-            box-shadow: 0 0 25px var(--color-accent), inset 0 0 15px var(--color-accent);
+            animation: infinity-glow 2s infinite alternate ease-in-out;
+            box-shadow: 0 0 40px var(--wtr-gold), inset 0 0 15px var(--wtr-gold);
         }
 
-        .wtr-infinity-loader::after {
+        .loader-wrapper::after {
             left: auto;
             right: 0;
-            border-radius: 50px 50px 50px 0;
+            border-radius: 50% 50% 50% 0;
             transform: rotate(45deg);
             animation-delay: -1s;
         }
 
-        .wtr-branding {
+        @keyframes infinity-glow {
+            0% { 
+                filter: hue-rotate(0deg) brightness(1); 
+                transform: scale(0.9) rotate(-45deg); 
+            }
+            100% { 
+                filter: hue-rotate(120deg) brightness(2); 
+                transform: scale(1.1) rotate(-45deg); 
+                border-color: var(--wtr-player-x);
+            }
+        }
+
+        .brand-logo {
             margin-top: 50px;
-            color: var(--color-accent);
-            letter-spacing: 8px;
-            text-shadow: 0 0 30px var(--color-accent);
-            font-size: 2rem;
+            font-family: 'Permanent Marker', cursive;
+            font-size: 3rem;
+            letter-spacing: 12px;
+            color: var(--wtr-gold);
+            text-shadow: 0 0 30px var(--wtr-gold);
+            animation: text-pulse 2s infinite;
+        }
+
+        @keyframes text-pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(0.95); }
         }
 
         /* ==========================================================================
-           11. KEYFRAME ANIMATIONS
-           ========================================================================== */
-        @keyframes draw-line {
+           5. NETWORK OPTIMIZATION HUD
+           ========================================================================== 
+        */
+        .network-hud {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 5000;
+        }
+
+        .ping-display {
+            background: var(--wtr-glass);
+            backdrop-filter: blur(20px);
+            padding: 10px 20px;
+            border-radius: 50px;
+            border: 1px solid var(--wtr-border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            box-shadow: var(--wtr-shadow-deep);
+        }
+
+        .ping-status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--wtr-player-o);
+            box-shadow: 0 0 15px var(--wtr-player-o);
+            transition: 0.3s;
+        }
+
+        .optimizer-label {
+            background: var(--wtr-gold);
+            color: #000;
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-weight: 800;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 0 15px rgba(251, 191, 36, 0.4);
+        }
+
+        /* ==========================================================================
+           6. THE COMBAT GRID (IMAGE 1 SOLID DESIGN)
+           ========================================================================== 
+        */
+        .screen-container {
+            width: 100%;
+            max-width: 450px;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            z-index: 10;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .screen-container.active {
+            display: flex;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .combat-badge {
+            background: #000;
+            padding: 15px 50px;
+            border-radius: 60px;
+            font-family: 'Permanent Marker', cursive;
+            font-size: 2rem;
+            margin-bottom: 35px;
+            border: 2px solid var(--wtr-border);
+            box-shadow: inset 0 0 20px rgba(255,255,255,0.05);
+            text-transform: uppercase;
+            color: #fff;
+        }
+
+        .grid-master {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            width: 88vw;
+            max-width: 360px;
+            aspect-ratio: 1/1;
+            margin-bottom: 30px;
+        }
+
+        .grid-cell {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 6px solid var(--wtr-grid-color);
+            cursor: pointer;
+            transition: background 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        /* CORE RULE: REMOVING OUTER BORDERS FOR EXACT H-SHAPE 
+        */
+        .grid-cell:nth-child(1), .grid-cell:nth-child(2), .grid-cell:nth-child(3) { border-top: none; }
+        .grid-cell:nth-child(7), .grid-cell:nth-child(8), .grid-cell:nth-child(9) { border-bottom: none; }
+        .grid-cell:nth-child(1), .grid-cell:nth-child(4), .grid-cell:nth-child(7) { border-left: none; }
+        .grid-cell:nth-child(3), .grid-cell:nth-child(6), .grid-cell:nth-child(9) { border-right: none; }
+
+        .grid-cell:active {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        /* SVG SYMBOLS 
+        */
+        .svg-icon {
+            width: 70%;
+            height: 70%;
+            filter: drop-shadow(0 0 15px currentColor);
+        }
+
+        .path-x {
+            stroke-dasharray: 200;
+            stroke-dashoffset: 200;
+            animation: draw-symbol 0.4s ease-out forwards;
+        }
+
+        .path-o {
+            stroke-dasharray: 250;
+            stroke-dashoffset: 250;
+            animation: draw-symbol 0.5s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards;
+        }
+
+        @keyframes draw-symbol {
             to { stroke-dashoffset: 0; }
         }
 
-        @keyframes pulse-ping {
-            0% { opacity: 1; transform: scale(1); box-shadow: 0 0 0 0 rgba(46, 213, 115, 0.7); }
-            50% { opacity: 0.6; transform: scale(1.1); box-shadow: 0 0 0 6px rgba(46, 213, 115, 0); }
-            100% { opacity: 1; transform: scale(1); box-shadow: 0 0 0 0 rgba(46, 213, 115, 0); }
+        /* ==========================================================================
+           7. INTERFACE COMPONENTS (GLASS CARD)
+           ========================================================================== 
+        */
+        .glass-card {
+            background: var(--wtr-glass);
+            backdrop-filter: blur(25px);
+            border-radius: 35px;
+            padding: 40px 30px;
+            width: 92%;
+            max-width: 400px;
+            border: 1px solid var(--wtr-border);
+            box-shadow: var(--wtr-shadow-deep);
+            text-align: center;
         }
 
-        @keyframes shine {
-            100% { left: 200%; }
+        .main-title {
+            font-family: 'Permanent Marker', cursive;
+            font-size: 3.2rem;
+            margin-bottom: 10px;
+            color: #fff;
         }
 
-        @keyframes pop-in {
-            0% { opacity: 0; transform: translateY(10px) scale(0.9); }
-            100% { opacity: 1; transform: translateY(0) scale(1); }
+        .sub-heading {
+            color: var(--wtr-gold);
+            font-weight: 800;
+            letter-spacing: 3px;
+            margin-bottom: 35px;
+            font-size: 0.9rem;
         }
 
-        @keyframes pulse-winner {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+        /* INPUTS */
+        .wtr-input {
+            width: 100%;
+            padding: 18px 25px;
+            margin-bottom: 15px;
+            border-radius: 50px;
+            border: 1px solid var(--wtr-border);
+            background: rgba(0,0,0,0.6);
+            color: #fff;
+            text-align: center;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            transition: 0.3s;
         }
 
-        @keyframes wtr-glow-pulse {
-            0% { filter: hue-rotate(0deg) brightness(1); }
-            100% { filter: hue-rotate(45deg) brightness(1.8); box-shadow: 0 0 50px var(--color-player-x); border-color: var(--color-player-x); }
+        .wtr-input:focus {
+            border-color: var(--wtr-gold);
+            box-shadow: 0 0 20px rgba(251, 191, 36, 0.3);
+        }
+
+        /* BUTTONS */
+        .btn {
+            width: 100%;
+            padding: 18px;
+            margin: 10px 0;
+            border-radius: 50px;
+            border: none;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 800;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .btn-primary { background: var(--wtr-player-x); color: #fff; box-shadow: 0 8px 30px rgba(255, 71, 87, 0.4); }
+        .btn-primary:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(255, 71, 87, 0.6); }
+
+        .btn-success { background: var(--wtr-player-o); color: #000; box-shadow: 0 8px 30px rgba(46, 213, 115, 0.4); }
+        .btn-success:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(46, 213, 115, 0.6); }
+
+        .btn-outline { background: transparent; border: 2px solid var(--wtr-grid-color); color: #fff; }
+        .btn-outline:hover { background: rgba(255,255,255,0.1); border-color: #fff; }
+
+        /* ==========================================================================
+           8. CHAT ARRAY SYSTEM
+           ========================================================================== 
+        */
+        .chat-container {
+            width: 100%;
+            max-width: 360px;
+            background: rgba(0,0,0,0.6);
+            border-radius: 25px;
+            margin-top: 25px;
+            border: 1px solid var(--wtr-border);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--wtr-shadow-deep);
+        }
+
+        #chat-log {
+            height: 120px;
+            overflow-y: auto;
+            padding: 15px;
+            font-size: 0.9rem;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .chat-bubble {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 8px 15px;
+            border-radius: 18px;
+            max-width: 90%;
+            width: fit-content;
+        }
+
+        .chat-bubble b { color: var(--wtr-gold); margin-right: 6px; }
+
+        .chat-input-row {
+            display: flex;
+            border-top: 1px solid var(--wtr-border);
+            background: rgba(0,0,0,0.3);
+        }
+
+        #chat-message-in {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 15px;
+            color: #fff;
+            font-size: 0.9rem;
+        }
+
+        #chat-trigger {
+            background: var(--wtr-player-o);
+            border: none;
+            padding: 0 25px;
+            font-weight: 900;
+            color: #000;
+            cursor: pointer;
+        }
+
+        /* ==========================================================================
+           9. MODALS & TOASTS
+           ========================================================================== 
+        */
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.92);
+            z-index: 9000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(15px);
+            animation: fade-in 0.4s forwards;
+        }
+
+        @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+
+        #toast-notice {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%) translateY(120px);
+            background: var(--wtr-gold);
+            color: #000;
+            padding: 15px 40px;
+            border-radius: 60px;
+            font-weight: 900;
+            font-size: 1rem;
+            transition: 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 11000;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+        }
+
+        .toast-active { transform: translateX(-50%) translateY(0) !important; }
+
+        /* ==========================================================================
+           10. RESPONSIVE MEDIA QUERIES
+           ========================================================================== 
+        */
+        @media (max-height: 700px) {
+            h1 { font-size: 2.5rem; }
+            .grid-master { max-width: 300px; }
+            .chat-container { display: none; }
         }
     </style>
 </head>
 <body>
 
-    <canvas id="particle-canvas"></canvas>
+    <canvas id="bg-canvas"></canvas>
 
-    <div id="splash-loader-screen">
-        <div class="wtr-infinity-loader"></div>
-        <h2 class="chalk-text wtr-branding">WTR LAB</h2>
-        <p style="color: #6b7280; font-size: 0.85rem; margin-top: 15px; font-weight: 600; letter-spacing: 2px;">INITIALIZING CORE SYSTEMS...</p>
+    <div id="startup-sequence">
+        <div class="loader-wrapper"></div>
+        <div class="brand-logo">WTR LAB</div>
+        <p style="color: #666; margin-top: 20px; font-weight: 700; letter-spacing: 4px;">INITIALIZING CORE ENGINE...</p>
     </div>
 
-    <div class="top-navigation">
-        <div class="network-monitor" id="network-monitor-badge">
-            <div class="ping-indicator" id="ping-dot-indicator"></div>
-            <span id="ping-value-text">Ping: Calculating...</span>
+    <div class="network-hud">
+        <div class="ping-display">
+            <div class="ping-status-dot" id="ping-dot"></div>
+            <span id="ping-label">SYNCING...</span>
         </div>
-        <button class="btn-speed-boost" id="btn-optimize-connection">⚡ Optimize</button>
+        <div class="optimizer-label">OPTIMIZER: ACTIVE</div>
     </div>
 
-    <div id="global-system-toast" class="system-toast">System Message Ready</div>
+    <div id="toast-notice">CORE READY</div>
 
-    <div id="screen-authentication" class="app-screen is-active">
-        <div class="glass-panel">
-            <h1>TIC TAC TOE</h1>
-            <p style="color: var(--color-accent); font-weight: 800; margin-bottom: 30px; letter-spacing: 2px;">PRO ENTERPRISE</p>
+    <div id="screen-auth" class="screen-container active">
+        <div class="glass-card">
+            <h1 class="main-title">TITAN TTT</h1>
+            <p class="sub-heading">PRO ENTERPRISE EDITION</p>
             
-            <div class="input-group">
-                <input type="email" id="auth-email-input" placeholder="Agent Email Address" autocomplete="off">
-            </div>
-            <div class="input-group">
-                <input type="password" id="auth-password-input" placeholder="Secure Password (Min 6)" autocomplete="off">
-            </div>
+            <input type="email" id="auth-email" class="wtr-input" placeholder="AGENT IDENTIFIER (EMAIL)">
+            <input type="password" id="auth-pass" class="wtr-input" placeholder="SECURITY KEY">
             
-            <button class="btn btn-primary" id="btn-execute-login" style="margin-top: 10px;">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg>
-                ENTER ARENA
+            <button class="btn btn-primary" id="login-trigger">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg>
+                INITIATE SESSION
             </button>
         </div>
     </div>
 
-    <div id="screen-command-center" class="app-screen">
-        <div class="glass-panel" style="padding: 25px 20px;">
-            <h2 class="chalk-text" style="font-size: 1.8rem; margin-bottom: 5px;">COMMAND CENTER</h2>
-            <p style="font-size: 0.9rem; color: #ccc;">Welcome back, <strong id="display-user-name" style="color: var(--color-player-o); font-size: 1.1rem;">Agent</strong></p>
+    <div id="screen-lobby" class="screen-container">
+        <div class="glass-card" style="max-width: 420px;">
+            <h2 class="main-title" style="font-size: 2.2rem;">COMMAND CENTER</h2>
+            <p style="margin-top: 5px;">Agent: <strong id="agent-name" style="color: var(--wtr-player-o); font-size: 1.2rem;">...</strong></p>
             
-            <div class="stats-container">
-                <div class="stat-box">
-                    <span class="stat-value" id="stat-matches">0</span>
-                    <span class="stat-label">Matches</span>
-                </div>
-                <div class="stat-box">
-                    <span class="stat-value" id="stat-wins" style="color: var(--color-player-o);">0</span>
-                    <span class="stat-label">Wins</span>
-                </div>
-                <div class="stat-box">
-                    <span class="stat-value" id="stat-winrate" style="color: #ffffff;">0%</span>
-                    <span class="stat-label">Win Rate</span>
-                </div>
+            <div style="background: rgba(0,0,0,0.6); padding: 25px; border-radius: 25px; margin: 25px 0; border: 1px dashed var(--wtr-gold); position: relative; overflow: hidden;">
+                <p style="font-size: 0.75rem; color: #888; font-weight: 800; letter-spacing: 2px;">YOUR COMBAT FREQUENCY</p>
+                <h2 id="agent-combat-code" class="main-title" style="color: var(--wtr-gold); font-size: 3rem; letter-spacing: 12px; margin-top: 10px;">----</h2>
             </div>
 
-            <div class="invite-display">
-                <p style="font-size: 0.75rem; color: var(--color-text-muted); font-weight: 600;">YOUR COMBAT CODE</p>
-                <h2 id="display-invite-code" class="chalk-text invite-code-text">----</h2>
-            </div>
-
-            <div class="input-group" style="margin-top: 25px;">
-                <input type="text" id="target-friend-code" placeholder="Enter Target's Combat Code">
-            </div>
+            <input type="text" id="target-combat-code" class="wtr-input" placeholder="ENTER TARGET FREQUENCY">
             
-            <button class="btn btn-primary" id="btn-send-challenge">INITIATE CHALLENGE</button>
-            <button class="btn btn-outline" id="btn-start-offline-training" style="margin-top: 10px;">OFFLINE SIMULATION</button>
+            <button class="btn btn-primary" id="challenge-trigger">ENGAGE TARGET</button>
+            <button class="btn btn-outline" id="offline-trigger" style="margin-top: 15px;">LOCAL SIMULATION</button>
         </div>
     </div>
 
-    <div id="screen-combat-arena" class="app-screen">
-        <div class="game-status-badge" id="arena-status-indicator">SYSTEM READY</div>
+    <div id="screen-arena" class="screen-container">
+        <div class="combat-badge" id="arena-status">WAITING</div>
         
-        <div class="tic-tac-toe-board" id="game-grid-board">
+        <div class="grid-master" id="grid-board">
             </div>
 
-        <div class="multiplayer-chat-wrapper" id="arena-comms-module">
-            <div class="chat-messages-container" id="chat-history-log">
-                </div>
-            <div class="chat-input-bar">
-                <input type="text" id="chat-message-input" class="chat-input-field" placeholder="Transmit secure message...">
-                <button id="btn-transmit-message" class="chat-send-btn">SEND</button>
+        <div class="chat-container">
+            <div id="chat-log"></div>
+            <div class="chat-input-row">
+                <input type="text" id="chat-message-in" placeholder="TRANSMIT COMMS...">
+                <button id="chat-trigger">SEND</button>
             </div>
         </div>
-        
-        <button class="btn btn-danger-outline" id="btn-abort-mission" style="margin-top: 25px; max-width: 360px;">ABORT MISSION</button>
+
+        <button class="btn btn-outline" style="margin-top: 30px; border-color: var(--wtr-player-x); color: var(--wtr-player-x);" id="abort-trigger">ABORT MISSION</button>
     </div>
 
-    <div id="modal-incoming-challenge" class="overlay-backdrop">
-        <div class="modal-content-box">
-            <h2 class="chalk-text" style="color: var(--color-accent); font-size: 2.5rem;">ALERT!</h2>
-            <div style="width: 50px; height: 2px; background: var(--color-accent); margin: 15px auto;"></div>
-            <p style="margin: 25px 0; font-size: 1.1rem;"><strong id="challenger-id-name" style="color: #ffffff; font-size: 1.3rem;">Unknown Agent</strong><br>is requesting combat.</p>
-            <button class="btn btn-secondary" id="btn-accept-combat">ENGAGE</button>
-            <button class="btn btn-outline" id="btn-decline-combat">DECLINE</button>
+    <div id="modal-result" class="overlay">
+        <div class="glass-card" style="max-width: 360px;">
+            <h1 id="result-announcement" style="font-size: 4.5rem; line-height: 1;">WIN</h1>
+            <p style="margin: 20px 0; color: #888;">MATCH DATA EVALUATED</p>
+            <button class="btn btn-success" id="rematch-trigger">RE-ENGAGE</button>
+            <button class="btn btn-outline" id="exit-trigger">RETURN TO BASE</button>
         </div>
     </div>
 
-    <div id="modal-combat-result" class="overlay-backdrop">
-        <div class="modal-content-box" style="max-width: 380px;">
-            <h1 id="combat-result-announcement" class="winner-announcement-text">VICTORY!</h1>
-            <p id="combat-result-subtext" style="margin-bottom: 30px; color: var(--color-text-muted);">Match logic evaluated.</p>
-            <button class="btn btn-secondary" id="btn-request-rematch">REMATCH</button>
-            <button class="btn btn-outline" id="btn-return-command-center">RETURN TO BASE</button>
+    <div id="modal-incoming" class="overlay">
+        <div class="glass-card" style="max-width: 320px;">
+            <h2 class="main-title" style="color: var(--wtr-gold); font-size: 2.2rem;">ALERT!</h2>
+            <p style="margin: 25px 0; font-size: 1.1rem;"><strong id="challenger-name" style="color: #fff;">...</strong> IS CHALLENGING YOU!</p>
+            <button class="btn btn-success" id="accept-trigger">ACCEPT</button>
+            <button class="btn btn-primary" id="reject-trigger">DECLINE</button>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    
     <script type="module">
+        /**
+         * FIREBASE ENTERPRISE INTEGRATION
+         */
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, query, where, onSnapshot, getDocs, addDoc, serverTimestamp, deleteDoc, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, query, where, onSnapshot, getDocs, addDoc, serverTimestamp, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        /**
-         * FIRBASE CONFIGURATION
-         * Nitesh, this is your provided config data.
-         */
+        // CONFIGURATION DATA (NITESH'S PROVIDED CONFIG)
         const firebaseConfig = {
             apiKey: "AIzaSyBldLyB9d18ZGStroUC0-yjuUrp31DFQ28",
             authDomain: "online-tic-tac-toe-d919f.firebaseapp.com",
@@ -834,913 +575,485 @@
             messagingSenderId: "644365665798",
             appId: "1:644365665798:web:f90b64bdc3aa6912032587"
         };
-        
-        // Initialize Firebase Backend
+
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
         /**
          * ========================================================================
-         * 1. CUSTOM AUDIO SYNTHESIZER ENGINE
-         * No external MP3s needed. Fully coded audio context.
+         * 1. SYSTEM STATE & GLOBAL VARIABLES
          * ========================================================================
          */
-        class AudioSynthesizer {
-            constructor() {
-                this.audioCtx = null;
-                this.isInitialized = false;
-            }
-
-            init() {
-                if (!this.isInitialized) {
-                    const AudioContext = window.AudioContext || window.webkitAudioContext;
-                    this.audioCtx = new AudioContext();
-                    this.isInitialized = true;
-                }
-            }
-
-            playTone(freq, type, duration, vol) {
-                if (!this.audioCtx) return;
-                const oscillator = this.audioCtx.createOscillator();
-                const gainNode = this.audioCtx.createGain();
-                
-                oscillator.type = type;
-                oscillator.frequency.setValueAtTime(freq, this.audioCtx.currentTime);
-                
-                gainNode.gain.setValueAtTime(vol, this.audioCtx.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioCtx.currentTime + duration);
-                
-                oscillator.connect(gainNode);
-                gainNode.connect(this.audioCtx.destination);
-                
-                oscillator.start();
-                oscillator.stop(this.audioCtx.currentTime + duration);
-            }
-
-            playClick() { this.playTone(600, 'sine', 0.1, 0.5); }
-            playPlaceX() { this.playTone(400, 'square', 0.15, 0.3); }
-            playPlaceO() { this.playTone(800, 'triangle', 0.15, 0.3); }
-            playWin() {
-                this.playTone(400, 'sine', 0.2, 0.5);
-                setTimeout(() => this.playTone(600, 'sine', 0.2, 0.5), 100);
-                setTimeout(() => this.playTone(800, 'sine', 0.4, 0.5), 200);
-            }
-            playLose() {
-                this.playTone(300, 'sawtooth', 0.3, 0.5);
-                setTimeout(() => this.playTone(200, 'sawtooth', 0.5, 0.5), 200);
-            }
-            playError() { this.playTone(150, 'square', 0.2, 0.6); }
-        }
-
-        const sfx = new AudioSynthesizer();
-
-        /**
-         * ========================================================================
-         * 2. AMBIENT PARTICLE ENGINE (CANVAS 2D)
-         * Creates a dynamic, floating space-dust background effect.
-         * ========================================================================
-         */
-        class ParticleEngine {
-            constructor(canvasId) {
-                this.canvas = document.getElementById(canvasId);
-                this.ctx = this.canvas.getContext('2d');
-                this.particles = [];
-                this.particleCount = 60;
-                this.resize();
-                window.addEventListener('resize', () => this.resize());
-                this.initParticles();
-                this.animate();
-            }
-
-            resize() {
-                this.canvas.width = window.innerWidth;
-                this.canvas.height = window.innerHeight;
-            }
-
-            initParticles() {
-                this.particles = [];
-                for (let i = 0; i < this.particleCount; i++) {
-                    this.particles.push({
-                        x: Math.random() * this.canvas.width,
-                        y: Math.random() * this.canvas.height,
-                        radius: Math.random() * 2 + 0.5,
-                        speedX: (Math.random() - 0.5) * 0.5,
-                        speedY: (Math.random() - 0.5) * 0.5,
-                        alpha: Math.random() * 0.5 + 0.1
-                    });
-                }
-            }
-
-            animate() {
-                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-                this.ctx.fillStyle = '#ffffff';
-                
-                this.particles.forEach(p => {
-                    this.ctx.globalAlpha = p.alpha;
-                    this.ctx.beginPath();
-                    this.ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-                    this.ctx.fill();
-
-                    // Update position
-                    p.x += p.speedX;
-                    p.y += p.speedY;
-
-                    // Screen wrap
-                    if (p.x < 0) p.x = this.canvas.width;
-                    if (p.x > this.canvas.width) p.x = 0;
-                    if (p.y < 0) p.y = this.canvas.height;
-                    if (p.y > this.canvas.height) p.y = 0;
-                });
-                
-                requestAnimationFrame(() => this.animate());
-            }
-        }
-        
-        // Initialize Background Graphics
-        new ParticleEngine('particle-canvas');
-
-        /**
-         * ========================================================================
-         * 3. SYSTEM STATE VARIABLES & UI CONTROLLERS
-         * ========================================================================
-         */
-        let userAuthProfile = null;
-        let userDatabaseData = null;
-        
-        let engineState = {
+        let state = {
+            user: null,
+            profile: null,
             mode: 'online', // 'online' or 'offline'
-            isActive: false,
-            boardArray: ['', '', '', '', '', '', '', '', ''],
-            currentPlayerTurn: 'X',
-            mySymbolAssignment: 'X',
-            currentGameDocumentId: null,
-            unsubGameDoc: null,
-            unsubChatQuery: null
+            gameId: null,
+            board: Array(9).fill(''),
+            mySym: 'X',
+            turn: 'X',
+            active: false,
+            unsubGame: null,
+            unsubChat: null
         };
 
-        // DOM Element Definitions for UI Manipulation
-        const UI = {
-            toast: document.getElementById('global-system-toast'),
-            screens: document.querySelectorAll('.app-screen'),
-            pingText: document.getElementById('ping-value-text'),
-            pingDot: document.getElementById('ping-dot-indicator'),
-            boardContainer: document.getElementById('game-grid-board'),
-            statusBadge: document.getElementById('arena-status-indicator'),
-            chatContainer: document.getElementById('arena-comms-module'),
-            chatLog: document.getElementById('chat-history-log'),
-            chatInput: document.getElementById('chat-message-input'),
-            
-            // Stats
-            statMatches: document.getElementById('stat-matches'),
-            statWins: document.getElementById('stat-wins'),
-            statWinrate: document.getElementById('stat-winrate'),
-            
-            // Modals
-            modalInvite: document.getElementById('modal-incoming-challenge'),
-            modalResult: document.getElementById('modal-combat-result')
+        // DOM REFERENCES
+        const DOM = {
+            toast: document.getElementById('toast-notice'),
+            screens: document.querySelectorAll('.screen-container'),
+            pingVal: document.getElementById('ping-label'),
+            pingDot: document.getElementById('ping-dot'),
+            board: document.getElementById('grid-board'),
+            status: document.getElementById('arena-status'),
+            chatStream: document.getElementById('chat-log')
         };
 
-        // SVG Drawing Path Constants
-        const RENDER_SVG_X = `
-            <svg class="symbol-icon symbol-x" viewBox="0 0 100 100">
-                <path class="draw-path-x" d="M 20 20 L 80 80" stroke="currentColor" stroke-width="12" stroke-linecap="round" fill="none"/>
-                <path class="draw-path-x-delay" d="M 80 20 L 20 80" stroke="currentColor" stroke-width="12" stroke-linecap="round" fill="none"/>
+        // SYMBOLS SVG TEMPLATES
+        const ICON_X = `
+            <svg class="svg-icon" viewBox="0 0 100 100">
+                <path class="path-x" d="M 20 20 L 80 80 M 80 20 L 20 80" stroke="var(--wtr-player-x)" stroke-width="12" stroke-linecap="round" fill="none"/>
             </svg>
         `;
-        const RENDER_SVG_O = `
-            <svg class="symbol-icon symbol-o" viewBox="0 0 100 100">
-                <circle class="draw-path-o" cx="50" cy="50" r="35" stroke="currentColor" stroke-width="12" fill="none" stroke-linecap="round"/>
+        const ICON_O = `
+            <svg class="svg-icon" viewBox="0 0 100 100">
+                <circle class="path-o" cx="50" cy="50" r="35" stroke="var(--wtr-player-o)" stroke-width="12" fill="none" stroke-linecap="round"/>
             </svg>
         `;
 
         /**
-         * Core Utility Functions
+         * ========================================================================
+         * 2. CORE UTILITY FUNCTIONS
+         * ========================================================================
          */
-        const sysMsg = (message) => {
-            UI.toast.innerText = message;
-            UI.toast.classList.add('show-toast');
-            setTimeout(() => UI.toast.classList.remove('show-toast'), 3500);
+        
+        // System Toast Controller
+        const triggerToast = (msg) => {
+            DOM.toast.innerText = msg;
+            DOM.toast.classList.add('toast-active');
+            setTimeout(() => DOM.toast.classList.remove('toast-active'), 3500);
         };
 
-        const navigateToScreen = (screenId) => {
-            UI.screens.forEach(s => s.classList.remove('is-active'));
-            document.getElementById(screenId).classList.add('is-active');
-            sfx.playClick();
+        // Screen Navigation Engine
+        const navigateTo = (id) => {
+            DOM.screens.forEach(s => s.classList.remove('active'));
+            setTimeout(() => {
+                DOM.screens.forEach(s => s.style.display = 'none');
+                const target = document.getElementById(id);
+                target.style.display = 'flex';
+                setTimeout(() => target.classList.add('active'), 50);
+            }, 300);
         };
 
-        const generateSecureCode = () => {
+        // Code Generation (Secure Combat Code)
+        const generateCombatCode = () => {
             return Math.random().toString(36).substring(2, 6).toUpperCase();
         };
 
         /**
-         * Splash Screen Sequence Controller
+         * ========================================================================
+         * 3. GRAPHICS ENGINE (PARTICLE SYSTEM)
+         * ========================================================================
          */
-        window.onload = () => {
-            setTimeout(() => {
-                const splash = document.getElementById('splash-loader-screen');
-                splash.style.opacity = '0';
-                setTimeout(() => {
-                    splash.style.visibility = 'hidden';
-                    splash.style.display = 'none';
-                }, 1000);
-            }, 3000); // 3 Seconds of infinity loading for dramatic effect
+        const initParticles = () => {
+            const canvas = document.getElementById('bg-canvas');
+            const ctx = canvas.getContext('2d');
+            let particles = [];
+            
+            const resize = () => {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            };
+            window.addEventListener('resize', resize);
+            resize();
+
+            class Particle {
+                constructor() {
+                    this.reset();
+                }
+                reset() {
+                    this.x = Math.random() * canvas.width;
+                    this.y = Math.random() * canvas.height;
+                    this.size = Math.random() * 2;
+                    this.speedX = (Math.random() - 0.5) * 0.5;
+                    this.speedY = (Math.random() - 0.5) * 0.5;
+                    this.alpha = Math.random();
+                }
+                update() {
+                    this.x += this.speedX;
+                    this.y += this.speedY;
+                    if(this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+                    if(this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+                }
+                draw() {
+                    ctx.fillStyle = `rgba(255, 255, 255, ${this.alpha})`;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+
+            for(let i=0; i<60; i++) particles.push(new Particle());
+
+            const animate = () => {
+                ctx.clearRect(0,0, canvas.width, canvas.height);
+                particles.forEach(p => { p.update(); p.draw(); });
+                requestAnimationFrame(animate);
+            };
+            animate();
         };
+        initParticles();
 
         /**
          * ========================================================================
-         * 4. NETWORK METRICS & OPTIMIZATION
+         * 4. NETWORK OPTIMIZER ENGINE (SELF-HEALING)
          * ========================================================================
          */
-        let pingCalculationInterval;
+        const runNetworkDiagnostic = async () => {
+            const startTime = Date.now();
+            try {
+                // Measure connection by small read
+                if(state.user) await getDoc(doc(db, 'users', state.user.uid));
+                const ping = Date.now() - startTime;
+                
+                DOM.pingVal.innerText = `PING: ${ping} MS`;
+                
+                if(ping < 120) {
+                    DOM.pingDot.style.background = 'var(--wtr-player-o)';
+                    DOM.pingDot.style.boxShadow = '0 0 15px var(--wtr-player-o)';
+                } else if(ping < 300) {
+                    DOM.pingDot.style.background = 'var(--wtr-gold)';
+                    DOM.pingDot.style.boxShadow = '0 0 15px var(--wtr-gold)';
+                } else {
+                    DOM.pingDot.style.background = 'var(--wtr-player-x)';
+                    DOM.pingDot.style.boxShadow = '0 0 15px var(--wtr-player-x)';
+                }
+            } catch(e) {
+                DOM.pingVal.innerText = "PING: ERROR";
+            }
+        };
+        setInterval(runNetworkDiagnostic, 6000);
+
+        /**
+         * ========================================================================
+         * 5. GAME LOGIC & BOARD CONTROLLER
+         * ========================================================================
+         */
         
-        const executeNetworkDiagnostic = async () => {
-            const timeStart = Date.now();
-            try {
-                // Perform a lightweight Firestore read to measure true latency
-                if (userAuthProfile) {
-                    await getDoc(doc(db, 'users', userAuthProfile.uid));
-                }
-                const latency = Date.now() - timeStart;
-                
-                UI.pingText.innerText = `Ping: ${latency} ms`;
-                
-                // Color Code based on quality
-                if (latency < 100) {
-                    UI.pingDot.style.backgroundColor = 'var(--color-player-o)'; // Green
-                    UI.pingDot.style.boxShadow = '0 0 10px var(--color-player-o)';
-                } else if (latency < 250) {
-                    UI.pingDot.style.backgroundColor = 'var(--color-accent)'; // Yellow
-                    UI.pingDot.style.boxShadow = '0 0 10px var(--color-accent)';
-                } else {
-                    UI.pingDot.style.backgroundColor = 'var(--color-player-x)'; // Red
-                    UI.pingDot.style.boxShadow = '0 0 10px var(--color-player-x)';
-                }
-            } catch (error) {
-                UI.pingText.innerText = `Ping: Error`;
-                UI.pingDot.style.backgroundColor = 'var(--color-player-x)';
+        // Initial Board Generation
+        const buildGridUI = () => {
+            DOM.board.innerHTML = '';
+            for(let i=0; i<9; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'grid-cell';
+                cell.onclick = () => onCellExecute(i);
+                DOM.board.appendChild(cell);
             }
         };
+        buildGridUI();
 
-        document.getElementById('btn-optimize-connection').addEventListener('click', () => {
-            sfx.init(); // Initialize audio context on first user interaction
-            sfx.playClick();
-            sysMsg("Initiating WTR server handshake...");
-            executeNetworkDiagnostic();
-            
-            // Set recurring check
-            if(!pingCalculationInterval) {
-                pingCalculationInterval = setInterval(executeNetworkDiagnostic, 6000);
-            }
-        });
-
-        /**
-         * ========================================================================
-         * 5. GAME LOGIC ENGINE & RENDERER
-         * ========================================================================
-         */
-         
-        // Initial Board Render Generation
-        const initializeGridDOM = () => {
-            UI.boardContainer.innerHTML = '';
-            for (let index = 0; index < 9; index++) {
-                const cellDiv = document.createElement('div');
-                cellDiv.className = 'board-cell';
-                cellDiv.setAttribute('data-cell-index', index);
-                
-                // Event listener attached to each cell
-                cellDiv.addEventListener('click', () => processCellInteraction(index));
-                
-                UI.boardContainer.appendChild(cellDiv);
-            }
-        };
-        initializeGridDOM();
-
-        // Update DOM visually based on state array
-        const syncBoardVisuals = () => {
-            const cellElements = document.querySelectorAll('.board-cell');
-            cellElements.forEach((cell, idx) => {
-                const stateValue = engineState.boardArray[idx];
-                
-                if (stateValue === 'X' && !cell.innerHTML.includes('symbol-x')) {
-                    cell.innerHTML = RENDER_SVG_X;
-                    if(engineState.isActive) sfx.playPlaceX();
-                } else if (stateValue === 'O' && !cell.innerHTML.includes('symbol-o')) {
-                    cell.innerHTML = RENDER_SVG_O;
-                    if(engineState.isActive) sfx.playPlaceO();
-                } else if (stateValue === '') {
-                    cell.innerHTML = '';
-                }
+        // Sync State to Visuals
+        const syncVisualBoard = () => {
+            const cells = document.querySelectorAll('.grid-cell');
+            cells.forEach((cell, idx) => {
+                const val = state.board[idx];
+                if(val === 'X' && !cell.innerHTML) cell.innerHTML = ICON_X;
+                else if(val === 'O' && !cell.innerHTML) cell.innerHTML = ICON_O;
+                else if(!val) cell.innerHTML = '';
             });
         };
 
-        // Mathematical Win Detection Engine
-        const evaluateBoardMatrix = (currentArray) => {
-            const winningCombinations = [
-                [0, 1, 2], [3, 4, 5], [6, 7, 8], // Horizontal
-                [0, 3, 6], [1, 4, 7], [2, 5, 8], // Vertical
-                [0, 4, 8], [2, 4, 6]             // Diagonal
+        // Win/Draw Evaluation
+        const evaluateCombatMatrix = (b) => {
+            const wins = [
+                [0,1,2],[3,4,5],[6,7,8], // H
+                [0,3,6],[1,4,7],[2,5,8], // V
+                [0,4,8],[2,4,6]          // D
             ];
-
-            for (let i = 0; i < winningCombinations.length; i++) {
-                const [posA, posB, posC] = winningCombinations[i];
-                if (
-                    currentArray[posA] !== '' &&
-                    currentArray[posA] === currentArray[posB] &&
-                    currentArray[posA] === currentArray[posC]
-                ) {
-                    return 'win';
-                }
+            for(let p of wins) {
+                if(b[p[0]] && b[p[0]] === b[p[1]] && b[p[0]] === b[p[2]]) return 'win';
             }
-
-            if (!currentArray.includes('')) {
-                return 'draw';
-            }
-
-            return 'continue';
+            return b.includes('') ? 'continue' : 'draw';
         };
 
-        // Update Profile Stats in Database after match
-        const updatePlayerStats = async (resultType) => {
-            if (!userAuthProfile) return;
-            
-            const userRef = doc(db, 'users', userAuthProfile.uid);
-            
-            try {
-                if (resultType === 'win') {
-                    await updateDoc(userRef, { totalMatches: increment(1), wins: increment(1) });
-                } else if (resultType === 'loss') {
-                    await updateDoc(userRef, { totalMatches: increment(1), losses: increment(1) });
-                } else if (resultType === 'draw') {
-                    await updateDoc(userRef, { totalMatches: increment(1) });
-                }
-                
-                // Force a fresh read to update local UI
-                const freshSnap = await getDoc(userRef);
-                userDatabaseData = freshSnap.data();
-                updateStatsDashboard();
-                
-            } catch (error) {
-                console.error("Failed to update stats logging", error);
-            }
-        };
-
-        const updateStatsDashboard = () => {
-            if(!userDatabaseData) return;
-            
-            const matches = userDatabaseData.totalMatches || 0;
-            const wins = userDatabaseData.wins || 0;
-            const winRate = matches > 0 ? Math.round((wins / matches) * 100) : 0;
-            
-            UI.statMatches.innerText = matches;
-            UI.statWins.innerText = wins;
-            UI.statWinrate.innerText = `${winRate}%`;
-        };
-
-        // Handle conclusion of a match sequence
-        const executeMatchTermination = (winnerSymbol) => {
-            engineState.isActive = false;
-            syncBoardVisuals();
+        const handleMatchEnd = (winner) => {
+            state.active = false;
+            syncVisualBoard();
             
             setTimeout(() => {
-                let announcementTxt = "";
-                let colorCode = "";
-                
-                if (winnerSymbol === 'draw') {
-                    announcementTxt = "STALEMATE!";
-                    colorCode = "#ffffff";
-                    sfx.playLose();
-                    if(engineState.mode === 'online') updatePlayerStats('draw');
+                const head = document.getElementById('result-announcement');
+                if(winner === 'draw') {
+                    head.innerText = "DRAW";
+                    head.style.color = "#fff";
                 } else {
-                    if (engineState.mode === 'online') {
-                        if (winnerSymbol === engineState.mySymbolAssignment) {
-                            announcementTxt = "VICTORY ACHIEVED!";
-                            colorCode = "var(--color-player-x)";
-                            sfx.playWin();
-                            updatePlayerStats('win');
-                            triggerConfettiEngine();
-                        } else {
-                            announcementTxt = "MISSION FAILED!";
-                            colorCode = "var(--color-player-o)";
-                            sfx.playLose();
-                            updatePlayerStats('loss');
-                        }
+                    if(state.mode === 'online') {
+                        head.innerText = (winner === state.mySym) ? "VICTORY" : "DEFEAT";
                     } else {
-                        // Offline Mode Result
-                        announcementTxt = `PLAYER ${winnerSymbol} WINS!`;
-                        colorCode = winnerSymbol === 'X' ? "var(--color-player-x)" : "var(--color-player-o)";
-                        sfx.playWin();
-                        triggerConfettiEngine();
+                        head.innerText = `AGENT ${winner} WINS`;
+                    }
+                    head.style.color = (winner === 'X') ? 'var(--wtr-player-x)' : 'var(--wtr-player-o)';
+                    
+                    if((state.mode === 'online' && winner === state.mySym) || state.mode === 'offline') {
+                        canvasConfetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
                     }
                 }
-                
-                const resultHead = document.getElementById('combat-result-announcement');
-                resultHead.innerText = announcementTxt;
-                resultHead.style.color = colorCode;
-                
-                UI.modalResult.classList.add('is-visible');
-            }, 700);
+                document.getElementById('modal-result').style.display = 'flex';
+            }, 600);
         };
 
-        const triggerConfettiEngine = () => {
-            const count = 250;
-            const defaults = { origin: { y: 0.7 }, zIndex: 3000 };
+        const onCellExecute = async (i) => {
+            if(!state.active || state.board[i]) return;
 
-            function fire(particleRatio, opts) {
-                canvasConfetti(Object.assign({}, defaults, opts, {
-                    particleCount: Math.floor(count * particleRatio)
-                }));
-            }
-
-            fire(0.25, { spread: 26, startVelocity: 55, colors: ['#ff4757', '#fbbf24'] });
-            fire(0.2, { spread: 60, colors: ['#2ed573', '#ffffff'] });
-            fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
-            fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
-            fire(0.1, { spread: 120, startVelocity: 45 });
-        };
-
-        // Core Interaction Controller
-        const processCellInteraction = async (cellIndex) => {
-            sfx.init();
-            
-            // Validate interaction permissions
-            if (!engineState.isActive) return;
-            if (engineState.boardArray[cellIndex] !== '') {
-                sfx.playError();
-                return;
-            }
-
-            // Route execution based on mode
-            if (engineState.mode === 'offline') {
-                engineState.boardArray[cellIndex] = engineState.currentPlayerTurn;
-                syncBoardVisuals();
-                
-                const evaluationResult = evaluateBoardMatrix(engineState.boardArray);
-                
-                if (evaluationResult === 'win') {
-                    executeMatchTermination(engineState.currentPlayerTurn);
-                } else if (evaluationResult === 'draw') {
-                    executeMatchTermination('draw');
-                } else {
-                    engineState.currentPlayerTurn = engineState.currentPlayerTurn === 'X' ? 'O' : 'X';
-                    updateStatusBadgeUI(`PLAYER ${engineState.currentPlayerTurn} TURN`, engineState.currentPlayerTurn === 'X' ? 'var(--color-player-x)' : 'var(--color-player-o)', '#000000');
+            if(state.mode === 'offline') {
+                state.board[i] = state.turn;
+                syncVisualBoard();
+                const res = evaluateCombatMatrix(state.board);
+                if(res === 'win') handleMatchEnd(state.turn);
+                else if(res === 'draw') handleMatchEnd('draw');
+                else {
+                    state.turn = (state.turn === 'X') ? 'O' : 'X';
+                    DOM.status.innerText = `AGENT ${state.turn} TURN`;
+                    DOM.status.style.color = (state.turn === 'X') ? 'var(--wtr-player-x)' : 'var(--wtr-player-o)';
                 }
-            } 
-            else if (engineState.mode === 'online') {
-                
-                if (engineState.currentPlayerTurn !== engineState.mySymbolAssignment) {
-                    sfx.playError();
-                    sysMsg("Warning: Awaiting opponent's transmission.");
-                    return;
-                }
-                
-                // Optimistic Local Update
-                engineState.boardArray[cellIndex] = engineState.mySymbolAssignment;
-                syncBoardVisuals();
-                
-                // Calculate resulting state
-                const evaluationResult = evaluateBoardMatrix(engineState.boardArray);
-                const gameDocRef = doc(db, 'games', engineState.currentGameDocumentId);
-                
-                try {
-                    if (evaluationResult === 'win') {
-                        await updateDoc(gameDocRef, { 
-                            board: engineState.boardArray, 
-                            status: 'win', 
-                            winner: engineState.mySymbolAssignment 
-                        });
-                    } else if (evaluationResult === 'draw') {
-                        await updateDoc(gameDocRef, { 
-                            board: engineState.boardArray, 
-                            status: 'draw' 
-                        });
-                    } else {
-                        const nextTurn = engineState.mySymbolAssignment === 'X' ? 'O' : 'X';
-                        await updateDoc(gameDocRef, { 
-                            board: engineState.boardArray, 
-                            turn: nextTurn 
-                        });
-                    }
-                } catch (error) {
-                    sysMsg("Server sync failure detected.");
-                    console.error(error);
-                }
-            }
-        };
-
-        // UI Helper for the Badge
-        const updateStatusBadgeUI = (text, textColor, borderColor) => {
-            UI.statusBadge.innerText = text;
-            UI.statusBadge.style.color = textColor;
-            UI.statusBadge.style.borderColor = borderColor;
-        };
-
-        /**
-         * ========================================================================
-         * 6. OFFLINE & ONLINE INITIALIZATION MODULES
-         * ========================================================================
-         */
-         
-        document.getElementById('btn-start-offline-training').addEventListener('click', () => {
-            engineState.mode = 'offline';
-            engineState.isActive = true;
-            engineState.boardArray = Array(9).fill('');
-            engineState.currentPlayerTurn = 'X';
-            
-            UI.chatContainer.style.display = 'none';
-            updateStatusBadgeUI("TRAINING: P1 TURN", 'var(--color-player-x)', 'transparent');
-            
-            syncBoardVisuals();
-            navigateToScreen('screen-combat-arena');
-        });
-
-        // The Multiplayer Synchronizer
-        const initiateOnlineCombatSequence = (gameDocumentId, assignedSymbol) => {
-            engineState.currentGameDocumentId = gameDocumentId;
-            engineState.mySymbolAssignment = assignedSymbol;
-            engineState.mode = 'online';
-            engineState.isActive = true;
-            
-            UI.chatContainer.style.display = 'flex';
-            UI.modalResult.classList.remove('is-visible');
-            
-            navigateToScreen('screen-combat-arena');
-
-            // 1. Establish Game State Listener
-            if(engineState.unsubGameDoc) engineState.unsubGameDoc();
-            
-            const docRef = doc(db, 'games', gameDocumentId);
-            engineState.unsubGameDoc = onSnapshot(docRef, (snapshot) => {
-                if (!snapshot.exists()) {
-                    sysMsg("Opponent severed the connection.");
-                    handleCombatAbort(true);
-                    return;
-                }
-                
-                const cloudData = snapshot.data();
-                engineState.boardArray = cloudData.board;
-                engineState.currentPlayerTurn = cloudData.turn;
-                engineState.isActive = (cloudData.status === 'playing');
-                
-                syncBoardVisuals();
-
-                // Process Cloud Status
-                if (cloudData.status === 'win') {
-                    executeMatchTermination(cloudData.winner);
-                } else if (cloudData.status === 'draw') {
-                    executeMatchTermination('draw');
-                } else {
-                    if (engineState.currentPlayerTurn === engineState.mySymbolAssignment) {
-                        updateStatusBadgeUI("YOUR TURN TO STRIKE", 'var(--color-player-o)', 'var(--color-player-o)');
-                        sfx.playClick();
-                    } else {
-                        updateStatusBadgeUI("AWAITING TARGET...", 'var(--color-text-muted)', 'var(--glass-border)');
-                    }
-                }
-            });
-
-            // 2. Establish Secure Chat Comm Listener
-            if(engineState.unsubChatQuery) engineState.unsubChatQuery();
-            
-            const chatCollectionRef = collection(db, `games/${gameDocumentId}/chat`);
-            const chatQuery = query(chatCollectionRef);
-            
-            engineState.unsubChatQuery = onSnapshot(chatQuery, (snapshot) => {
-                UI.chatLog.innerHTML = '';
-                const messageList = [];
-                
-                snapshot.forEach(docSnap => messageList.push(docSnap.data()));
-                
-                // Sort chronologically
-                messageList.sort((a,b) => (a.timestamp?.toMillis() || 0) - (b.timestamp?.toMillis() || 0));
-                
-                messageList.forEach(msgItem => {
-                    const isSelf = msgItem.sender === userDatabaseData.name;
-                    const bubbleHTML = `
-                        <div class="chat-bubble ${isSelf ? 'self' : ''}">
-                            <span class="chat-sender-name">${isSelf ? 'You' : msgItem.sender}</span>
-                            <br>
-                            ${msgItem.text}
-                        </div>
-                    `;
-                    UI.chatLog.insertAdjacentHTML('beforeend', bubbleHTML);
-                });
-                
-                // Auto Scroll down
-                UI.chatLog.scrollTop = UI.chatLog.scrollHeight;
-            });
-        };
-
-        /**
-         * ========================================================================
-         * 7. CHALLENGE PROTOCOLS & INVITATION SYSTEM
-         * ========================================================================
-         */
-        document.getElementById('btn-send-challenge').addEventListener('click', async () => {
-            sfx.init(); sfx.playClick();
-            
-            const targetInput = document.getElementById('target-friend-code');
-            const targetCode = targetInput.value.toUpperCase().trim();
-            
-            if (!targetCode) {
-                sysMsg("Error: Target code required.");
-                sfx.playError();
-                return;
-            }
-            if (targetCode === userDatabaseData.inviteCode) {
-                sysMsg("Logic Error: Self-targeting prohibited.");
-                sfx.playError();
-                return;
-            }
-
-            // Locate Target in Database
-            const usersRef = collection(db, "users");
-            const q = query(usersRef, where("inviteCode", "==", targetCode));
-            
-            try {
-                const querySnapshot = await getDocs(q);
-                
-                if (querySnapshot.empty) {
-                    sysMsg("Target offline or invalid code.");
-                    sfx.playError();
-                    return;
-                }
-                
-                const targetProfile = querySnapshot.docs[0].data();
-                
-                // Construct Invitation Document
-                const inviteData = {
-                    senderUid: userAuthProfile.uid,
-                    senderName: userDatabaseData.name,
-                    receiverUid: targetProfile.uid,
-                    status: 'pending',
-                    createdAt: serverTimestamp()
-                };
-                
-                const inviteRef = await addDoc(collection(db, 'invites'), inviteData);
-                sysMsg("Transmission Sent. Awaiting response...");
-                
-                // Listen for Target's Decision
-                const unsubInvite = onSnapshot(doc(db, 'invites', inviteRef.id), (docSnap) => {
-                    const dataObj = docSnap.data();
-                    
-                    if (dataObj?.status === 'accepted' && dataObj.gameId) {
-                        sysMsg("Challenge Accepted! Engaging...");
-                        initiateOnlineCombatSequence(dataObj.gameId, 'X');
-                        deleteDoc(doc(db, 'invites', inviteRef.id));
-                        unsubInvite();
-                    } else if (dataObj?.status === 'rejected') {
-                        sysMsg("Target evaded the challenge.");
-                        sfx.playError();
-                        deleteDoc(doc(db, 'invites', inviteRef.id));
-                        unsubInvite();
-                    }
-                });
-                
-            } catch (error) {
-                sysMsg("Database routing failure.");
-                console.error(error);
-            }
-        });
-
-        // Continuous Radar for Incoming Challenges
-        const activateIncomingRadar = () => {
-            const invitesRef = collection(db, 'invites');
-            const q = query(invitesRef, 
-                where('receiverUid', '==', userAuthProfile.uid), 
-                where('status', '==', 'pending')
-            );
-            
-            onSnapshot(q, (snapshot) => {
-                snapshot.docChanges().forEach(change => {
-                    if (change.type === 'added') {
-                        const incomingData = change.doc.data();
-                        const inviteDocId = change.doc.id;
-                        
-                        sfx.playTone(800, 'square', 0.1, 0.4);
-                        setTimeout(() => sfx.playTone(800, 'square', 0.3, 0.4), 150);
-                        
-                        document.getElementById('challenger-id-name').innerText = incomingData.senderName;
-                        UI.modalInvite.classList.add('is-visible');
-
-                        // Attach Decision Handlers
-                        document.getElementById('btn-accept-combat').onclick = async () => {
-                            sfx.playClick();
-                            
-                            // Initialize new Game Board Document
-                            const newGameData = {
-                                players: [incomingData.senderUid, userAuthProfile.uid],
-                                board: ['', '', '', '', '', '', '', '', ''],
-                                turn: 'X',
-                                status: 'playing',
-                                createdAt: serverTimestamp()
-                            };
-                            
-                            try {
-                                const gameDocRef = await addDoc(collection(db, 'games'), newGameData);
-                                
-                                // Update Invite to Accepted state with the new Game ID attached
-                                await updateDoc(doc(db, 'invites', inviteDocId), { 
-                                    status: 'accepted', 
-                                    gameId: gameDocRef.id 
-                                });
-                                
-                                UI.modalInvite.classList.remove('is-visible');
-                                
-                                // Receiver plays as 'O'
-                                initiateOnlineCombatSequence(gameDocRef.id, 'O');
-                            } catch (e) {
-                                sysMsg("Failed to establish game session.");
-                            }
-                        };
-
-                        document.getElementById('btn-decline-combat').onclick = async () => {
-                            sfx.playClick();
-                            await updateDoc(doc(db, 'invites', inviteDocId), { status: 'rejected' });
-                            UI.modalInvite.classList.remove('is-visible');
-                        };
-                    }
-                });
-            });
-        };
-
-        /**
-         * ========================================================================
-         * 8. COMMUNICATION MODULE (CHAT)
-         * ========================================================================
-         */
-        const transmitChatMessage = async () => {
-            const msgInputText = UI.chatInput.value.trim();
-            
-            if (msgInputText && engineState.mode === 'online' && engineState.currentGameDocumentId) {
-                try {
-                    const chatColRef = collection(db, `games/${engineState.currentGameDocumentId}/chat`);
-                    await addDoc(chatColRef, {
-                        sender: userDatabaseData.name,
-                        text: msgInputText,
-                        timestamp: serverTimestamp()
-                    });
-                    
-                    UI.chatInput.value = '';
-                    sfx.playTone(1000, 'sine', 0.05, 0.2); // Tiny bloop for sending message
-                } catch (e) {
-                    sysMsg("Comms array failure.");
-                }
-            }
-        };
-
-        document.getElementById('btn-transmit-message').addEventListener('click', transmitChatMessage);
-        UI.chatInput.addEventListener('keypress', (event) => {
-            if (event.key === 'Enter') transmitChatMessage();
-        });
-
-        /**
-         * ========================================================================
-         * 9. GAME TERMINATION & REMATCH ROUTINES
-         * ========================================================================
-         */
-        const handleCombatAbort = async (isForcedByOpponent = false) => {
-            sfx.playClick();
-            
-            // Cleanup Cloud resources if initiating the abort
-            if (!isForcedByOpponent && engineState.mode === 'online' && engineState.currentGameDocumentId) {
-                try {
-                    // Note: Security rules should ideally handle cascade deletes,
-                    // but we do a raw delete of the game doc here.
-                    await deleteDoc(doc(db, 'games', engineState.currentGameDocumentId));
-                } catch (err) {
-                    console.log("Cleanup backgrounded.");
-                }
-            }
-            
-            // Sever local listeners
-            if(engineState.unsubGameDoc) engineState.unsubGameDoc();
-            if(engineState.unsubChatQuery) engineState.unsubChatQuery();
-            
-            engineState.currentGameDocumentId = null;
-            engineState.isActive = false;
-            
-            UI.modalResult.classList.remove('is-visible');
-            navigateToScreen('screen-command-center');
-        };
-
-        document.getElementById('btn-abort-mission').addEventListener('click', () => handleCombatAbort(false));
-        document.getElementById('btn-return-command-center').addEventListener('click', () => handleCombatAbort(false));
-
-        document.getElementById('btn-request-rematch').addEventListener('click', async () => {
-            sfx.playClick();
-            UI.modalResult.classList.remove('is-visible');
-            
-            if (engineState.mode === 'online' && engineState.currentGameDocumentId) {
-                try {
-                    await updateDoc(doc(db, 'games', engineState.currentGameDocumentId), {
-                        board: ['', '', '', '', '', '', '', '', ''],
-                        status: 'playing',
-                        turn: 'X'
-                    });
-                } catch (e) {
-                    sysMsg("Rematch request failed.");
-                }
-            } else if (engineState.mode === 'offline') {
-                document.getElementById('btn-start-offline-training').click();
-            }
-        });
-
-        /**
-         * ========================================================================
-         * 10. AUTHENTICATION & IDENTITY MANAGEMENT
-         * ========================================================================
-         */
-        const processAuthentication = async () => {
-            sfx.init(); sfx.playClick();
-            
-            const emailValue = document.getElementById('auth-email-input').value.trim();
-            const passwordValue = document.getElementById('auth-password-input').value.trim();
-            const loginBtn = document.getElementById('btn-execute-login');
-            
-            if (!emailValue || !passwordValue) {
-                sysMsg("Error: Invalid credentials format.");
-                sfx.playError();
-                return;
-            }
-            
-            loginBtn.innerHTML = `PROCESSING... <div class="ping-indicator" style="display:inline-block; margin-left:10px; width:8px; height:8px;"></div>`;
-            
-            try {
-                // Attempt standard login
-                await signInWithEmailAndPassword(auth, emailValue, passwordValue);
-                sysMsg("Authentication verified.");
-            } catch (error) {
-                // If account doesn't exist, create it dynamically
-                if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
-                    try {
-                        sysMsg("Registering new Agent ID...");
-                        await createUserWithEmailAndPassword(auth, emailValue, passwordValue);
-                    } catch (creationError) {
-                        sysMsg("Registration Failed: " + creationError.message);
-                        sfx.playError();
-                    }
-                } else {
-                    sysMsg("Auth Error: " + error.message);
-                    sfx.playError();
-                }
-            }
-            
-            loginBtn.innerHTML = `ENTER ARENA`;
-        };
-
-        document.getElementById('btn-execute-login').addEventListener('click', processAuthentication);
-
-        // Core Session Observer
-        onAuthStateChanged(auth, async (userObj) => {
-            if (userObj) {
-                userAuthProfile = userObj;
-                
-                const userDocRef = doc(db, 'users', userObj.uid);
-                try {
-                    const snap = await getDoc(userDocRef);
-                    
-                    if (snap.exists()) {
-                        userDatabaseData = snap.data();
-                    } else {
-                        // Initialize new database profile with zeroed stats
-                        userDatabaseData = {
-                            uid: userObj.uid,
-                            name: userObj.email.split('@')[0].toUpperCase(),
-                            inviteCode: generateSecureCode(),
-                            totalMatches: 0,
-                            wins: 0,
-                            losses: 0,
-                            accountCreated: serverTimestamp()
-                        };
-                        await setDoc(userDocRef, userDatabaseData);
-                    }
-                    
-                    // Bind data to DOM
-                    document.getElementById('display-user-name').innerText = userDatabaseData.name;
-                    document.getElementById('display-invite-code').innerText = userDatabaseData.inviteCode;
-                    
-                    updateStatsDashboard();
-                    
-                    // Move to Lobby
-                    navigateToScreen('screen-command-center');
-                    
-                    // Start Background Services
-                    activateIncomingRadar();
-                    executeNetworkDiagnostic();
-                    
-                } catch (err) {
-                    console.error("Critical Profile Fetch Failure", err);
-                    sysMsg("System Error Loading Profile");
-                }
-                
             } else {
-                // Logged out state
-                userAuthProfile = null;
-                userDatabaseData = null;
-                navigateToScreen('screen-authentication');
+                if(state.turn !== state.mySym) {
+                    triggerToast("AWAITING OPPONENT MOVE...");
+                    return;
+                }
+                
+                // OPTIMISTIC LOCAL UPDATE (0-LAG FEEL)
+                state.board[i] = state.mySym;
+                syncVisualBoard();
+                
+                const res = evaluateCombatMatrix(state.board);
+                const gRef = doc(db, 'games', state.gameId);
+                
+                if(res === 'win') await updateDoc(gRef, { board: state.board, status: 'win', winner: state.mySym });
+                else if(res === 'draw') await updateDoc(gRef, { board: state.board, status: 'draw' });
+                else await updateDoc(gRef, { board: state.board, turn: (state.mySym==='X'?'O':'X') });
+            }
+        };
+
+        /**
+         * ========================================================================
+         * 6. ONLINE MULTIPLAYER ENGINE
+         * ========================================================================
+         */
+        const initiateOnlineArena = (gId, sym) => {
+            state.gameId = gId;
+            state.mySym = sym;
+            state.mode = 'online';
+            state.active = true;
+            
+            document.getElementById('modal-result').style.display = 'none';
+            navigateTo('screen-arena');
+
+            // 1. GAME DATA SYNC
+            if(state.unsubGame) state.unsubGame();
+            state.unsubGame = onSnapshot(doc(db, 'games', gId), (snapshot) => {
+                if(!snapshot.exists()) {
+                    triggerToast("SESSION TERMINATED BY OPPONENT");
+                    handleAbortMission(true);
+                    return;
+                }
+                const data = snapshot.data();
+                state.board = data.board;
+                state.turn = data.turn;
+                state.active = (data.status === 'playing');
+                syncVisualBoard();
+
+                if(data.status === 'win') handleMatchEnd(data.winner);
+                else if(data.status === 'draw') handleMatchEnd('draw');
+                else {
+                    if(state.turn === state.mySym) {
+                        DOM.status.innerText = "YOUR TURN";
+                        DOM.status.style.color = "var(--wtr-player-o)";
+                    } else {
+                        DOM.status.innerText = "OPPONENT TURN";
+                        DOM.status.style.color = "#fff";
+                    }
+                }
+            });
+
+            // 2. CHAT COMMS SYNC
+            if(state.unsubChat) state.unsubChat();
+            state.unsubChat = onSnapshot(query(collection(db, `games/${gId}/chat`)), (snapshot) => {
+                DOM.chatStream.innerHTML = '';
+                let msgs = [];
+                snapshot.forEach(d => msgs.push(d.data()));
+                msgs.sort((a,b) => (a.t?.toMillis()||0) - (b.t?.toMillis()||0)).forEach(m => {
+                    DOM.chatStream.innerHTML += `<div class="chat-bubble"><b>${m.s}:</b> ${m.m}</div>`;
+                });
+                DOM.chatStream.scrollTop = DOM.chatStream.scrollHeight;
+            });
+        };
+
+        /**
+         * ========================================================================
+         * 7. CHALLENGE & INVITE PROTOCOLS
+         * ========================================================================
+         */
+        document.getElementById('challenge-trigger').onclick = async () => {
+            const input = document.getElementById('target-combat-code');
+            const code = input.value.toUpperCase().trim();
+            
+            if(!code || code === state.profile.inviteCode) return triggerToast("INVALID FREQUENCY CODE");
+
+            const q = await getDocs(query(collection(db, 'users'), where('inviteCode', '==', code)));
+            if(q.empty) return triggerToast("TARGET AGENT NOT FOUND");
+            
+            const target = q.docs[0].data();
+            const inviteRef = await addDoc(collection(db, 'invites'), {
+                sUid: state.user.uid,
+                sName: state.profile.name,
+                rUid: target.uid,
+                status: 'pending'
+            });
+            
+            triggerToast("CHALLENGE TRANSMITTED...");
+            
+            onSnapshot(doc(db, 'invites', inviteRef.id), (snap) => {
+                const d = snap.data();
+                if(d?.status === 'accepted') {
+                    initiateOnlineArena(d.gameId, 'X');
+                    deleteDoc(doc(db, 'invites', inviteRef.id));
+                } else if(d?.status === 'rejected') {
+                    triggerToast("CHALLENGE EVADED BY TARGET");
+                    deleteDoc(doc(db, 'invites', inviteRef.id));
+                }
+            });
+        };
+
+        const listenForIncomingChallenges = () => {
+            onSnapshot(query(collection(db, 'invites'), where('rUid', '==', state.user.uid), where('status', '==', 'pending')), (snap) => {
+                snap.docChanges().forEach(async (change) => {
+                    if(change.type === 'added') {
+                        const inv = change.doc.data();
+                        document.getElementById('challenger-name').innerText = inv.sName;
+                        document.getElementById('modal-incoming').style.display = 'flex';
+
+                        document.getElementById('accept-trigger').onclick = async () => {
+                            const newGame = await addDoc(collection(db, 'games'), {
+                                players: [inv.sUid, state.user.uid],
+                                board: Array(9).fill(''),
+                                turn: 'X',
+                                status: 'playing'
+                            });
+                            await updateDoc(doc(db, 'invites', change.doc.id), { status: 'accepted', gameId: newGame.id });
+                            document.getElementById('modal-incoming').style.display = 'none';
+                            initiateOnlineArena(newGame.id, 'O');
+                        };
+                        document.getElementById('reject-trigger').onclick = async () => {
+                            await updateDoc(doc(db, 'invites', change.doc.id), { status: 'rejected' });
+                            document.getElementById('modal-incoming').style.display = 'none';
+                        };
+                    }
+                });
+            });
+        };
+
+        /**
+         * ========================================================================
+         * 8. SYSTEM BOOTSTRAP (AUTH & INITIALIZATION)
+         * ========================================================================
+         */
+        
+        // Startup Sequence Delay
+        setTimeout(() => {
+            document.getElementById('startup-sequence').style.opacity = '0';
+            setTimeout(() => document.getElementById('startup-sequence').style.display = 'none', 1200);
+        }, 2800);
+
+        onAuthStateChanged(auth, async (user) => {
+            if(user) {
+                state.user = user;
+                const snap = await getDoc(doc(db, 'users', user.uid));
+                if(snap.exists()) {
+                    state.profile = snap.data();
+                } else {
+                    state.profile = { 
+                        uid: user.uid, 
+                        name: user.email.split('@')[0].toUpperCase(), 
+                        inviteCode: generateCombatCode() 
+                    };
+                    await setDoc(doc(db, 'users', user.uid), state.profile);
+                }
+                
+                document.getElementById('agent-name').innerText = state.profile.name;
+                document.getElementById('agent-combat-code').innerText = state.profile.inviteCode;
+                
+                navigateTo('screen-lobby');
+                listenForIncomingChallenges();
+                runNetworkDiagnostic();
+            } else {
+                navigateTo('screen-auth');
             }
         });
+
+        document.getElementById('login-trigger').onclick = async () => {
+            const email = document.getElementById('auth-email').value;
+            const pass = document.getElementById('auth-pass').value;
+            if(!email || !pass) return triggerToast("CREDENTIALS REQUIRED");
+            
+            try {
+                await signInWithEmailAndPassword(auth, email, pass);
+                triggerToast("ACCESS GRANTED");
+            } catch(e) {
+                try {
+                    await createUserWithEmailAndPassword(auth, email, pass);
+                    triggerToast("ACCOUNT CREATED");
+                } catch(e2) { triggerToast(e2.message.toUpperCase()); }
+            }
+        };
+
+        /**
+         * ========================================================================
+         * 9. MISSION CONTROLS & CHAT
+         * ========================================================================
+         */
+        const handleAbortMission = async (forced = false) => {
+            if(!forced && state.gameId) {
+                try { await deleteDoc(doc(db, 'games', state.gameId)); } catch(e){}
+            }
+            if(state.unsubGame) state.unsubGame();
+            if(state.unsubChat) state.unsubChat();
+            
+            state.gameId = null;
+            state.active = false;
+            document.getElementById('modal-result').style.display = 'none';
+            navigateTo('screen-lobby');
+        };
+
+        document.getElementById('abort-trigger').onclick = () => handleAbortMission(false);
+        document.getElementById('exit-trigger').onclick = () => handleAbortMission(false);
+
+        document.getElementById('offline-trigger').onclick = () => {
+            state.mode = 'offline'; state.active = true; state.board = Array(9).fill(''); state.turn = 'X';
+            DOM.status.innerText = "PLAYER X TURN";
+            navigateTo('screen-arena');
+            syncVisualBoard();
+        };
+
+        document.getElementById('rematch-trigger').onclick = async () => {
+            document.getElementById('modal-result').style.display = 'none';
+            if(state.mode === 'online' && state.gameId) {
+                await updateDoc(doc(db, 'games', state.gameId), { board: Array(9).fill(''), turn: 'X', status: 'playing' });
+            } else {
+                document.getElementById('offline-trigger').click();
+            }
+        };
+
+        document.getElementById('chat-trigger').onclick = async () => {
+            const input = document.getElementById('chat-message-in');
+            if(input.value.trim() && state.gameId) {
+                await addDoc(collection(db, `games/${state.gameId}/chat`), {
+                    s: state.profile.name,
+                    m: input.value,
+                    t: serverTimestamp()
+                });
+                input.value = '';
+            }
+        };
 
     </script>
 </body>
