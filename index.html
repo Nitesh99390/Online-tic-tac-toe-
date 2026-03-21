@@ -1,52 +1,264 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="manifest" href="./manifest.json">
-    <meta name="theme-color" content="#1a2a2f">
-    <link rel="icon" type="image/svg+xml" href="./icon.svg">
-    <link rel="apple-touch-icon" href="./icon-192.png">
-    
-    <meta name="google-site-verification" content="Za1pEupQLM-LlPnODka_5pMgrC6DyOzmuDaZBepfg7Q" />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tic Tac Toe – AlignIt Style</title>
+    <meta name="theme-color" content="#0d1117">
+    <title>Tic Tac Toe – Nitesh Pro Enterprise</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+    
     <style>
+        /* ==========================================================================
+           1. RESET & VARIABLES
+           ========================================================================== */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             user-select: none;
+            -webkit-tap-highlight-color: transparent;
         }
 
         :root {
-            --chalkboard-dark: #1a2a2f;
-            --chalk-line: rgba(255, 255, 255, 0.4);
-            --x-color: #ff4757;
-            --o-color: #2ed573;
-            --glow-white: rgba(255, 255, 255, 0.3);
+            --color-bg-dark: #0d1117;
+            --color-grid-line: #6b7280;
+            --color-player-x: #ff4757;
+            --color-player-o: #2ed573;
+            --color-accent: #fbbf24;
+            --color-text-main: #f0f0f0;
+            --color-text-muted: #9ca3af;
+            
+            --glass-bg: rgba(13, 17, 23, 0.75);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            
+            --transition-speed: 0.3s;
         }
 
+        /* ==========================================================================
+           2. GLOBAL STYLES & TYPOGRAPHY
+           ========================================================================== */
         body {
-            background-color: var(--chalkboard-dark);
-            background-image: radial-gradient(circle, rgba(255,255,240,0.07) 1px, transparent 1px);
-            background-size: 22px 22px;
-            background-position: 0 0;
+            background-color: var(--color-bg-dark);
+            /* High-res Sci-Fi Background */
+            background-image: url('https://images.unsplash.com/photo-1614729939124-032f0b56c9ce?q=80&w=2000&auto=format&fit=crop');
+            background-position: center;
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
             font-family: 'Poppins', sans-serif;
-            color: #f0f0f0;
+            color: var(--color-text-main);
             display: flex;
             align-items: center;
             justify-content: center;
             min-height: 100vh;
             overflow: hidden;
+            position: relative;
         }
 
-        /* screens */
-        .screen {
+        h1, h2, h3, .chalk-text {
+            font-family: 'Permanent Marker', cursive;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
+            color: #ffffff;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+            margin-bottom: 20px;
+        }
+
+        /* Ambient Particle Canvas */
+        #particle-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* ==========================================================================
+           3. UI COMPONENTS & GLASSMORPHISM
+           ========================================================================== */
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 30px 25px;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: var(--glass-shadow);
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Network & Speed Optimizer UI */
+        .top-navigation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .network-monitor {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            padding: 8px 18px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            border: 1px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            transition: all var(--transition-speed) ease;
+        }
+
+        .ping-indicator {
+            width: 12px;
+            height: 12px;
+            background-color: var(--color-player-o);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--color-player-o);
+            animation: pulse-ping 2s infinite ease-in-out;
+        }
+
+        .btn-speed-boost {
+            background: linear-gradient(135deg, var(--color-accent), #f59e0b);
+            color: #000000;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(251, 191, 36, 0.5);
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-speed-boost:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px rgba(251, 191, 36, 0.8);
+        }
+
+        /* ==========================================================================
+           4. FORMS, INPUTS & BUTTONS
+           ========================================================================== */
+        .input-group {
+            margin-bottom: 15px;
+            width: 100%;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: 16px 20px;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid var(--glass-border);
+            border-radius: 50px;
+            color: #ffffff;
+            font-size: 1rem;
+            text-align: center;
+            outline: none;
+            transition: all var(--transition-speed) ease;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        input:focus {
+            border-color: var(--color-accent);
+            box-shadow: 0 0 20px rgba(251, 191, 36, 0.3);
+            background: rgba(0, 0, 0, 0.8);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 16px;
+            margin-bottom: 15px;
+            border-radius: 50px;
+            border: 2px solid transparent;
+            background: transparent;
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+            font-family: 'Poppins', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background-color: var(--color-player-x);
+            box-shadow: 0 8px 25px rgba(255, 71, 87, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(255, 71, 87, 0.6);
+        }
+
+        .btn-primary:active {
+            transform: translateY(1px);
+        }
+
+        .btn-secondary {
+            background-color: var(--color-player-o);
+            color: #000000;
+            box-shadow: 0 8px 25px rgba(46, 213, 115, 0.4);
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(46, 213, 115, 0.6);
+        }
+
+        .btn-outline {
+            border-color: var(--color-grid-line);
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(5px);
+        }
+
+        .btn-outline:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: #ffffff;
+        }
+
+        .btn-danger-outline {
+            border-color: var(--color-player-x);
+            color: var(--color-player-x);
+        }
+
+        .btn-danger-outline:hover {
+            background: rgba(255, 71, 87, 0.1);
+        }
+
+        /* ==========================================================================
+           5. SCREENS & LAYOUT
+           ========================================================================== */
+        .app-screen {
             display: none;
             width: 100%;
-            max-width: 500px;
             height: 100vh;
             flex-direction: column;
             align-items: center;
@@ -54,756 +266,1482 @@
             padding: 20px;
             position: absolute;
             top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            backdrop-filter: blur(2px);
+            left: 0;
             opacity: 0;
-            transition: opacity 0.3s ease-in-out;
+            transition: opacity 0.5s ease-in-out, transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform: scale(0.95);
+            z-index: 10;
         }
-        .active { 
-            display: flex; 
+
+        .app-screen.is-active {
+            display: flex;
             opacity: 1;
+            transform: scale(1);
+            z-index: 20;
         }
 
-        h1, h2, .chalk-text {
-            font-family: 'Permanent Marker', cursive;
-            letter-spacing: 2px;
-            text-shadow: 3px 3px 0 rgba(0,0,0,0.5);
-        }
-        h1 { font-size: 3rem; margin-bottom: 0.5rem; text-align: center; }
-        h2 { font-size: 2rem; margin-bottom: 1.5rem; }
-
-        input {
-            width: 100%;
-            max-width: 280px;
-            padding: 12px 18px;
-            margin-bottom: 15px;
-            background: rgba(0,0,0,0.4);
-            border: 2px solid var(--chalk-line);
-            border-radius: 50px;
-            color: white;
-            font-size: 1rem;
-            text-align: center;
-            outline: none;
-            transition: all 0.3s ease;
-        }
-        input:focus {
-            border-color: #fff;
-            box-shadow: 0 0 15px var(--glow-white);
-            background: rgba(0,0,0,0.6);
-        }
-
-        .btn {
-            background: transparent;
-            border: 2px solid white;
-            color: white;
-            padding: 10px 22px;
-            border-radius: 40px;
-            font-weight: 600;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            width: 100%;
-            max-width: 280px;
-            margin: 6px auto;
-            font-family: 'Poppins', sans-serif;
-        }
-        .btn:hover, .btn:active {
-            background: rgba(255,255,255,0.15);
-            box-shadow: 0 0 12px rgba(255,255,255,0.3);
-            transform: translateY(-2px);
-        }
-        .btn:active {
-            transform: translateY(1px);
-        }
-        .btn-action {
-            background: var(--o-color);
-            border: none;
-            color: #111;
-            font-weight: bold;
-            box-shadow: 0 4px 12px rgba(46,213,115,0.4);
-        }
-        .btn-danger {
-            border-color: var(--x-color);
-            color: var(--x-color);
-        }
-        .btn-danger:hover {
-            background: rgba(255, 71, 87, 0.15);
-            box-shadow: 0 0 12px rgba(255, 71, 87, 0.4);
-        }
-
-        .invite-box {
-            background: rgba(0,0,0,0.5);
-            border-radius: 24px;
-            padding: 14px 20px;
+        /* Profile Stats Section */
+        .stats-container {
+            display: flex;
+            justify-content: space-around;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 15px;
             margin: 20px 0;
-            text-align: center;
-            border: 1px dashed var(--chalk-line);
             width: 100%;
-            max-width: 280px;
-            transition: transform 0.2s ease;
-        }
-        .invite-box:hover {
-            transform: scale(1.02);
-        }
-        .invite-code {
-            font-family: 'Permanent Marker', cursive;
-            font-size: 2rem;
-            color: #ffdd88;
-            letter-spacing: 4px;
         }
 
-        /* GAME BOARD – CHALK GRID */
-        .board-container {
+        .stat-box {
             display: flex;
             flex-direction: column;
             align-items: center;
-            width: 100%;
         }
-        .status-area {
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--color-accent);
+        }
+
+        .stat-label {
+            font-size: 0.65rem;
+            color: var(--color-text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 5px;
+        }
+
+        /* Invite Code Display */
+        .invite-display {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px dashed var(--color-grid-line);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .invite-display::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.1), transparent);
+            transform: skewX(-20deg);
+            animation: shine 3s infinite;
+        }
+
+        .invite-code-text {
+            color: var(--color-accent);
+            font-size: 2.8rem;
+            letter-spacing: 10px;
+            margin-top: 5px;
+            text-shadow: 0 0 15px rgba(251, 191, 36, 0.4);
+        }
+
+        /* ==========================================================================
+           6. THE EXACT IMAGE 1 H-SHAPE GRID
+           ========================================================================== */
+        .game-status-badge {
+            background-color: #000000;
+            padding: 12px 40px;
+            border-radius: 50px;
             font-family: 'Permanent Marker', cursive;
             font-size: 1.5rem;
-            margin-bottom: 20px;
-            text-align: center;
-            text-transform: uppercase;
-            background: rgba(0,0,0,0.4);
-            padding: 8px 24px;
-            border-radius: 60px;
-            letter-spacing: 1px;
-            border: 1px solid rgba(255,255,255,0.1);
+            letter-spacing: 2px;
+            border: 1px solid var(--glass-border);
+            box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.05), 0 10px 30px rgba(0, 0, 0, 0.5);
+            margin-bottom: 30px;
             transition: all 0.3s ease;
         }
-        .board {
+
+        .tic-tac-toe-board {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 0;
-            width: 80vw;
-            max-width: 340px;
+            grid-template-rows: repeat(3, 1fr);
+            width: 85vw;
+            max-width: 360px;
             aspect-ratio: 1 / 1;
+            margin: 0 auto 30px auto;
             background: transparent;
         }
-        .cell {
+
+        .board-cell {
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            border: 4px solid var(--chalk-line);
-            transition: background 0.2s linear;
+            border: 5px solid var(--color-grid-line);
+            position: relative;
+            transition: background-color 0.2s ease;
         }
-        .cell[data-index="0"], .cell[data-index="1"], .cell[data-index="2"] { border-top: none; }
-        .cell[data-index="6"], .cell[data-index="7"], .cell[data-index="8"] { border-bottom: none; }
-        .cell[data-index="0"], .cell[data-index="3"], .cell[data-index="6"] { border-left: none; }
-        .cell[data-index="2"], .cell[data-index="5"], .cell[data-index="8"] { border-right: none; }
-        .cell:hover { background: rgba(255,255,255,0.05); }
 
-        /* SVG ICONS – DRAWING ANIMATIONS */
-        .svg-icon {
-            width: 70%;
-            height: 70%;
+        /* CRITICAL: Removing specific borders to create the EXACT H-Shape
+           seen in Image 1. No outer bounding box. 
+        */
+        .board-cell:nth-child(1), 
+        .board-cell:nth-child(2), 
+        .board-cell:nth-child(3) {
+            border-top: none;
         }
-        .path-x {
+
+        .board-cell:nth-child(7), 
+        .board-cell:nth-child(8), 
+        .board-cell:nth-child(9) {
+            border-bottom: none;
+        }
+
+        .board-cell:nth-child(1), 
+        .board-cell:nth-child(4), 
+        .board-cell:nth-child(7) {
+            border-left: none;
+        }
+
+        .board-cell:nth-child(3), 
+        .board-cell:nth-child(6), 
+        .board-cell:nth-child(9) {
+            border-right: none;
+        }
+
+        .board-cell:hover {
+            background-color: rgba(255, 255, 255, 0.03);
+        }
+
+        /* ==========================================================================
+           7. SVG DRAWING ANIMATIONS
+           ========================================================================== */
+        .symbol-icon {
+            width: 65%;
+            height: 65%;
+            filter: drop-shadow(0 0 12px currentColor);
+        }
+
+        .symbol-x {
+            color: var(--color-player-x);
+        }
+
+        .symbol-o {
+            color: var(--color-player-o);
+        }
+
+        .draw-path-x {
             stroke-dasharray: 140;
             stroke-dashoffset: 140;
-            animation: drawChalk 0.4s ease-out forwards;
+            animation: draw-line 0.3s ease-out forwards;
         }
-        .path-x-delay {
+
+        .draw-path-x-delay {
             stroke-dasharray: 140;
             stroke-dashoffset: 140;
-            animation: drawChalk 0.4s ease-out 0.18s forwards;
+            animation: draw-line 0.3s ease-out 0.15s forwards;
         }
-        .path-o {
-            stroke-dasharray: 220;   
+
+        .draw-path-o {
+            stroke-dasharray: 220;
             stroke-dashoffset: 220;
-            animation: drawChalk 0.55s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards;
+            animation: draw-line 0.5s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards;
         }
 
-        @keyframes drawChalk {
-            to { stroke-dashoffset: 0; }
-        }
-
-        /* Chat section */
-        .chat-wrapper {
+        /* ==========================================================================
+           8. CHAT SYSTEM
+           ========================================================================== */
+        .multiplayer-chat-wrapper {
             width: 100%;
-            max-width: 340px;
-            background: rgba(0,0,0,0.45);
-            border-radius: 24px;
-            margin-top: 20px;
-            backdrop-filter: blur(2px);
-            border: 1px solid var(--chalk-line);
+            max-width: 360px;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 20px;
             overflow: hidden;
+            border: 1px solid var(--glass-border);
+            margin-top: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
             display: flex;
             flex-direction: column;
         }
-        .chat-messages {
-            height: 110px;
-            overflow-y: auto;
-            padding: 8px 12px;
-            font-size: 0.85rem;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-        .chat-msg {
-            background: rgba(255,255,200,0.08);
-            padding: 6px 12px;
-            border-radius: 16px;
-            width: fit-content;
-            max-width: 90%;
-            word-wrap: break-word;
-        }
-        .chat-msg span { color: #ffdd88; font-weight: bold; margin-right: 6px; }
-        .chat-input-area {
-            display: flex;
-            border-top: 1px solid var(--chalk-line);
-            background: rgba(0,0,0,0.2);
-        }
-        .chat-input-area input {
-            margin: 0;
-            border: none;
-            border-radius: 0;
-            background: transparent;
-            padding: 12px;
-            text-align: left;
-            flex-grow: 1;
-        }
-        .chat-input-area input:focus { box-shadow: none; }
-        .chat-input-area button {
-            background: var(--chalk-line);
-            border: none;
-            padding: 0 18px;
-            font-weight: bold;
-            cursor: pointer;
-            color: black;
-            transition: background 0.2s;
-        }
-        .chat-input-area button:hover { background: rgba(255,255,255,0.7); }
 
-        /* Modals */
-        .overlay {
+        .chat-messages-container {
+            height: 120px;
+            overflow-y: auto;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            font-size: 0.85rem;
+            scroll-behavior: smooth;
+        }
+
+        /* Custom Scrollbar for Chat */
+        .chat-messages-container::-webkit-scrollbar {
+            width: 6px;
+        }
+        .chat-messages-container::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+        }
+        .chat-messages-container::-webkit-scrollbar-thumb {
+            background: var(--color-grid-line);
+            border-radius: 10px;
+        }
+
+        .chat-bubble {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 8px 14px;
+            border-radius: 16px;
+            border-bottom-left-radius: 4px;
+            width: fit-content;
+            max-width: 85%;
+            word-wrap: break-word;
+            line-height: 1.4;
+            animation: pop-in 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        .chat-bubble.self {
+            align-self: flex-end;
+            background: rgba(46, 213, 115, 0.15);
+            border-bottom-left-radius: 16px;
+            border-bottom-right-radius: 4px;
+        }
+
+        .chat-sender-name {
+            color: var(--color-accent);
+            font-weight: 700;
+            margin-right: 6px;
+            font-size: 0.75rem;
+        }
+
+        .chat-input-bar {
+            display: flex;
+            border-top: 1px solid var(--glass-border);
+            background: rgba(0, 0, 0, 0.4);
+        }
+
+        .chat-input-field {
+            margin: 0 !important;
+            border: none !important;
+            border-radius: 0 !important;
+            background: transparent !important;
+            flex-grow: 1;
+            padding: 15px !important;
+            text-align: left !important;
+            box-shadow: none !important;
+        }
+
+        .chat-send-btn {
+            background-color: var(--color-player-o);
+            border: none;
+            padding: 0 25px;
+            font-weight: 800;
+            color: #000000;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .chat-send-btn:hover {
+            background-color: #26b05f;
+        }
+
+        /* ==========================================================================
+           9. MODALS, TOASTS & OVERLAYS
+           ========================================================================== */
+        .overlay-backdrop {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.85);
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             display: none;
             align-items: center;
             justify-content: center;
-            z-index: 200;
-            backdrop-filter: blur(6px);
+            z-index: 2000;
             opacity: 0;
-            animation: fadeIn 0.3s forwards;
+            transition: opacity 0.4s ease;
         }
-        @keyframes fadeIn { to { opacity: 1; } }
 
-        .modal {
-            background: #1e2a2f;
-            padding: 32px 24px;
-            border-radius: 32px;
-            border: 2px solid white;
+        .overlay-backdrop.is-visible {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-content-box {
+            background: var(--glass-bg);
+            padding: 40px 30px;
+            border-radius: 30px;
+            border: 1px solid var(--glass-border);
             text-align: center;
-            width: 85%;
-            max-width: 320px;
-            box-shadow: 0 0 40px rgba(0,0,0,0.6), inset 0 0 15px rgba(255,255,255,0.05);
-            transform: translateY(20px);
-            animation: slideUp 0.3s ease-out forwards;
+            width: 90%;
+            max-width: 350px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+            transform: translateY(30px) scale(0.95);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        @keyframes slideUp { to { transform: translateY(0); } }
 
-        .winner-text {
+        .overlay-backdrop.is-visible .modal-content-box {
+            transform: translateY(0) scale(1);
+        }
+
+        .winner-announcement-text {
             font-family: 'Permanent Marker', cursive;
-            font-size: 3rem;
-            margin-bottom: 20px;
-            text-shadow: 0 0 15px currentColor;
+            font-size: 3.5rem;
+            margin-bottom: 30px;
+            line-height: 1.1;
+            text-shadow: 0 0 30px currentColor;
+            animation: pulse-winner 2s infinite;
         }
-        
-        #toast {
+
+        /* Toast Notification */
+        .system-toast {
             position: fixed;
-            top: 20px;
+            bottom: 40px;
             left: 50%;
-            transform: translateX(-50%) translateY(-20px);
-            background: rgba(17, 17, 17, 0.95);
-            color: #ffdd88;
-            padding: 12px 24px;
-            border-radius: 40px;
-            font-weight: bold;
-            z-index: 500;
-            display: none;
-            font-family: 'Poppins', sans-serif;
-            white-space: nowrap;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-            border: 1px solid rgba(255,221,136,0.2);
+            transform: translateX(-50%) translateY(50px);
+            background-color: var(--color-accent);
+            color: #000000;
+            padding: 14px 30px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.9rem;
             opacity: 0;
-            transition: all 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 3000;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+            pointer-events: none;
+            text-align: center;
+            white-space: nowrap;
         }
-        .toast-visible {
-            transform: translateX(-50%) translateY(0) !important;
-            opacity: 1 !important;
+
+        .system-toast.show-toast {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        /* ==========================================================================
+           10. SPLASH SCREEN (WTR LAB INFINITY)
+           ========================================================================== */
+        #splash-loader-screen {
+            position: fixed;
+            inset: 0;
+            background-color: #000000;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 1s ease-out, visibility 1s;
+        }
+
+        .wtr-infinity-loader {
+            width: 120px;
+            height: 60px;
+            position: relative;
+        }
+
+        .wtr-infinity-loader::before,
+        .wtr-infinity-loader::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 60px;
+            height: 60px;
+            border: 8px solid var(--color-accent);
+            border-radius: 50px 50px 0 50px;
+            transform: rotate(-45deg);
+            animation: wtr-glow-pulse 2s infinite alternate ease-in-out;
+            box-shadow: 0 0 25px var(--color-accent), inset 0 0 15px var(--color-accent);
+        }
+
+        .wtr-infinity-loader::after {
+            left: auto;
+            right: 0;
+            border-radius: 50px 50px 50px 0;
+            transform: rotate(45deg);
+            animation-delay: -1s;
+        }
+
+        .wtr-branding {
+            margin-top: 50px;
+            color: var(--color-accent);
+            letter-spacing: 8px;
+            text-shadow: 0 0 30px var(--color-accent);
+            font-size: 2rem;
+        }
+
+        /* ==========================================================================
+           11. KEYFRAME ANIMATIONS
+           ========================================================================== */
+        @keyframes draw-line {
+            to { stroke-dashoffset: 0; }
+        }
+
+        @keyframes pulse-ping {
+            0% { opacity: 1; transform: scale(1); box-shadow: 0 0 0 0 rgba(46, 213, 115, 0.7); }
+            50% { opacity: 0.6; transform: scale(1.1); box-shadow: 0 0 0 6px rgba(46, 213, 115, 0); }
+            100% { opacity: 1; transform: scale(1); box-shadow: 0 0 0 0 rgba(46, 213, 115, 0); }
+        }
+
+        @keyframes shine {
+            100% { left: 200%; }
+        }
+
+        @keyframes pop-in {
+            0% { opacity: 0; transform: translateY(10px) scale(0.9); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        @keyframes pulse-winner {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes wtr-glow-pulse {
+            0% { filter: hue-rotate(0deg) brightness(1); }
+            100% { filter: hue-rotate(45deg) brightness(1.8); box-shadow: 0 0 50px var(--color-player-x); border-color: var(--color-player-x); }
         }
     </style>
 </head>
 <body>
 
-<div id="toast">✨ Message</div>
+    <canvas id="particle-canvas"></canvas>
 
-<div id="auth-screen" class="screen active">
-    <h1 class="chalk-text">TIC TAC TOE</h1>
-    <p style="margin-bottom: 24px; color: #ffdd88; font-weight: 600;">⚡ Multiplayer Edition</p>
-    <input type="email" id="email" placeholder="Email address">
-    <input type="password" id="password" placeholder="Password (min 6)">
-    <button class="btn btn-action" id="login-btn">PLAY NOW</button>
-</div>
-
-<div id="home-screen" class="screen">
-    <h2 class="chalk-text">LOBBY</h2>
-    <p style="font-size: 1.1rem;">👤 <strong id="user-name" style="color: #ffdd88;">---</strong></p>
-    <div class="invite-box">
-        <div style="font-size: 0.85rem; color: #aaa; margin-bottom: 5px;">YOUR INVITE CODE</div>
-        <div class="invite-code" id="my-invite-code">------</div>
+    <div id="splash-loader-screen">
+        <div class="wtr-infinity-loader"></div>
+        <h2 class="chalk-text wtr-branding">WTR LAB</h2>
+        <p style="color: #6b7280; font-size: 0.85rem; margin-top: 15px; font-weight: 600; letter-spacing: 2px;">INITIALIZING CORE SYSTEMS...</p>
     </div>
-    <input type="text" id="friend-code" placeholder="Enter friend's code">
-    <button class="btn btn-action" onclick="window.handleInvite()">SEND CHALLENGE</button>
-    <button class="btn" style="margin-top: 18px;" onclick="window.playOffline()">✏️ PRACTICE (OFFLINE)</button>
-</div>
 
-<div id="game-screen" class="screen">
-    <div class="board-container">
-        <div class="status-area" id="status-text">YOUR TURN</div>
-        <div class="board" id="board">
+    <div class="top-navigation">
+        <div class="network-monitor" id="network-monitor-badge">
+            <div class="ping-indicator" id="ping-dot-indicator"></div>
+            <span id="ping-value-text">Ping: Calculating...</span>
+        </div>
+        <button class="btn-speed-boost" id="btn-optimize-connection">⚡ Optimize</button>
+    </div>
+
+    <div id="global-system-toast" class="system-toast">System Message Ready</div>
+
+    <div id="screen-authentication" class="app-screen is-active">
+        <div class="glass-panel">
+            <h1>TIC TAC TOE</h1>
+            <p style="color: var(--color-accent); font-weight: 800; margin-bottom: 30px; letter-spacing: 2px;">PRO ENTERPRISE</p>
+            
+            <div class="input-group">
+                <input type="email" id="auth-email-input" placeholder="Agent Email Address" autocomplete="off">
             </div>
-        <div class="chat-wrapper" id="chat-container" style="display: none;">
-            <div class="chat-messages" id="chat-messages"></div>
-            <div class="chat-input-area">
-                <input type="text" id="chat-input" placeholder="Chalk a message...">
-                <button id="send-chat">SEND</button>
+            <div class="input-group">
+                <input type="password" id="auth-password-input" placeholder="Secure Password (Min 6)" autocomplete="off">
+            </div>
+            
+            <button class="btn btn-primary" id="btn-execute-login" style="margin-top: 10px;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg>
+                ENTER ARENA
+            </button>
+        </div>
+    </div>
+
+    <div id="screen-command-center" class="app-screen">
+        <div class="glass-panel" style="padding: 25px 20px;">
+            <h2 class="chalk-text" style="font-size: 1.8rem; margin-bottom: 5px;">COMMAND CENTER</h2>
+            <p style="font-size: 0.9rem; color: #ccc;">Welcome back, <strong id="display-user-name" style="color: var(--color-player-o); font-size: 1.1rem;">Agent</strong></p>
+            
+            <div class="stats-container">
+                <div class="stat-box">
+                    <span class="stat-value" id="stat-matches">0</span>
+                    <span class="stat-label">Matches</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-value" id="stat-wins" style="color: var(--color-player-o);">0</span>
+                    <span class="stat-label">Wins</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-value" id="stat-winrate" style="color: #ffffff;">0%</span>
+                    <span class="stat-label">Win Rate</span>
+                </div>
+            </div>
+
+            <div class="invite-display">
+                <p style="font-size: 0.75rem; color: var(--color-text-muted); font-weight: 600;">YOUR COMBAT CODE</p>
+                <h2 id="display-invite-code" class="chalk-text invite-code-text">----</h2>
+            </div>
+
+            <div class="input-group" style="margin-top: 25px;">
+                <input type="text" id="target-friend-code" placeholder="Enter Target's Combat Code">
+            </div>
+            
+            <button class="btn btn-primary" id="btn-send-challenge">INITIATE CHALLENGE</button>
+            <button class="btn btn-outline" id="btn-start-offline-training" style="margin-top: 10px;">OFFLINE SIMULATION</button>
+        </div>
+    </div>
+
+    <div id="screen-combat-arena" class="app-screen">
+        <div class="game-status-badge" id="arena-status-indicator">SYSTEM READY</div>
+        
+        <div class="tic-tac-toe-board" id="game-grid-board">
+            </div>
+
+        <div class="multiplayer-chat-wrapper" id="arena-comms-module">
+            <div class="chat-messages-container" id="chat-history-log">
+                </div>
+            <div class="chat-input-bar">
+                <input type="text" id="chat-message-input" class="chat-input-field" placeholder="Transmit secure message...">
+                <button id="btn-transmit-message" class="chat-send-btn">SEND</button>
             </div>
         </div>
-        <button class="btn btn-danger" style="margin-top: 24px;" onclick="window.leaveGame()">LEAVE MATCH</button>
+        
+        <button class="btn btn-danger-outline" id="btn-abort-mission" style="margin-top: 25px; max-width: 360px;">ABORT MISSION</button>
     </div>
-</div>
 
-<div id="invite-popup" class="overlay">
-    <div class="modal">
-        <h2 class="chalk-text" style="color: #ffdd88;">⚡ CHALLENGE!</h2>
-        <p style="margin-bottom: 24px; font-size: 1.1rem;"><strong id="inviter-name" style="color: white;">Someone</strong> invited you to play.</p>
-        <button class="btn btn-action" id="accept-invite">ACCEPT</button>
-        <button class="btn btn-danger" id="reject-invite">DECLINE</button>
+    <div id="modal-incoming-challenge" class="overlay-backdrop">
+        <div class="modal-content-box">
+            <h2 class="chalk-text" style="color: var(--color-accent); font-size: 2.5rem;">ALERT!</h2>
+            <div style="width: 50px; height: 2px; background: var(--color-accent); margin: 15px auto;"></div>
+            <p style="margin: 25px 0; font-size: 1.1rem;"><strong id="challenger-id-name" style="color: #ffffff; font-size: 1.3rem;">Unknown Agent</strong><br>is requesting combat.</p>
+            <button class="btn btn-secondary" id="btn-accept-combat">ENGAGE</button>
+            <button class="btn btn-outline" id="btn-decline-combat">DECLINE</button>
+        </div>
     </div>
-</div>
 
-<div id="celebration-screen" class="overlay">
-    <div class="modal">
-        <div class="winner-text" id="winner-msg-text">WINNER!</div>
-        <button class="btn btn-action" id="rematch-btn" onclick="window.requestRestart()">PLAY AGAIN</button>
-        <button class="btn" onclick="window.leaveGame()">BACK TO LOBBY</button>
+    <div id="modal-combat-result" class="overlay-backdrop">
+        <div class="modal-content-box" style="max-width: 380px;">
+            <h1 id="combat-result-announcement" class="winner-announcement-text">VICTORY!</h1>
+            <p id="combat-result-subtext" style="margin-bottom: 30px; color: var(--color-text-muted);">Match logic evaluated.</p>
+            <button class="btn btn-secondary" id="btn-request-rematch">REMATCH</button>
+            <button class="btn btn-outline" id="btn-return-command-center">RETURN TO BASE</button>
+        </div>
     </div>
-</div>
 
-<div id="install-popup" class="overlay" style="z-index: 400;">
-    <div class="modal">
-        <h2 class="chalk-text" style="color: #2ed573;">📱 Install App</h2>
-        <p style="margin-bottom: 24px; font-size: 1rem; color: #ddd;">Install Tic Tac Toe for a faster, full-screen experience!</p>
-        <button class="btn btn-action" id="install-btn">INSTALL NOW</button>
-        <button class="btn" id="close-install-btn">MAYBE LATER</button>
-    </div>
-</div>
-
-<script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js')
-          .then(registration => {
-            console.log('ServiceWorker registered successfully');
-          })
-          .catch(err => {
-            console.log('ServiceWorker registration failed: ', err);
-          });
-      });
-    }
-
-    let deferredPrompt;
-    const installPopup = document.getElementById('install-popup');
-    const installBtn = document.getElementById('install-btn');
-    const closeInstallBtn = document.getElementById('close-install-btn');
-
-    window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        deferredPrompt = e;
-        installPopup.style.display = 'flex';
-    });
-
-    installBtn.addEventListener('click', async () => {
-        installPopup.style.display = 'none';
-        if (deferredPrompt) {
-            deferredPrompt.prompt();
-            const { outcome } = await deferredPrompt.userChoice;
-            console.log(`User install response: ${outcome}`);
-            deferredPrompt = null;
-        }
-    });
-
-    closeInstallBtn.addEventListener('click', () => {
-        installPopup.style.display = 'none';
-    });
-
-    window.addEventListener('appinstalled', () => {
-        installPopup.style.display = 'none';
-        deferredPrompt = null;
-        console.log('PWA was installed successfully');
-    });
-</script>
-
-<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-<script type="module">
-    // FIREBASE INIT
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, query, where, onSnapshot, getDocs, addDoc, serverTimestamp, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-    const firebaseConfig = {
-        apiKey: "AIzaSyBldLyB9d18ZGStroUC0-yjuUrp31DFQ28",
-        authDomain: "online-tic-tac-toe-d919f.firebaseapp.com",
-        projectId: "online-tic-tac-toe-d919f",
-        storageBucket: "online-tic-tac-toe-d919f.firebasestorage.app",
-        messagingSenderId: "644365665798",
-        appId: "1:644365665798:web:f90b64bdc3aa6912032587"
-    };
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-
-    // SVG ICONS
-    const svgX = `<svg class="svg-icon" viewBox="0 0 100 100"><path class="path-x" d="M 20 20 L 80 80" stroke="#ff4757" stroke-width="12" stroke-linecap="round" fill="none"/><path class="path-x-delay" d="M 80 20 L 20 80" stroke="#ff4757" stroke-width="12" stroke-linecap="round" fill="none"/></svg>`;
-    const svgO = `<svg class="svg-icon" viewBox="0 0 100 100"><circle class="path-o" cx="50" cy="50" r="35" stroke="#2ed573" stroke-width="12" fill="none" stroke-linecap="round"/></svg>`;
-
-    // STATE
-    let currentUser = null;
-    let myProfile = null;
-    let mode = 'online';          
-    let boardState = ['', '', '', '', '', '', '', '', ''];
-    let currentPlayer = 'X';     
-    let gameActive = false;
-    let mySymbol = 'X';           
-    let currentGameId = null;
-    let unsubscribeGame = null;
-    let unsubscribeChat = null;
-
-    // TOAST
-    const showToast = (msg) => {
-        const toast = document.getElementById('toast');
-        toast.innerText = msg;
-        toast.style.display = 'block';
-        requestAnimationFrame(() => toast.classList.add('toast-visible'));
-        setTimeout(() => {
-            toast.classList.remove('toast-visible');
-            setTimeout(() => toast.style.display = 'none', 300);
-        }, 2800);
-    };
-
-    const switchScreen = (id) => {
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-    };
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     
-    const generateInviteCode = () => Math.random().toString(36).substring(2, 6).toUpperCase();
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, query, where, onSnapshot, getDocs, addDoc, serverTimestamp, deleteDoc, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // GAME LOGIC
-    function checkWinOrDraw(board) {
-        const winPatterns = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-        for (let p of winPatterns) {
-            if (board[p[0]] && board[p[0]] === board[p[1]] && board[p[0]] === board[p[2]]) return 'win';
-        }
-        return board.includes('') ? 'continue' : 'draw';
-    }
+        /**
+         * FIRBASE CONFIGURATION
+         * Nitesh, this is your provided config data.
+         */
+        const firebaseConfig = {
+            apiKey: "AIzaSyBldLyB9d18ZGStroUC0-yjuUrp31DFQ28",
+            authDomain: "online-tic-tac-toe-d919f.firebaseapp.com",
+            projectId: "online-tic-tac-toe-d919f",
+            storageBucket: "online-tic-tac-toe-d919f.firebasestorage.app",
+            messagingSenderId: "644365665798",
+            appId: "1:644365665798:web:f90b64bdc3aa6912032587"
+        };
+        
+        // Initialize Firebase Backend
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
 
-    function renderBoardUI() {
-        const cells = document.querySelectorAll('.cell');
-        cells.forEach((cell, i) => {
-            const val = boardState[i];
-            if (val === 'X' && !cell.innerHTML.includes('path-x')) cell.innerHTML = svgX;
-            else if (val === 'O' && !cell.innerHTML.includes('path-o')) cell.innerHTML = svgO;
-            else if (val === '') cell.innerHTML = '';
-        });
-    }
-
-    // OFFLINE
-    function initOfflineBoard() {
-        boardState = ['', '', '', '', '', '', '', '', ''];
-        currentPlayer = 'X';
-        gameActive = true;
-        document.getElementById('celebration-screen').style.display = 'none';
-        document.getElementById('status-text').innerText = "PLAYER X TURN";
-        document.getElementById('status-text').style.color = "#fff";
-        renderBoardUI();
-    }
-
-    window.playOffline = () => {
-        mode = 'offline';
-        document.getElementById('chat-container').style.display = 'none';
-        switchScreen('game-screen');
-        initOfflineBoard();
-    };
-
-    function handleWinUI(winner, winnerSymbol = null) {
-        gameActive = false;
-        renderBoardUI();
-        setTimeout(() => {
-            let msg = (mode === 'online') ? (winner === mySymbol ? "YOU WIN!" : "OPPONENT WINS!") : `PLAYER ${winner} WINS!`;
-            document.getElementById('winner-msg-text').innerText = msg;
-            const winnerColor = (winnerSymbol === 'X' || winner === 'X') ? 'var(--x-color)' : 'var(--o-color)';
-            document.getElementById('winner-msg-text').style.color = winnerColor;
-            document.getElementById('celebration-screen').style.display = 'flex';
-            if ((mode === 'online' && winner === mySymbol) || mode === 'offline') {
-                canvasConfetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, startVelocity: 15 });
+        /**
+         * ========================================================================
+         * 1. CUSTOM AUDIO SYNTHESIZER ENGINE
+         * No external MP3s needed. Fully coded audio context.
+         * ========================================================================
+         */
+        class AudioSynthesizer {
+            constructor() {
+                this.audioCtx = null;
+                this.isInitialized = false;
             }
-        }, 600);
-    }
-    
-    function handleDrawUI() {
-        gameActive = false;
-        renderBoardUI();
-        setTimeout(() => {
-            document.getElementById('winner-msg-text').innerText = "DRAW!";
-            document.getElementById('winner-msg-text').style.color = "white";
-            document.getElementById('celebration-screen').style.display = 'flex';
-        }, 600);
-    }
 
-    async function onCellClick(index) {
-        if (!gameActive) return;
-        if (boardState[index] !== '') return;
-
-        if (mode === 'offline') {
-            boardState[index] = currentPlayer;
-            renderBoardUI();   
-            const result = checkWinOrDraw(boardState);
-            if (result === 'win') handleWinUI(currentPlayer);
-            else if (result === 'draw') handleDrawUI();
-            else {
-                currentPlayer = (currentPlayer === 'X') ? 'O' : 'X';
-                document.getElementById('status-text').innerText = `PLAYER ${currentPlayer} TURN`;
-            }
-        } 
-        else if (mode === 'online') {
-            if (currentPlayer !== mySymbol) {
-                showToast("Wait for your turn!");
-                return;
-            }
-            boardState[index] = mySymbol;
-            renderBoardUI();   
-            const result = checkWinOrDraw(boardState);
-            if (result === 'win') {
-                await updateDoc(doc(db, 'games', currentGameId), { board: boardState, status: 'win', winner: mySymbol });
-            } else if (result === 'draw') {
-                await updateDoc(doc(db, 'games', currentGameId), { board: boardState, status: 'draw' });
-            } else {
-                const nextTurn = (mySymbol === 'X') ? 'O' : 'X';
-                await updateDoc(doc(db, 'games', currentGameId), { board: boardState, turn: nextTurn });
-            }
-        }
-    }
-
-    // ONLINE
-    function startOnlineGame(gameId, symbol) {
-        currentGameId = gameId;
-        mySymbol = symbol;
-        mode = 'online';
-        document.getElementById('chat-container').style.display = 'flex';
-        switchScreen('game-screen');
-        document.getElementById('celebration-screen').style.display = 'none';
-
-        if (unsubscribeGame) unsubscribeGame();
-        unsubscribeGame = onSnapshot(doc(db, 'games', gameId), (docSnap) => {
-            if (!docSnap.exists()) {
-                if (gameActive) showToast("Opponent left the game");
-                window.leaveGame(true);
-                return;
-            }
-            const game = docSnap.data();
-            boardState = game.board;
-            currentPlayer = game.turn;
-            gameActive = (game.status === 'playing');
-            renderBoardUI();
-
-            if (game.status === 'win') handleWinUI(game.winner, game.winner);
-            else if (game.status === 'draw') handleDrawUI();
-            else {
-                const statusDiv = document.getElementById('status-text');
-                if (currentPlayer === mySymbol) {
-                    statusDiv.innerText = "✨ YOUR TURN";
-                    statusDiv.style.color = "#2ed573";
-                    statusDiv.style.borderColor = "rgba(46,213,115,0.4)";
-                } else {
-                    statusDiv.innerText = "⏳ OPPONENT'S TURN";
-                    statusDiv.style.color = "#f0f0f0";
-                    statusDiv.style.borderColor = "rgba(255,255,255,0.1)";
+            init() {
+                if (!this.isInitialized) {
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    this.audioCtx = new AudioContext();
+                    this.isInitialized = true;
                 }
             }
-        });
 
-        if (unsubscribeChat) unsubscribeChat();
-        unsubscribeChat = onSnapshot(query(collection(db, `games/${gameId}/chat`)), (snap) => {
-            const container = document.getElementById('chat-messages');
-            container.innerHTML = '';
-            const msgs = [];
-            snap.forEach(d => msgs.push(d.data()));
-            msgs.sort((a,b) => (a.timestamp?.toMillis()||0) - (b.timestamp?.toMillis()||0)).forEach(m => {
-                container.innerHTML += `<div class="chat-msg"><span>${m.sender}:</span> ${m.text}</div>`;
-            });
-            container.scrollTop = container.scrollHeight;
-        });
-    }
+            playTone(freq, type, duration, vol) {
+                if (!this.audioCtx) return;
+                const oscillator = this.audioCtx.createOscillator();
+                const gainNode = this.audioCtx.createGain();
+                
+                oscillator.type = type;
+                oscillator.frequency.setValueAtTime(freq, this.audioCtx.currentTime);
+                
+                gainNode.gain.setValueAtTime(vol, this.audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioCtx.currentTime + duration);
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(this.audioCtx.destination);
+                
+                oscillator.start();
+                oscillator.stop(this.audioCtx.currentTime + duration);
+            }
 
-    window.leaveGame = async (isForced = false) => {
-        if (!isForced && mode === 'online' && currentGameId) {
+            playClick() { this.playTone(600, 'sine', 0.1, 0.5); }
+            playPlaceX() { this.playTone(400, 'square', 0.15, 0.3); }
+            playPlaceO() { this.playTone(800, 'triangle', 0.15, 0.3); }
+            playWin() {
+                this.playTone(400, 'sine', 0.2, 0.5);
+                setTimeout(() => this.playTone(600, 'sine', 0.2, 0.5), 100);
+                setTimeout(() => this.playTone(800, 'sine', 0.4, 0.5), 200);
+            }
+            playLose() {
+                this.playTone(300, 'sawtooth', 0.3, 0.5);
+                setTimeout(() => this.playTone(200, 'sawtooth', 0.5, 0.5), 200);
+            }
+            playError() { this.playTone(150, 'square', 0.2, 0.6); }
+        }
+
+        const sfx = new AudioSynthesizer();
+
+        /**
+         * ========================================================================
+         * 2. AMBIENT PARTICLE ENGINE (CANVAS 2D)
+         * Creates a dynamic, floating space-dust background effect.
+         * ========================================================================
+         */
+        class ParticleEngine {
+            constructor(canvasId) {
+                this.canvas = document.getElementById(canvasId);
+                this.ctx = this.canvas.getContext('2d');
+                this.particles = [];
+                this.particleCount = 60;
+                this.resize();
+                window.addEventListener('resize', () => this.resize());
+                this.initParticles();
+                this.animate();
+            }
+
+            resize() {
+                this.canvas.width = window.innerWidth;
+                this.canvas.height = window.innerHeight;
+            }
+
+            initParticles() {
+                this.particles = [];
+                for (let i = 0; i < this.particleCount; i++) {
+                    this.particles.push({
+                        x: Math.random() * this.canvas.width,
+                        y: Math.random() * this.canvas.height,
+                        radius: Math.random() * 2 + 0.5,
+                        speedX: (Math.random() - 0.5) * 0.5,
+                        speedY: (Math.random() - 0.5) * 0.5,
+                        alpha: Math.random() * 0.5 + 0.1
+                    });
+                }
+            }
+
+            animate() {
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                this.ctx.fillStyle = '#ffffff';
+                
+                this.particles.forEach(p => {
+                    this.ctx.globalAlpha = p.alpha;
+                    this.ctx.beginPath();
+                    this.ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                    this.ctx.fill();
+
+                    // Update position
+                    p.x += p.speedX;
+                    p.y += p.speedY;
+
+                    // Screen wrap
+                    if (p.x < 0) p.x = this.canvas.width;
+                    if (p.x > this.canvas.width) p.x = 0;
+                    if (p.y < 0) p.y = this.canvas.height;
+                    if (p.y > this.canvas.height) p.y = 0;
+                });
+                
+                requestAnimationFrame(() => this.animate());
+            }
+        }
+        
+        // Initialize Background Graphics
+        new ParticleEngine('particle-canvas');
+
+        /**
+         * ========================================================================
+         * 3. SYSTEM STATE VARIABLES & UI CONTROLLERS
+         * ========================================================================
+         */
+        let userAuthProfile = null;
+        let userDatabaseData = null;
+        
+        let engineState = {
+            mode: 'online', // 'online' or 'offline'
+            isActive: false,
+            boardArray: ['', '', '', '', '', '', '', '', ''],
+            currentPlayerTurn: 'X',
+            mySymbolAssignment: 'X',
+            currentGameDocumentId: null,
+            unsubGameDoc: null,
+            unsubChatQuery: null
+        };
+
+        // DOM Element Definitions for UI Manipulation
+        const UI = {
+            toast: document.getElementById('global-system-toast'),
+            screens: document.querySelectorAll('.app-screen'),
+            pingText: document.getElementById('ping-value-text'),
+            pingDot: document.getElementById('ping-dot-indicator'),
+            boardContainer: document.getElementById('game-grid-board'),
+            statusBadge: document.getElementById('arena-status-indicator'),
+            chatContainer: document.getElementById('arena-comms-module'),
+            chatLog: document.getElementById('chat-history-log'),
+            chatInput: document.getElementById('chat-message-input'),
+            
+            // Stats
+            statMatches: document.getElementById('stat-matches'),
+            statWins: document.getElementById('stat-wins'),
+            statWinrate: document.getElementById('stat-winrate'),
+            
+            // Modals
+            modalInvite: document.getElementById('modal-incoming-challenge'),
+            modalResult: document.getElementById('modal-combat-result')
+        };
+
+        // SVG Drawing Path Constants
+        const RENDER_SVG_X = `
+            <svg class="symbol-icon symbol-x" viewBox="0 0 100 100">
+                <path class="draw-path-x" d="M 20 20 L 80 80" stroke="currentColor" stroke-width="12" stroke-linecap="round" fill="none"/>
+                <path class="draw-path-x-delay" d="M 80 20 L 20 80" stroke="currentColor" stroke-width="12" stroke-linecap="round" fill="none"/>
+            </svg>
+        `;
+        const RENDER_SVG_O = `
+            <svg class="symbol-icon symbol-o" viewBox="0 0 100 100">
+                <circle class="draw-path-o" cx="50" cy="50" r="35" stroke="currentColor" stroke-width="12" fill="none" stroke-linecap="round"/>
+            </svg>
+        `;
+
+        /**
+         * Core Utility Functions
+         */
+        const sysMsg = (message) => {
+            UI.toast.innerText = message;
+            UI.toast.classList.add('show-toast');
+            setTimeout(() => UI.toast.classList.remove('show-toast'), 3500);
+        };
+
+        const navigateToScreen = (screenId) => {
+            UI.screens.forEach(s => s.classList.remove('is-active'));
+            document.getElementById(screenId).classList.add('is-active');
+            sfx.playClick();
+        };
+
+        const generateSecureCode = () => {
+            return Math.random().toString(36).substring(2, 6).toUpperCase();
+        };
+
+        /**
+         * Splash Screen Sequence Controller
+         */
+        window.onload = () => {
+            setTimeout(() => {
+                const splash = document.getElementById('splash-loader-screen');
+                splash.style.opacity = '0';
+                setTimeout(() => {
+                    splash.style.visibility = 'hidden';
+                    splash.style.display = 'none';
+                }, 1000);
+            }, 3000); // 3 Seconds of infinity loading for dramatic effect
+        };
+
+        /**
+         * ========================================================================
+         * 4. NETWORK METRICS & OPTIMIZATION
+         * ========================================================================
+         */
+        let pingCalculationInterval;
+        
+        const executeNetworkDiagnostic = async () => {
+            const timeStart = Date.now();
             try {
-                const chats = await getDocs(query(collection(db, `games/${currentGameId}/chat`)));
-                for (const c of chats.docs) await deleteDoc(doc(db, `games/${currentGameId}/chat`, c.id));
-                await deleteDoc(doc(db, 'games', currentGameId));
-            } catch(e) { console.warn(e); }
-        }
-        if (unsubscribeGame) unsubscribeGame();
-        if (unsubscribeChat) unsubscribeChat();
-        currentGameId = null;
-        gameActive = false;
-        document.getElementById('celebration-screen').style.display = 'none';
-        switchScreen('home-screen');
-    };
+                // Perform a lightweight Firestore read to measure true latency
+                if (userAuthProfile) {
+                    await getDoc(doc(db, 'users', userAuthProfile.uid));
+                }
+                const latency = Date.now() - timeStart;
+                
+                UI.pingText.innerText = `Ping: ${latency} ms`;
+                
+                // Color Code based on quality
+                if (latency < 100) {
+                    UI.pingDot.style.backgroundColor = 'var(--color-player-o)'; // Green
+                    UI.pingDot.style.boxShadow = '0 0 10px var(--color-player-o)';
+                } else if (latency < 250) {
+                    UI.pingDot.style.backgroundColor = 'var(--color-accent)'; // Yellow
+                    UI.pingDot.style.boxShadow = '0 0 10px var(--color-accent)';
+                } else {
+                    UI.pingDot.style.backgroundColor = 'var(--color-player-x)'; // Red
+                    UI.pingDot.style.boxShadow = '0 0 10px var(--color-player-x)';
+                }
+            } catch (error) {
+                UI.pingText.innerText = `Ping: Error`;
+                UI.pingDot.style.backgroundColor = 'var(--color-player-x)';
+            }
+        };
 
-    window.requestRestart = async () => {
-        if (mode === 'online' && currentGameId) {
-            document.getElementById('celebration-screen').style.display = 'none';
-            await updateDoc(doc(db, 'games', currentGameId), {
-                board: ['', '', '', '', '', '', '', '', ''],
-                status: 'playing',
-                turn: 'X'
-            });
-        } else if (mode === 'offline') {
-            initOfflineBoard();
-            document.getElementById('celebration-screen').style.display = 'none';
-        }
-    };
-
-    window.handleInvite = async () => {
-        mode = 'online';
-        const fCode = document.getElementById('friend-code').value.toUpperCase().trim();
-        if (!fCode) return showToast("Enter friend's invite code");
-        if (fCode === myProfile.inviteCode) return showToast("That's your own code!");
-
-        const qSnap = await getDocs(query(collection(db, "users"), where("inviteCode", "==", fCode)));
-        if (qSnap.empty) return showToast("No player with that code");
-        const friend = qSnap.docs[0].data();
-        const invRef = await addDoc(collection(db, 'invites'), {
-            senderUid: currentUser.uid,
-            senderName: myProfile.name,
-            receiverUid: friend.uid,
-            status: 'pending'
-        });
-        showToast("Challenge sent! Waiting...");
-        onSnapshot(doc(db, 'invites', invRef.id), (docSnap) => {
-            const data = docSnap.data();
-            if (data?.status === 'accepted' && data.gameId) {
-                startOnlineGame(data.gameId, 'X');
-                deleteDoc(doc(db, 'invites', invRef.id));
-            } else if (data?.status === 'rejected') {
-                showToast("Friend declined the challenge");
-                deleteDoc(doc(db, 'invites', invRef.id));
+        document.getElementById('btn-optimize-connection').addEventListener('click', () => {
+            sfx.init(); // Initialize audio context on first user interaction
+            sfx.playClick();
+            sysMsg("Initiating WTR server handshake...");
+            executeNetworkDiagnostic();
+            
+            // Set recurring check
+            if(!pingCalculationInterval) {
+                pingCalculationInterval = setInterval(executeNetworkDiagnostic, 6000);
             }
         });
-    };
 
-    function listenForInvites() {
-        onSnapshot(query(collection(db, 'invites'), where('receiverUid', '==', currentUser?.uid), where('status', '==', 'pending')), (snap) => {
-            snap.docChanges().forEach(async (change) => {
-                if (change.type === 'added') {
-                    const inv = change.doc.data();
-                    document.getElementById('inviter-name').innerText = inv.senderName;
-                    document.getElementById('invite-popup').style.display = 'flex';
+        /**
+         * ========================================================================
+         * 5. GAME LOGIC ENGINE & RENDERER
+         * ========================================================================
+         */
+         
+        // Initial Board Render Generation
+        const initializeGridDOM = () => {
+            UI.boardContainer.innerHTML = '';
+            for (let index = 0; index < 9; index++) {
+                const cellDiv = document.createElement('div');
+                cellDiv.className = 'board-cell';
+                cellDiv.setAttribute('data-cell-index', index);
+                
+                // Event listener attached to each cell
+                cellDiv.addEventListener('click', () => processCellInteraction(index));
+                
+                UI.boardContainer.appendChild(cellDiv);
+            }
+        };
+        initializeGridDOM();
 
-                    document.getElementById('accept-invite').onclick = async () => {
-                        const gameRef = await addDoc(collection(db, 'games'), {
-                            players: [inv.senderUid, currentUser.uid],
-                            board: ['','','','','','','','',''],
-                            turn: 'X',
-                            status: 'playing'
-                        });
-                        await updateDoc(doc(db, 'invites', change.doc.id), { status: 'accepted', gameId: gameRef.id });
-                        document.getElementById('invite-popup').style.display = 'none';
-                        startOnlineGame(gameRef.id, 'O');
-                    };
-                    document.getElementById('reject-invite').onclick = async () => {
-                        await updateDoc(doc(db, 'invites', change.doc.id), { status: 'rejected' });
-                        document.getElementById('invite-popup').style.display = 'none';
-                    };
+        // Update DOM visually based on state array
+        const syncBoardVisuals = () => {
+            const cellElements = document.querySelectorAll('.board-cell');
+            cellElements.forEach((cell, idx) => {
+                const stateValue = engineState.boardArray[idx];
+                
+                if (stateValue === 'X' && !cell.innerHTML.includes('symbol-x')) {
+                    cell.innerHTML = RENDER_SVG_X;
+                    if(engineState.isActive) sfx.playPlaceX();
+                } else if (stateValue === 'O' && !cell.innerHTML.includes('symbol-o')) {
+                    cell.innerHTML = RENDER_SVG_O;
+                    if(engineState.isActive) sfx.playPlaceO();
+                } else if (stateValue === '') {
+                    cell.innerHTML = '';
                 }
             });
-        });
-    }
+        };
 
-    // AUTH
-    document.getElementById('login-btn').addEventListener('click', async () => {
-        const email = document.getElementById('email').value;
-        const pass = document.getElementById('password').value;
-        if (!email || !pass) return showToast("Enter email & password");
-        document.getElementById('login-btn').innerText = "🔄 ...";
-        try {
-            await signInWithEmailAndPassword(auth, email, pass);
-            showToast("Welcome back!");
-        } catch (err) {
-            if (err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential') {
-                try {
-                    await createUserWithEmailAndPassword(auth, email, pass);
-                    showToast("Account created!");
-                } catch (e2) { showToast(e2.message); }
-            } else { showToast(err.message); }
-        }
-        document.getElementById('login-btn').innerText = "PLAY NOW";
-    });
+        // Mathematical Win Detection Engine
+        const evaluateBoardMatrix = (currentArray) => {
+            const winningCombinations = [
+                [0, 1, 2], [3, 4, 5], [6, 7, 8], // Horizontal
+                [0, 3, 6], [1, 4, 7], [2, 5, 8], // Vertical
+                [0, 4, 8], [2, 4, 6]             // Diagonal
+            ];
 
-    onAuthStateChanged(auth, async (user) => {
-        if (user) {
-            currentUser = user;
-            const userRef = doc(db, 'users', user.uid);
-            const snap = await getDoc(userRef);
-            if (snap.exists()) myProfile = snap.data();
-            else {
-                myProfile = { uid: user.uid, name: user.email.split('@')[0], inviteCode: generateInviteCode() };
-                await setDoc(userRef, myProfile);
+            for (let i = 0; i < winningCombinations.length; i++) {
+                const [posA, posB, posC] = winningCombinations[i];
+                if (
+                    currentArray[posA] !== '' &&
+                    currentArray[posA] === currentArray[posB] &&
+                    currentArray[posA] === currentArray[posC]
+                ) {
+                    return 'win';
+                }
             }
-            document.getElementById('user-name').innerText = myProfile.name;
-            document.getElementById('my-invite-code').innerText = myProfile.inviteCode;
-            switchScreen('home-screen');
-            listenForInvites();
-        } else {
-            switchScreen('auth-screen');
-        }
-    });
 
-    // BUILD BOARD
-    const boardDiv = document.getElementById('board');
-    for (let i = 0; i < 9; i++) {
-        const cell = document.createElement('div');
-        cell.className = 'cell';
-        cell.setAttribute('data-index', i);
-        cell.addEventListener('click', () => onCellClick(i));
-        boardDiv.appendChild(cell);
-    }
+            if (!currentArray.includes('')) {
+                return 'draw';
+            }
 
-    // CHAT
-    document.getElementById('send-chat').addEventListener('click', async () => {
-        const input = document.getElementById('chat-input');
-        if (input.value.trim() && mode === 'online' && currentGameId) {
-            await addDoc(collection(db, `games/${currentGameId}/chat`), {
-                sender: myProfile.name,
-                text: input.value,
-                timestamp: serverTimestamp()
+            return 'continue';
+        };
+
+        // Update Profile Stats in Database after match
+        const updatePlayerStats = async (resultType) => {
+            if (!userAuthProfile) return;
+            
+            const userRef = doc(db, 'users', userAuthProfile.uid);
+            
+            try {
+                if (resultType === 'win') {
+                    await updateDoc(userRef, { totalMatches: increment(1), wins: increment(1) });
+                } else if (resultType === 'loss') {
+                    await updateDoc(userRef, { totalMatches: increment(1), losses: increment(1) });
+                } else if (resultType === 'draw') {
+                    await updateDoc(userRef, { totalMatches: increment(1) });
+                }
+                
+                // Force a fresh read to update local UI
+                const freshSnap = await getDoc(userRef);
+                userDatabaseData = freshSnap.data();
+                updateStatsDashboard();
+                
+            } catch (error) {
+                console.error("Failed to update stats logging", error);
+            }
+        };
+
+        const updateStatsDashboard = () => {
+            if(!userDatabaseData) return;
+            
+            const matches = userDatabaseData.totalMatches || 0;
+            const wins = userDatabaseData.wins || 0;
+            const winRate = matches > 0 ? Math.round((wins / matches) * 100) : 0;
+            
+            UI.statMatches.innerText = matches;
+            UI.statWins.innerText = wins;
+            UI.statWinrate.innerText = `${winRate}%`;
+        };
+
+        // Handle conclusion of a match sequence
+        const executeMatchTermination = (winnerSymbol) => {
+            engineState.isActive = false;
+            syncBoardVisuals();
+            
+            setTimeout(() => {
+                let announcementTxt = "";
+                let colorCode = "";
+                
+                if (winnerSymbol === 'draw') {
+                    announcementTxt = "STALEMATE!";
+                    colorCode = "#ffffff";
+                    sfx.playLose();
+                    if(engineState.mode === 'online') updatePlayerStats('draw');
+                } else {
+                    if (engineState.mode === 'online') {
+                        if (winnerSymbol === engineState.mySymbolAssignment) {
+                            announcementTxt = "VICTORY ACHIEVED!";
+                            colorCode = "var(--color-player-x)";
+                            sfx.playWin();
+                            updatePlayerStats('win');
+                            triggerConfettiEngine();
+                        } else {
+                            announcementTxt = "MISSION FAILED!";
+                            colorCode = "var(--color-player-o)";
+                            sfx.playLose();
+                            updatePlayerStats('loss');
+                        }
+                    } else {
+                        // Offline Mode Result
+                        announcementTxt = `PLAYER ${winnerSymbol} WINS!`;
+                        colorCode = winnerSymbol === 'X' ? "var(--color-player-x)" : "var(--color-player-o)";
+                        sfx.playWin();
+                        triggerConfettiEngine();
+                    }
+                }
+                
+                const resultHead = document.getElementById('combat-result-announcement');
+                resultHead.innerText = announcementTxt;
+                resultHead.style.color = colorCode;
+                
+                UI.modalResult.classList.add('is-visible');
+            }, 700);
+        };
+
+        const triggerConfettiEngine = () => {
+            const count = 250;
+            const defaults = { origin: { y: 0.7 }, zIndex: 3000 };
+
+            function fire(particleRatio, opts) {
+                canvasConfetti(Object.assign({}, defaults, opts, {
+                    particleCount: Math.floor(count * particleRatio)
+                }));
+            }
+
+            fire(0.25, { spread: 26, startVelocity: 55, colors: ['#ff4757', '#fbbf24'] });
+            fire(0.2, { spread: 60, colors: ['#2ed573', '#ffffff'] });
+            fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
+            fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
+            fire(0.1, { spread: 120, startVelocity: 45 });
+        };
+
+        // Core Interaction Controller
+        const processCellInteraction = async (cellIndex) => {
+            sfx.init();
+            
+            // Validate interaction permissions
+            if (!engineState.isActive) return;
+            if (engineState.boardArray[cellIndex] !== '') {
+                sfx.playError();
+                return;
+            }
+
+            // Route execution based on mode
+            if (engineState.mode === 'offline') {
+                engineState.boardArray[cellIndex] = engineState.currentPlayerTurn;
+                syncBoardVisuals();
+                
+                const evaluationResult = evaluateBoardMatrix(engineState.boardArray);
+                
+                if (evaluationResult === 'win') {
+                    executeMatchTermination(engineState.currentPlayerTurn);
+                } else if (evaluationResult === 'draw') {
+                    executeMatchTermination('draw');
+                } else {
+                    engineState.currentPlayerTurn = engineState.currentPlayerTurn === 'X' ? 'O' : 'X';
+                    updateStatusBadgeUI(`PLAYER ${engineState.currentPlayerTurn} TURN`, engineState.currentPlayerTurn === 'X' ? 'var(--color-player-x)' : 'var(--color-player-o)', '#000000');
+                }
+            } 
+            else if (engineState.mode === 'online') {
+                
+                if (engineState.currentPlayerTurn !== engineState.mySymbolAssignment) {
+                    sfx.playError();
+                    sysMsg("Warning: Awaiting opponent's transmission.");
+                    return;
+                }
+                
+                // Optimistic Local Update
+                engineState.boardArray[cellIndex] = engineState.mySymbolAssignment;
+                syncBoardVisuals();
+                
+                // Calculate resulting state
+                const evaluationResult = evaluateBoardMatrix(engineState.boardArray);
+                const gameDocRef = doc(db, 'games', engineState.currentGameDocumentId);
+                
+                try {
+                    if (evaluationResult === 'win') {
+                        await updateDoc(gameDocRef, { 
+                            board: engineState.boardArray, 
+                            status: 'win', 
+                            winner: engineState.mySymbolAssignment 
+                        });
+                    } else if (evaluationResult === 'draw') {
+                        await updateDoc(gameDocRef, { 
+                            board: engineState.boardArray, 
+                            status: 'draw' 
+                        });
+                    } else {
+                        const nextTurn = engineState.mySymbolAssignment === 'X' ? 'O' : 'X';
+                        await updateDoc(gameDocRef, { 
+                            board: engineState.boardArray, 
+                            turn: nextTurn 
+                        });
+                    }
+                } catch (error) {
+                    sysMsg("Server sync failure detected.");
+                    console.error(error);
+                }
+            }
+        };
+
+        // UI Helper for the Badge
+        const updateStatusBadgeUI = (text, textColor, borderColor) => {
+            UI.statusBadge.innerText = text;
+            UI.statusBadge.style.color = textColor;
+            UI.statusBadge.style.borderColor = borderColor;
+        };
+
+        /**
+         * ========================================================================
+         * 6. OFFLINE & ONLINE INITIALIZATION MODULES
+         * ========================================================================
+         */
+         
+        document.getElementById('btn-start-offline-training').addEventListener('click', () => {
+            engineState.mode = 'offline';
+            engineState.isActive = true;
+            engineState.boardArray = Array(9).fill('');
+            engineState.currentPlayerTurn = 'X';
+            
+            UI.chatContainer.style.display = 'none';
+            updateStatusBadgeUI("TRAINING: P1 TURN", 'var(--color-player-x)', 'transparent');
+            
+            syncBoardVisuals();
+            navigateToScreen('screen-combat-arena');
+        });
+
+        // The Multiplayer Synchronizer
+        const initiateOnlineCombatSequence = (gameDocumentId, assignedSymbol) => {
+            engineState.currentGameDocumentId = gameDocumentId;
+            engineState.mySymbolAssignment = assignedSymbol;
+            engineState.mode = 'online';
+            engineState.isActive = true;
+            
+            UI.chatContainer.style.display = 'flex';
+            UI.modalResult.classList.remove('is-visible');
+            
+            navigateToScreen('screen-combat-arena');
+
+            // 1. Establish Game State Listener
+            if(engineState.unsubGameDoc) engineState.unsubGameDoc();
+            
+            const docRef = doc(db, 'games', gameDocumentId);
+            engineState.unsubGameDoc = onSnapshot(docRef, (snapshot) => {
+                if (!snapshot.exists()) {
+                    sysMsg("Opponent severed the connection.");
+                    handleCombatAbort(true);
+                    return;
+                }
+                
+                const cloudData = snapshot.data();
+                engineState.boardArray = cloudData.board;
+                engineState.currentPlayerTurn = cloudData.turn;
+                engineState.isActive = (cloudData.status === 'playing');
+                
+                syncBoardVisuals();
+
+                // Process Cloud Status
+                if (cloudData.status === 'win') {
+                    executeMatchTermination(cloudData.winner);
+                } else if (cloudData.status === 'draw') {
+                    executeMatchTermination('draw');
+                } else {
+                    if (engineState.currentPlayerTurn === engineState.mySymbolAssignment) {
+                        updateStatusBadgeUI("YOUR TURN TO STRIKE", 'var(--color-player-o)', 'var(--color-player-o)');
+                        sfx.playClick();
+                    } else {
+                        updateStatusBadgeUI("AWAITING TARGET...", 'var(--color-text-muted)', 'var(--glass-border)');
+                    }
+                }
             });
-            input.value = '';
-        }
-    });
-    document.getElementById('chat-input').addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') document.getElementById('send-chat').click();
-    });
-</script>
+
+            // 2. Establish Secure Chat Comm Listener
+            if(engineState.unsubChatQuery) engineState.unsubChatQuery();
+            
+            const chatCollectionRef = collection(db, `games/${gameDocumentId}/chat`);
+            const chatQuery = query(chatCollectionRef);
+            
+            engineState.unsubChatQuery = onSnapshot(chatQuery, (snapshot) => {
+                UI.chatLog.innerHTML = '';
+                const messageList = [];
+                
+                snapshot.forEach(docSnap => messageList.push(docSnap.data()));
+                
+                // Sort chronologically
+                messageList.sort((a,b) => (a.timestamp?.toMillis() || 0) - (b.timestamp?.toMillis() || 0));
+                
+                messageList.forEach(msgItem => {
+                    const isSelf = msgItem.sender === userDatabaseData.name;
+                    const bubbleHTML = `
+                        <div class="chat-bubble ${isSelf ? 'self' : ''}">
+                            <span class="chat-sender-name">${isSelf ? 'You' : msgItem.sender}</span>
+                            <br>
+                            ${msgItem.text}
+                        </div>
+                    `;
+                    UI.chatLog.insertAdjacentHTML('beforeend', bubbleHTML);
+                });
+                
+                // Auto Scroll down
+                UI.chatLog.scrollTop = UI.chatLog.scrollHeight;
+            });
+        };
+
+        /**
+         * ========================================================================
+         * 7. CHALLENGE PROTOCOLS & INVITATION SYSTEM
+         * ========================================================================
+         */
+        document.getElementById('btn-send-challenge').addEventListener('click', async () => {
+            sfx.init(); sfx.playClick();
+            
+            const targetInput = document.getElementById('target-friend-code');
+            const targetCode = targetInput.value.toUpperCase().trim();
+            
+            if (!targetCode) {
+                sysMsg("Error: Target code required.");
+                sfx.playError();
+                return;
+            }
+            if (targetCode === userDatabaseData.inviteCode) {
+                sysMsg("Logic Error: Self-targeting prohibited.");
+                sfx.playError();
+                return;
+            }
+
+            // Locate Target in Database
+            const usersRef = collection(db, "users");
+            const q = query(usersRef, where("inviteCode", "==", targetCode));
+            
+            try {
+                const querySnapshot = await getDocs(q);
+                
+                if (querySnapshot.empty) {
+                    sysMsg("Target offline or invalid code.");
+                    sfx.playError();
+                    return;
+                }
+                
+                const targetProfile = querySnapshot.docs[0].data();
+                
+                // Construct Invitation Document
+                const inviteData = {
+                    senderUid: userAuthProfile.uid,
+                    senderName: userDatabaseData.name,
+                    receiverUid: targetProfile.uid,
+                    status: 'pending',
+                    createdAt: serverTimestamp()
+                };
+                
+                const inviteRef = await addDoc(collection(db, 'invites'), inviteData);
+                sysMsg("Transmission Sent. Awaiting response...");
+                
+                // Listen for Target's Decision
+                const unsubInvite = onSnapshot(doc(db, 'invites', inviteRef.id), (docSnap) => {
+                    const dataObj = docSnap.data();
+                    
+                    if (dataObj?.status === 'accepted' && dataObj.gameId) {
+                        sysMsg("Challenge Accepted! Engaging...");
+                        initiateOnlineCombatSequence(dataObj.gameId, 'X');
+                        deleteDoc(doc(db, 'invites', inviteRef.id));
+                        unsubInvite();
+                    } else if (dataObj?.status === 'rejected') {
+                        sysMsg("Target evaded the challenge.");
+                        sfx.playError();
+                        deleteDoc(doc(db, 'invites', inviteRef.id));
+                        unsubInvite();
+                    }
+                });
+                
+            } catch (error) {
+                sysMsg("Database routing failure.");
+                console.error(error);
+            }
+        });
+
+        // Continuous Radar for Incoming Challenges
+        const activateIncomingRadar = () => {
+            const invitesRef = collection(db, 'invites');
+            const q = query(invitesRef, 
+                where('receiverUid', '==', userAuthProfile.uid), 
+                where('status', '==', 'pending')
+            );
+            
+            onSnapshot(q, (snapshot) => {
+                snapshot.docChanges().forEach(change => {
+                    if (change.type === 'added') {
+                        const incomingData = change.doc.data();
+                        const inviteDocId = change.doc.id;
+                        
+                        sfx.playTone(800, 'square', 0.1, 0.4);
+                        setTimeout(() => sfx.playTone(800, 'square', 0.3, 0.4), 150);
+                        
+                        document.getElementById('challenger-id-name').innerText = incomingData.senderName;
+                        UI.modalInvite.classList.add('is-visible');
+
+                        // Attach Decision Handlers
+                        document.getElementById('btn-accept-combat').onclick = async () => {
+                            sfx.playClick();
+                            
+                            // Initialize new Game Board Document
+                            const newGameData = {
+                                players: [incomingData.senderUid, userAuthProfile.uid],
+                                board: ['', '', '', '', '', '', '', '', ''],
+                                turn: 'X',
+                                status: 'playing',
+                                createdAt: serverTimestamp()
+                            };
+                            
+                            try {
+                                const gameDocRef = await addDoc(collection(db, 'games'), newGameData);
+                                
+                                // Update Invite to Accepted state with the new Game ID attached
+                                await updateDoc(doc(db, 'invites', inviteDocId), { 
+                                    status: 'accepted', 
+                                    gameId: gameDocRef.id 
+                                });
+                                
+                                UI.modalInvite.classList.remove('is-visible');
+                                
+                                // Receiver plays as 'O'
+                                initiateOnlineCombatSequence(gameDocRef.id, 'O');
+                            } catch (e) {
+                                sysMsg("Failed to establish game session.");
+                            }
+                        };
+
+                        document.getElementById('btn-decline-combat').onclick = async () => {
+                            sfx.playClick();
+                            await updateDoc(doc(db, 'invites', inviteDocId), { status: 'rejected' });
+                            UI.modalInvite.classList.remove('is-visible');
+                        };
+                    }
+                });
+            });
+        };
+
+        /**
+         * ========================================================================
+         * 8. COMMUNICATION MODULE (CHAT)
+         * ========================================================================
+         */
+        const transmitChatMessage = async () => {
+            const msgInputText = UI.chatInput.value.trim();
+            
+            if (msgInputText && engineState.mode === 'online' && engineState.currentGameDocumentId) {
+                try {
+                    const chatColRef = collection(db, `games/${engineState.currentGameDocumentId}/chat`);
+                    await addDoc(chatColRef, {
+                        sender: userDatabaseData.name,
+                        text: msgInputText,
+                        timestamp: serverTimestamp()
+                    });
+                    
+                    UI.chatInput.value = '';
+                    sfx.playTone(1000, 'sine', 0.05, 0.2); // Tiny bloop for sending message
+                } catch (e) {
+                    sysMsg("Comms array failure.");
+                }
+            }
+        };
+
+        document.getElementById('btn-transmit-message').addEventListener('click', transmitChatMessage);
+        UI.chatInput.addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') transmitChatMessage();
+        });
+
+        /**
+         * ========================================================================
+         * 9. GAME TERMINATION & REMATCH ROUTINES
+         * ========================================================================
+         */
+        const handleCombatAbort = async (isForcedByOpponent = false) => {
+            sfx.playClick();
+            
+            // Cleanup Cloud resources if initiating the abort
+            if (!isForcedByOpponent && engineState.mode === 'online' && engineState.currentGameDocumentId) {
+                try {
+                    // Note: Security rules should ideally handle cascade deletes,
+                    // but we do a raw delete of the game doc here.
+                    await deleteDoc(doc(db, 'games', engineState.currentGameDocumentId));
+                } catch (err) {
+                    console.log("Cleanup backgrounded.");
+                }
+            }
+            
+            // Sever local listeners
+            if(engineState.unsubGameDoc) engineState.unsubGameDoc();
+            if(engineState.unsubChatQuery) engineState.unsubChatQuery();
+            
+            engineState.currentGameDocumentId = null;
+            engineState.isActive = false;
+            
+            UI.modalResult.classList.remove('is-visible');
+            navigateToScreen('screen-command-center');
+        };
+
+        document.getElementById('btn-abort-mission').addEventListener('click', () => handleCombatAbort(false));
+        document.getElementById('btn-return-command-center').addEventListener('click', () => handleCombatAbort(false));
+
+        document.getElementById('btn-request-rematch').addEventListener('click', async () => {
+            sfx.playClick();
+            UI.modalResult.classList.remove('is-visible');
+            
+            if (engineState.mode === 'online' && engineState.currentGameDocumentId) {
+                try {
+                    await updateDoc(doc(db, 'games', engineState.currentGameDocumentId), {
+                        board: ['', '', '', '', '', '', '', '', ''],
+                        status: 'playing',
+                        turn: 'X'
+                    });
+                } catch (e) {
+                    sysMsg("Rematch request failed.");
+                }
+            } else if (engineState.mode === 'offline') {
+                document.getElementById('btn-start-offline-training').click();
+            }
+        });
+
+        /**
+         * ========================================================================
+         * 10. AUTHENTICATION & IDENTITY MANAGEMENT
+         * ========================================================================
+         */
+        const processAuthentication = async () => {
+            sfx.init(); sfx.playClick();
+            
+            const emailValue = document.getElementById('auth-email-input').value.trim();
+            const passwordValue = document.getElementById('auth-password-input').value.trim();
+            const loginBtn = document.getElementById('btn-execute-login');
+            
+            if (!emailValue || !passwordValue) {
+                sysMsg("Error: Invalid credentials format.");
+                sfx.playError();
+                return;
+            }
+            
+            loginBtn.innerHTML = `PROCESSING... <div class="ping-indicator" style="display:inline-block; margin-left:10px; width:8px; height:8px;"></div>`;
+            
+            try {
+                // Attempt standard login
+                await signInWithEmailAndPassword(auth, emailValue, passwordValue);
+                sysMsg("Authentication verified.");
+            } catch (error) {
+                // If account doesn't exist, create it dynamically
+                if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
+                    try {
+                        sysMsg("Registering new Agent ID...");
+                        await createUserWithEmailAndPassword(auth, emailValue, passwordValue);
+                    } catch (creationError) {
+                        sysMsg("Registration Failed: " + creationError.message);
+                        sfx.playError();
+                    }
+                } else {
+                    sysMsg("Auth Error: " + error.message);
+                    sfx.playError();
+                }
+            }
+            
+            loginBtn.innerHTML = `ENTER ARENA`;
+        };
+
+        document.getElementById('btn-execute-login').addEventListener('click', processAuthentication);
+
+        // Core Session Observer
+        onAuthStateChanged(auth, async (userObj) => {
+            if (userObj) {
+                userAuthProfile = userObj;
+                
+                const userDocRef = doc(db, 'users', userObj.uid);
+                try {
+                    const snap = await getDoc(userDocRef);
+                    
+                    if (snap.exists()) {
+                        userDatabaseData = snap.data();
+                    } else {
+                        // Initialize new database profile with zeroed stats
+                        userDatabaseData = {
+                            uid: userObj.uid,
+                            name: userObj.email.split('@')[0].toUpperCase(),
+                            inviteCode: generateSecureCode(),
+                            totalMatches: 0,
+                            wins: 0,
+                            losses: 0,
+                            accountCreated: serverTimestamp()
+                        };
+                        await setDoc(userDocRef, userDatabaseData);
+                    }
+                    
+                    // Bind data to DOM
+                    document.getElementById('display-user-name').innerText = userDatabaseData.name;
+                    document.getElementById('display-invite-code').innerText = userDatabaseData.inviteCode;
+                    
+                    updateStatsDashboard();
+                    
+                    // Move to Lobby
+                    navigateToScreen('screen-command-center');
+                    
+                    // Start Background Services
+                    activateIncomingRadar();
+                    executeNetworkDiagnostic();
+                    
+                } catch (err) {
+                    console.error("Critical Profile Fetch Failure", err);
+                    sysMsg("System Error Loading Profile");
+                }
+                
+            } else {
+                // Logged out state
+                userAuthProfile = null;
+                userDatabaseData = null;
+                navigateToScreen('screen-authentication');
+            }
+        });
+
+    </script>
 </body>
 </html>
